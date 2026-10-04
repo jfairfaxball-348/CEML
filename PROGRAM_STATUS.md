@@ -1,6 +1,6 @@
 # CEML Programme Status
 
-**Authoritative current phase:** R2 — ALGORITHM / IMPLEMENTATION AUDIT  
+**Authoritative current phase:** R3 — REPRODUCIBILITY / VALIDATION AUDIT  
 **Scientific execution authorization:** DENIED  
 **Production implementation authorization:** DENIED  
 **Scientific master-seed generation:** DENIED  
@@ -14,9 +14,9 @@
 | Gate | Status | Evidence / consequence |
 |---|---|---|
 | BOOTSTRAP | COMPLETE | Governance and scaffold committed before R1. |
-| R1 | **PASS — 2026-10-04** | docs/LITERATURE_AUDIT.md records the source-level state-of-the-art audit, evidence confidence, implementation landscape, performance conditions, caveats and unresolved R2 questions. |
-| R2 | **OPEN — CURRENT GATE** | Algorithm and implementation audit may proceed. No production implementation is authorized. |
-| R3 | NOT ENTERED | Reproducibility/validation semantics remain unfrozen. |
+| R1 | **PASS — 2026-10-04** | docs/LITERATURE_AUDIT.md records the state-of-the-art evidence base, source confidence, caveats and implementation landscape. |
+| R2 | **PASS — 2026-10-04** | docs/ALGORITHM_AUDIT.md reconstructs exact affine invariants, audits the strongest source lineages, records failure modes, validation implications, checkpoint implications, a viable machine-neutral shortlist and C1 benchmark questions. |
+| R3 | **OPEN — CURRENT GATE** | Reproducibility, scientific semantics, manifests, checkpoint/restart semantics and validation acceptance criteria may now be researched and frozen. |
 | R4 | NOT ENTERED | Local hardware-audit specification not frozen. |
 | I1 | NOT ENTERED | Codex implementation brief not approved. |
 | C1 | NOT ENTERED | Local audit/build not authorized. |
@@ -43,30 +43,69 @@ R1 established, without importing authority from another Collatz repository:
 
 - a primary current high-magnitude method: Elsenhans's exact standard-polynomial / affine binary-splitting approach;
 - an author-reported 20-billion-decimal-digit computation, explicitly not treated as independently reproduced;
-- public current implementations suitable for R2 source audit, including DRMacIver/collatz-eval and Boutoukoat/Collatz-steps-on-large-numbers;
+- public current implementations suitable for source audit;
 - independent public output agreement for selected large exact Mersenne starts;
 - explicit separation of standard, shortcut and odd-only step conventions;
 - separation of isolated-start computation from contiguous verification;
-- performance evidence with missing conditions preserved as missing;
-- correctness, portability, checkpoint/restart and provenance gaps to be resolved in later gates.
+- performance evidence with missing conditions preserved as missing.
 
 R1 did **not** choose a CEML production architecture or backend.
 
-## Current R2 boundary
+## R2 acceptance summary
 
-R2 is research and source/algorithm audit only. It may inspect mathematics, public source code, licenses, tests, interfaces and bounded deterministic examples needed to understand correctness.
+R2 established, without writing production code or importing machine-specific tuning:
 
-R2 may not:
+- normalized standard-map, shortcut-map and odd-only semantics and exact count conversions;
+- the affine invariant 2^k T^k(n) = 3^i n + B and its non-commutative composition order;
+- why the low k bits determine k exact shortcut steps;
+- direct-base and binary-split construction invariants, including odd split lengths;
+- the first-occurrence-of-1 macro-block hazard and the requirement for terminal-safe scheduling or exact decomposition;
+- the scope and hypotheses of Elsenhans's conditional complexity theorem;
+- a source-level audit of DRMacIver/collatz-eval at 0f5ad6da40171cdcd68ce167776a0644ceb942dc;
+- a source-level audit of Boutoukoat/Collatz-steps-on-large-numbers at ec82c0a7e248add8f3f6d16b07cda0aae4e7ebfd, including mpz_mullo history, standard-step preservation and portability risks;
+- explicit separation between direct-step oracles and checks that share the affine recurrence;
+- a correctness threat model tied to R3/V1 detection methods;
+- machine-neutral viable families: direct arbitrary-precision reference/tail stepping, small affine leaves, and on-demand binary-split/hierarchical affine batching;
+- optional Dense/Sparse, value-threaded, FLINT and parallel paths left as later benchmark hypotheses;
+- canonical checkpoint/restart requirements identified but not yet scientifically frozen;
+- exact local benchmark questions for C1 without choosing values.
+
+R2 also preserved two external evidence gaps:
+
+- the institutional Elsenhans collatz_2026.tar.gz archive could not be acquired as inspectable bytes in the R2 environment and therefore was not hashed or source-audited;
+- the cited R. Gerbicz primary forum post could not be retrieved directly, so the current Boutoukoat recurrence was audited from source without promoting its approximate complexity description into a theorem.
+
+These gaps do not certify the external artifacts and remain recorded in docs/ALGORITHM_AUDIT.md. They do not block the R2 exit condition, which requires viable architecture families, invariants, correctness risks and benchmark requirements to be documented.
+
+## Current R3 boundary
+
+R3 is research and protocol design only. It may define and freeze the scientific and validation semantics that later implementation must obey.
+
+R3 may research and decide:
+
+- the canonical reported map/count semantics and first-1 definition;
+- deterministic start-generation and scientific master-seed protocol without generating the actual scientific master seed;
+- what magnitude-ladder properties must be frozen later, without executing a rung;
+- canonical integer, result, manifest and checkpoint encodings;
+- hash/digest requirements and domain separation;
+- build/run/provenance manifest requirements;
+- checkpoint crash consistency and restart equivalence rules;
+- independent oracle diversity requirements;
+- bounded fixture suites, adversarial tests, differential tests and fault-injection expectations;
+- acceptance criteria for V1;
+- anomaly handling and evidence-preservation triggers.
+
+R3 may not:
 
 - implement the CEML production engine;
 - generate the scientific master seed;
-- freeze the magnitude ladder;
+- freeze or execute the scientific magnitude ladder unless the roadmap explicitly assigns that freeze to R3 and the required protocol evidence is complete;
 - run a giant or scientific trajectory;
 - launch the local Codex implementation;
 - infer or record unmeasured local hardware;
-- select machine-specific compiler flags, backend thresholds, macro/super-block sizes, thread counts, RAM ceilings or checkpoint cadence;
+- select machine-specific compiler flags, backend thresholds, macro/super-block sizes, thread counts, RAM ceilings, storage ceilings or checkpoint cadence;
 - convert an author benchmark into a local performance prediction;
-- call an implementation audited without documenting the audit scope.
+- call an implementation validated before V1 actually passes.
 
 ## Non-substitution rule
 

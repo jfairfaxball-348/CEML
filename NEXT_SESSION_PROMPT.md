@@ -1,10 +1,10 @@
-# Next Session Prompt — CEML-R2
+# Next Session Prompt — CEML-R3
 
 Use this prompt to begin the next research session.
 
 ---
 
-CEML-R2 — ALGORITHM AND IMPLEMENTATION AUDIT
+CEML-R3 — REPRODUCIBILITY AND VALIDATION AUDIT
 
 Repository:
 
@@ -22,280 +22,341 @@ Read, in this order:
 6. docs/RESEARCH_PROTOCOL.md
 7. docs/LITERATURE_AUDIT.md
 8. docs/ALGORITHM_AUDIT.md
-9. docs/CLAIM_POLICY.md
-10. docs/HARDWARE_AUDIT_SPEC.md
-11. NEXT_SESSION_PROMPT.md
+9. docs/RANDOMNESS_AND_REPRODUCIBILITY.md
+10. docs/EXPERIMENT_PROTOCOL.md
+11. docs/CHECKPOINT_SPEC.md
+12. docs/RESULT_SCHEMA.md
+13. docs/VALIDATION_PLAN.md
+14. docs/SECURITY_AND_INTEGRITY.md
+15. docs/CLAIM_POLICY.md
+16. docs/HARDWARE_AUDIT_SPEC.md
+17. schemas/run_manifest.schema.json
+18. schemas/checkpoint_metadata.schema.json
+19. schemas/result.schema.json
+20. NEXT_SESSION_PROMPT.md
 
-CEML-R1 is complete. The current phase is R2 research only.
+CEML-R1 and CEML-R2 have passed. The current phase is CEML-R3 research and protocol design only.
 
-Do not import architecture, terminology, assumptions, reports, conclusions, or research state from any previous Collatz repository unless a specific fact is independently relevant, independently re-audited, and explicitly cited.
+Do not import architecture, terminology, assumptions, reports, conclusions, or research state from previous Collatz repositories unless a specific fact is independently relevant, independently re-audited, and explicitly cited.
 
 Do not:
 
 - implement the CEML production engine;
 - generate the scientific master seed;
-- freeze the magnitude ladder;
-- run giant Collatz trajectories or any scientific rung;
+- execute a giant Collatz trajectory or any scientific rung;
 - launch the local Codex implementation;
 - invent or assume local hardware specifications;
-- select machine-specific compiler flags, arithmetic backend thresholds, macro/super-block sizes, thread counts, checkpoint cadence, RAM ceilings, storage limits, or similar local engineering parameters;
-- treat any public implementation as correct merely because it is published or passes examples;
-- treat ANTS review, public source availability, OEIS agreement, or a benchmark as a substitute for source-level correctness analysis;
-- conflate standard-map, shortcut-map, and odd-only step counts;
-- conflate contiguous Collatz verification with isolated-start extreme-magnitude evaluation;
-- advance to R3 unless every R2 exit criterion is genuinely satisfied.
+- select machine-specific compiler flags, arithmetic-backend thresholds, macro/super-block sizes, thread counts, checkpoint cadence, RAM ceilings, storage ceilings, or similar local engineering parameters;
+- silently convert an R2 architecture shortlist into a production winner;
+- treat a hash, published output, benchmark, or successful test as a substitute for independent correctness validation;
+- treat multiple checks derived from the same affine recurrence as independent oracles;
+- conflate shortcut, standard and odd-only step counts;
+- allow a macro block to obscure the first occurrence of 1;
+- generate or inspect scientific starts before the generator/seed/rung protocol is frozen;
+- freeze the final executable ladder or generate its seed during R3;
+- advance to R4 unless every R3 exit criterion is genuinely satisfied.
 
-The purpose of this session is CEML-R2 only:
+PURPOSE
 
-Compare the exact algorithm families and serious public implementations identified by R1, reconstruct their mathematical invariants, source-audit the strongest candidates, and document a defensible shortlist of architecture families for later validation and machine-local benchmarking.
+Freeze the scientific semantics and reproducibility/validation contract that every later CEML implementation, checkpoint, manifest and result must obey.
 
-R1 evidence that must be treated with its recorded caveats includes:
+R2 evidence must be inherited with its caveats, especially:
 
-- Andreas-Stephan Elsenhans, ANTS XVII 2026, standard-polynomial / affine binary-splitting macro steps;
-- the linked Elsenhans code/data archive, which R1 located but did not unpack and audit;
-- DRMacIver/collatz-eval, Rust v0.1.0, with Dense/Sparse representations, optional GMP super-batching, optional FLINT routing, oracle scaffolding, and an explicit warning that human auditing is limited;
-- Boutoukoat/Collatz-steps-on-large-numbers, C++/GMP, with Gerbicz-attributed acceleration and independently matching outputs for some large Mersenne starts, but incomplete benchmark provenance and a primary-method gap;
-- Wei Ren's bit/file-backed C implementations as an independent algorithmic lineage and convention cross-check;
-- Bařina's contiguous verifier only as a non-equivalent comparator.
+- exact shortcut affine blocks satisfy 2^k T^k(n) = 3^i n + B;
+- the low k bits determine k exact shortcut steps;
+- affine composition order is non-commutative;
+- exact standard-map count equals shortcut-map count plus the number of odd shortcut steps;
+- odd-only stepping must accumulate valuations to convert counts exactly;
+- total-stopping semantics require the first occurrence of 1 and terminal-safe macro handling;
+- direct elementary stepping is a definition-level oracle for affine batching;
+- several collatz-eval audit paths share the affine recurrence and are not mathematically independent;
+- Boutoukoat/Gerbicz is an independent implementation lineage but algebraically the same affine family;
+- Dense/Sparse, value-threaded recursion, FLINT routing, macro sizes, allocation strategies and parallelism remain later benchmark hypotheses;
+- durable checkpoint semantics are not supplied by external implementations;
+- the Elsenhans collatz_2026.tar.gz artifact and the cited Gerbicz primary forum post remain unresolved external evidence gaps.
 
-Investigate at minimum:
+AUDIT AND FREEZE AT MINIMUM
 
-1. Exact semantic normalization
+A. Scientific map and count semantics.
 
-Define, implementation-independently:
+Freeze, implementation-independently:
 
-- standard map C;
-- shortcut map T;
-- any odd-only map U considered;
-- stopping time versus total stopping time;
-- exact conversion of step counts between conventions;
-- the exact meaning of “reaches 1” when a macro block could cross the first occurrence of 1;
-- the state variables an engine must preserve to make results and checkpoints unambiguous.
+- the canonical CEML map used for trajectory accounting;
+- whether standard-map, shortcut-map and odd-only counts are stored/reported and which is primary;
+- exact conversion formulas;
+- first-occurrence-of-1 semantics;
+- total stopping time terminology;
+- maximum/minimum magnitude metrics, if any, with exact definitions;
+- the rule for macro blocks near terminal state;
+- integer and counter domains, including how unbounded counts are serialized.
 
-Do not freeze R3 scientific protocol fields prematurely, but identify every semantic choice R3 will have to freeze.
+The protocol must make it impossible for two conforming implementations to disagree merely because they used different internal maps.
 
-2. Elsenhans mathematical audit
+B. Magnitude/rung definition.
 
-Reconstruct the method from the primary paper:
+Freeze the mathematical definition of a rung, not the final ladder values.
 
-- standard polynomial / affine triple representation;
-- dependence on the low k bits;
-- exact composition identity;
-- direct base-block construction;
-- recursive binary splitting;
-- coefficient and denominator bounds;
-- macro-step selection logic;
-- exact step accounting;
-- terminal-block boundary;
-- conditional complexity theorem and its G_c hypothesis.
+Determine whether a rung is defined by:
 
-For each formula, state the invariant that an implementation must preserve and identify plausible transcription/overflow/order/boundary failures.
+- exact decimal-digit count;
+- exact bit length;
+- or another explicit magnitude interval.
 
-3. Elsenhans artifact audit
+For the chosen definition specify the exact set of permitted positive odd integers, boundary inclusion, leading-bit/digit rules, and conversion/reporting rules.
 
-Attempt to obtain the linked collatz_2026.tar.gz research archive from the author/institutional source.
+Do not freeze the final ladder during R3; E1 retains final ladder authorization.
 
-If accessible:
+C. Deterministic random-start generation.
 
-- record a cryptographic hash of the downloaded archive;
-- inventory the files;
-- identify Magma and C/GMP implementations;
-- record license information if present;
-- map source functions to the paper's formulas;
-- identify build/compiler/GMP requirements;
-- inspect tests and assertions;
-- determine whether exact 10-billion- or 20-billion-digit inputs/results/digests are preserved;
-- record any discrepancies with the paper.
+Audit suitable deterministic cryptographic primitives and standard references.
 
-If the archive cannot be obtained or inspected, preserve that as an explicit unresolved evidence gap rather than substituting a mirror silently.
+Specify:
 
-4. DRMacIver/collatz-eval audit
+- primitive and exact version/standard;
+- seed bitstring interpretation;
+- domain separation;
+- rung/index encoding;
+- deterministic expansion;
+- unbiased mapping into the chosen finite set of odd starts;
+- rejection-sampling rules where required;
+- retry/counter semantics;
+- canonical generated-start encoding;
+- start digest;
+- test vectors sufficient for independent implementations.
 
-Inspect the current pinned revision rather than only the README.
+Candidates already noted in the repository include SHAKE256 and ChaCha20-based streams, but R3 must choose only after auditing their standards and suitability. Do not generate the actual scientific master seed.
 
-Audit:
+D. Seed policy and precommitment.
 
-- Dense and Sparse state representations;
-- BlockTable/fused-step logic;
-- super-batch affine representation and recursion;
-- GMP/rug interface;
-- optional FLINT multiplication path;
-- low-limb/shift/carry handling;
-- terminal behavior;
-- step-count API;
-- debug/audit overflow checks;
-- property-based tests and oracle independence;
-- feature-specific tests;
-- any issue/PR history relevant to correctness;
-- license and dependency implications.
+Freeze the protocol for:
 
-Determine what is mathematically independent versus derived from Elsenhans. Do not call its oracle independent if it merely reuses the same recurrence and bug surface.
+- seed generation event requirements at the later authorized gate;
+- whether the seed is published immediately, committed then revealed, or handled another reproducible way;
+- commitment algorithm and canonical bytes;
+- prevention/detection of candidate selection or rerolling;
+- loss/recovery policy;
+- domain separation between scientific starts and all validation/calibration randomness.
 
-5. Boutoukoat / Gerbicz lineage audit
+The scientific master seed must remain nonexistent after R3.
 
-Inspect the current pinned Boutoukoat source.
+E. Canonical encodings and cryptographic digests.
 
-Determine:
+Select and specify stable algorithms and canonicalization for:
 
-- exact recurrence or decomposition used;
-- how it differs from Elsenhans;
-- the role of GMP internals and mpz_mullo;
-- standard-map step preservation;
-- tail handling;
-- architecture-specific assumptions;
-- known size/GMP limits;
-- build portability constraints;
-- whether the Mersenne outputs can be reproduced by a genuinely independent reference implementation on bounded/appropriate test sizes.
+- start value;
+- checkpoint body and metadata;
+- run manifest;
+- result record;
+- build/profile references where scientifically required.
 
-Trace the cited R. Gerbicz primary source if possible. If the source remains inaccessible or informal, reconstruct the algorithm from code and label the provenance honestly. Do not promote the repository's approximate complexity statement into a theorem without evidence.
+Research relevant standards for cryptographic hashes and canonical JSON or choose a simpler unambiguous canonical binary/text encoding.
 
-6. Other exact families
+Define exactly:
 
-Compare at least:
+- byte encoding;
+- integer encoding;
+- field order/canonicalization;
+- Unicode/text restrictions if applicable;
+- digest algorithm;
+- digest rendering;
+- domain-separation prefixes;
+- versioning;
+- how self-referential digest fields are excluded or normalized.
 
-- direct arbitrary-precision stepping;
-- odd-only valuation stepping;
-- table-driven affine/composite-polynomial batching;
-- on-demand binary-split affine batching;
-- hierarchical/super-batching;
-- Ren-style bit/file representation;
-- any additional exact macro-transform family found during R2.
+Hashes identify bytes; they are not correctness proofs.
 
-For each record:
+F. Run manifest.
 
-- mathematical state;
-- exact transform;
-- step accounting;
-- correctness argument;
-- asymptotic claim and assumptions;
-- allocation/copy pressure;
-- multiplication requirements;
-- memory behavior;
-- checkpoint boundary options;
-- implementation complexity;
-- independent-test strategy;
-- maturity.
+Substantially complete and scientifically freeze schemas/run_manifest.schema.json plus prose requirements.
 
-7. Arithmetic/backend audit
+The manifest must distinguish:
 
-Compare, without selecting machine-specific thresholds:
+- scientific protocol identity;
+- repository/protocol commit;
+- rung definition;
+- generator/seed reference and start commitment/digest;
+- exact map/count convention;
+- engine/build identity placeholders to be populated later;
+- machine-profile identity placeholders;
+- checkpoint format;
+- authorization gate;
+- timestamps only where scientifically meaningful.
 
-- GMP;
-- GMP plus FLINT;
-- Rust wrappers/FFI options;
-- direct C;
-- C++;
-- Rust;
-- Python only as orchestration/reference where appropriate.
+R3 may define required fields even when later gates supply their values.
 
-Record:
+G. Checkpoint/restart semantics.
 
-- exactness guarantees;
-- ABI/dependency/license issues;
-- serialization portability;
-- low-level APIs relied upon;
-- risk from undocumented/internal library functions;
-- what later C1 benchmarks must measure.
+Substantially complete docs/CHECKPOINT_SPEC.md and schemas/checkpoint_metadata.schema.json.
 
-Do not select a winner based on reputation or another machine's benchmark.
+Freeze logical and canonical semantics for:
 
-8. Correctness threat model
+- current exact n;
+- exact step counters needed by the map conventions;
+- first-1 safety;
+- required run/start/protocol/build/profile identities;
+- maximum or other trajectory statistics if scientifically retained;
+- checkpoint body encoding;
+- metadata/digest binding;
+- crash consistency;
+- atomic promotion;
+- corruption/version refusal;
+- resumption validation;
+- restart equivalence with uninterrupted execution;
+- treatment of caches/derived batching state;
+- failure categories.
 
-Build an explicit failure-mode matrix covering at least:
+Do not freeze checkpoint cadence; that remains C1 engineering.
 
-- fixed-width overflow;
-- big-integer allocation failure handling;
-- carry/borrow errors;
-- low-bit extraction errors;
-- parity/valuation errors;
-- affine composition order;
-- denominator/shift errors;
-- base-table errors;
-- odd block-length split errors;
-- final-block overshoot of 1;
-- step-count convention mismatch;
-- state/result serialization mismatch;
-- checkpoint restart drift;
-- backend/FFI aliasing or lifetime errors;
-- architecture-specific undefined behavior;
-- compiler-optimization-sensitive undefined behavior.
+H. Result semantics and certification.
 
-For each failure mode identify detection/validation methods appropriate to R3/V1.
+Substantially complete docs/RESULT_SCHEMA.md and schemas/result.schema.json.
 
-9. Validation architecture inputs for R3
+Freeze:
 
-R2 should not freeze the R3 protocol, but must identify what an independent oracle needs to be genuinely diverse.
+- status enum and exact meaning of each status;
+- completed-run condition;
+- resource stop versus anomaly versus validation/integrity failure;
+- map/count fields;
+- final value;
+- trajectory statistics retained;
+- start/build/profile/protocol provenance;
+- timing definitions if they remain in scientific records;
+- result digest and canonicalization;
+- required certification/validation references.
 
-Specify candidate cross-checks such as:
+A non-completed status must never imply divergence.
 
-- direct Python or GMP stepping on bounded fixtures;
-- standard versus shortcut count conversion;
-- randomly generated small/medium differential cases;
-- adversarial low-bit patterns;
-- known exact large formula-defined starts such as selected Mersenne values;
-- comparing affine block application with k direct T steps;
-- comparing two implementation lineages that do not share the same batching code.
+I. Independent validation architecture.
 
-10. Benchmark plan inputs for C1
+Substantially complete docs/VALIDATION_PLAN.md.
 
-Identify what later local benchmarking must compare, without choosing values now:
+Freeze which validation paths count as genuinely independent.
 
-- direct versus affine/super-batch;
-- GMP versus GMP+FLINT where available;
-- block/macro-size families;
-- allocation/copy strategies;
-- single-thread core trajectory versus auxiliary parallel work;
-- memory scaling;
-- checkpoint serialization cost.
+At minimum specify:
 
-Preserve the rule that R2 produces hypotheses and benchmark requirements, not local tuning decisions.
+- direct elementary reference stepping;
+- affine-block versus k direct T-step differential checks;
+- standard/shortcut/odd-only conversion tests;
+- exhaustive small-residue/base-table tests;
+- randomized bounded differential tests from a validation-only deterministic seed/domain;
+- adversarial low-bit and limb-boundary patterns;
+- odd split lengths;
+- powers of two and terminal overshoot fixtures;
+- serialization round trips;
+- checkpoint stop/resume equivalence;
+- fault injection;
+- backend/feature-route activation tests;
+- selected exact Mersenne fixtures inherited from R2;
+- implementation diversity where practical.
 
-Repository deliverable:
+R2 bounded fixtures include:
 
-Substantially complete docs/ALGORITHM_AUDIT.md.
+- 27: 111 standard steps and 70 shortcut steps;
+- 2^127-1: 1,660 standard steps, 593 odd standard steps, 1,067 shortcut steps;
+- 2^44497-1: 598,067 standard steps, 214,150 odd standard steps, 383,917 shortcut steps.
 
-It must include:
+Confirm provenance before freezing fixture files or schemas. Do not execute a scientific rung.
 
-- research questions and methodology;
-- normalized Collatz semantics relevant to implementations;
-- algorithm-family comparison matrix;
-- Elsenhans mathematical and artifact audit;
-- source-level audits of serious public implementations;
-- arithmetic/backend comparison;
-- correctness/failure-mode matrix;
-- independent-validation implications;
-- checkpoint/restart implications;
-- performance claims classified as theoretical, author-reported, independently reproduced, or CEML inference;
-- viable architecture shortlist, if justified;
-- rejected/deferred families with reasons;
-- exact local benchmarks C1 will later need;
-- unresolved questions;
-- explicit R2 exit checklist and decision.
+J. V1 acceptance criteria.
 
-Update other repository files only where justified.
+Define objective pass/fail criteria for the later V1 gate.
 
-In particular, update PROGRAM_STATUS.md only if every R2 exit criterion has actually been satisfied.
+Include requirements for:
+
+- all required test classes;
+- zero unexplained arithmetic disagreements;
+- deterministic regeneration;
+- checkpoint/restart equivalence;
+- canonical serialization and digest agreement;
+- feature-specific route coverage;
+- sanitizer/checked-build expectations where relevant;
+- validation evidence manifest;
+- handling and logging of any deviation.
+
+Do not claim V1 has passed during R3.
+
+K. Anomaly and freeze rules.
+
+Freeze what later scientific execution must do on:
+
+- unexpected non-1 state behavior;
+- arithmetic/oracle disagreement;
+- resource exhaustion;
+- checkpoint corruption;
+- reproducibility mismatch;
+- build/profile mismatch;
+- unexpected termination;
+- suspected counterexample behavior.
+
+Automatic progression must stop. Preserve evidence. A resource stop is not divergence, and a possible counterexample requires a separate certification programme.
+
+L. Machine-readable schema consistency.
+
+Review all R3-relevant schemas together. Required fields, versions and terminology must agree across:
+
+- protocol prose;
+- run manifest;
+- checkpoint metadata/body specification;
+- result schema;
+- validation evidence requirements.
+
+Avoid implementation-language-sized integers in schemas. Prefer canonical strings or another explicitly unbounded representation for scientific counters.
+
+M. Research evidence.
+
+Use current primary standards for cryptographic primitives, canonicalization and reproducibility claims. Record exact standard/version/section where material.
+
+Do not select a primitive merely because it is popular. Analyze determinism, unbiased mapping, test vectors, domain separation, availability for independent reproduction, and long-term specification stability.
+
+REPOSITORY DELIVERABLES
+
+Substantially complete, mutually consistent R3 versions of:
+
+- docs/RANDOMNESS_AND_REPRODUCIBILITY.md;
+- docs/EXPERIMENT_PROTOCOL.md;
+- docs/CHECKPOINT_SPEC.md;
+- docs/RESULT_SCHEMA.md;
+- docs/VALIDATION_PLAN.md;
+- docs/SECURITY_AND_INTEGRITY.md where justified;
+- schemas/run_manifest.schema.json;
+- schemas/checkpoint_metadata.schema.json;
+- schemas/result.schema.json;
+- any additional small schema/specification needed to make validation evidence machine-readable.
+
+Update PROGRAM_STATUS.md only if every R3 exit condition is genuinely met.
 
 Do not write production code.
+Do not generate the scientific master seed.
+Do not execute a scientific rung.
+Do not launch local Codex.
+Do not choose machine-specific engineering parameters.
 
-Do not authorize scientific execution.
+R3 EXIT STANDARD
 
-Do not generate a scientific seed.
+R3 passes only if:
 
-Do not freeze the magnitude ladder.
+- scientific map/count and first-1 semantics are unambiguous;
+- magnitude/rung definition semantics are frozen;
+- deterministic random-start generation and seed policy are reproducible and unbiased by construction;
+- the actual scientific master seed has not been generated;
+- canonical encodings and digest rules are fully specified;
+- run/result/checkpoint schemas agree with prose;
+- checkpoint restart equivalence is defined;
+- independent-oracle diversity is explicit;
+- validation fixtures/test classes and fault-injection requirements are frozen;
+- V1 objective acceptance criteria are frozen;
+- anomaly/freeze rules are explicit;
+- no machine-specific tuning or production implementation has occurred.
 
-Do not select machine-specific engineering parameters.
+At the end:
 
-End-of-session requirements:
+1. commit all R3 repository updates;
+2. report the authoritative commit SHA;
+3. summarize the scientific semantics frozen;
+4. summarize the validation/oracle contract;
+5. summarize unresolved risks that are legitimately deferred to R4/I1/C1/V1;
+6. state explicitly either "CEML-R3 PASS" or "CEML-R3 REMAINS OPEN";
+7. if R3 passes, provide a self-contained CEML-R4 hardware-audit specification prompt;
+8. if R3 remains open, provide the exact continuation task required to finish R3.
 
-1. commit all R2 repository updates;
-2. report the new authoritative commit SHA;
-3. summarize the strongest algorithm/correctness conclusions;
-4. summarize important unresolved risks and implementation disagreements;
-5. state explicitly either:
-   - “CEML-R2 PASS”, or
-   - “CEML-R2 REMAINS OPEN”;
-6. if R2 passes, provide a self-contained prompt for CEML-R3 — reproducibility and validation audit;
-7. if R2 remains open, provide the exact continuation task required to finish R2.
-
-The standard is source-level correctness, explicit invariants, and auditability. Performance is secondary and must never substitute for correctness.
+The standard is reproducibility, independence of validation, unambiguous scientific semantics and auditability. No later performance consideration may silently change a frozen R3 scientific rule.

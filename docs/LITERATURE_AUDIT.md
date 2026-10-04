@@ -4,7 +4,8 @@ Status: **COMPLETE — CEML-R1 PASS**
 
 Decision date: **2026-10-04**  
 External-source access date for this audit: **2026-10-04**  
-Research stage: **R1 only — literature and implementation evidence audit**  
+Research stage completed: **R1 — literature and implementation evidence audit**  
+Gate transition: **R1 PASS; R2 becomes the current research gate in the same reviewed repository snapshot as this audit**  
 Scientific execution: **NOT AUTHORIZED**
 
 ## 1. Scope and decision

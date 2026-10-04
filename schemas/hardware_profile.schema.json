@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jfairfaxball-348/CEML/schemas/hardware_profile.schema.json",
+  "title": "CEML Sanitized Hardware Profile",
+  "description": "Bootstrap draft; must exclude sensitive machine identifiers.",
+  "x-ceml-status": "bootstrap-draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_version",
+    "system",
+    "cpu",
+    "memory",
+    "storage",
+    "toolchains",
+    "bigint_libraries",
+    "privacy_attestation",
+    "profile_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "profile_version": {
+      "type": "string"
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "os": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "os_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kernel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "architecture": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filesystem": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "cpu": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "vendor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "microarchitecture": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "physical_cores": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "logical_threads": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "frequency_info": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cache_hierarchy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "instruction_sets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "installed_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "available_bytes_at_audit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "swap": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bandwidth_observation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "storage": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "device_class": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "capacity_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "available_bytes_at_audit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "filesystem": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checkpoint_write_observation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "toolchains": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "bigint_libraries": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "thermal": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "power": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "performance_counters": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "engineering_recommendations": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "privacy_attestation": {
+      "type": "object",
+      "required": [
+        "sensitive_identifiers_excluded"
+      ],
+      "properties": {
+        "sensitive_identifiers_excluded": {
+          "const": true
+        }
+      }
+    },
+    "profile_digest": {
+      "type": "string"
+    }
+  }
+}

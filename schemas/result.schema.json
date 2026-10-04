@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jfairfaxball-348/CEML/schemas/result.schema.json",
+  "title": "CEML Result",
+  "description": "Bootstrap draft compact result schema.",
+  "x-ceml-status": "bootstrap-draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment",
+    "schema_version",
+    "protocol_version",
+    "machine_profile_version",
+    "magnitude_rung",
+    "generator_version",
+    "start_digest",
+    "engine_commit",
+    "build_digest",
+    "hardware_profile_digest",
+    "status",
+    "shortcut_steps",
+    "macro_blocks",
+    "maximum_bits",
+    "elapsed_wall_seconds",
+    "elapsed_cpu_seconds",
+    "final_value",
+    "result_digest"
+  ],
+  "properties": {
+    "experiment": {
+      "const": "CEML"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "protocol_version": {
+      "type": "string"
+    },
+    "machine_profile_version": {
+      "type": "string"
+    },
+    "magnitude_rung": {
+      "type": "string"
+    },
+    "generator_version": {
+      "type": "string"
+    },
+    "start_digest": {
+      "type": "string"
+    },
+    "start_bits": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+$"
+    },
+    "start_decimal_digits": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+$"
+    },
+    "engine_commit": {
+      "type": "string"
+    },
+    "build_digest": {
+      "type": "string"
+    },
+    "compiler": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "compiler_flags": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "gmp_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "flint_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "hardware_profile_digest": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "frozen_anomaly",
+        "operator_abort",
+        "validation_failure",
+        "resource_stop",
+        "integrity_failure"
+      ]
+    },
+    "shortcut_steps": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "macro_blocks": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "maximum_bits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "minimum_bits_after_start": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+$"
+    },
+    "elapsed_wall_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "elapsed_cpu_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "final_value": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]+$"
+    },
+    "final_checkpoint_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "result_digest": {
+      "type": "string"
+    }
+  }
+}

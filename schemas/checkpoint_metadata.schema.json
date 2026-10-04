@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jfairfaxball-348/CEML/schemas/checkpoint_metadata.schema.json",
+  "title": "CEML Checkpoint Metadata",
+  "description": "Bootstrap draft sidecar metadata; exact binary body format is not yet frozen.",
+  "x-ceml-status": "bootstrap-draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "checkpoint_format_version",
+    "run_id",
+    "slot",
+    "original_start_digest",
+    "current_value_digest",
+    "shortcut_steps",
+    "macro_blocks",
+    "current_bits",
+    "maximum_bits",
+    "engine_version",
+    "protocol_version",
+    "integrity_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "checkpoint_format_version": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "slot": {
+      "enum": [
+        "A",
+        "B",
+        "other"
+      ]
+    },
+    "original_start_digest": {
+      "type": "string"
+    },
+    "current_value_digest": {
+      "type": "string"
+    },
+    "shortcut_steps": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "macro_blocks": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "current_bits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "maximum_bits": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "elapsed_wall_seconds": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "elapsed_cpu_seconds": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "engine_version": {
+      "type": "string"
+    },
+    "protocol_version": {
+      "type": "string"
+    },
+    "machine_profile_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "body_bytes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "integrity_digest": {
+      "type": "string"
+    }
+  }
+}

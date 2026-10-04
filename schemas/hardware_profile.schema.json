@@ -1,59 +1,96 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/jfairfaxball-348/CEML/schemas/hardware_profile.schema.json",
-  "title": "CEML Sanitized Hardware Profile",
-  "description": "Bootstrap draft; must exclude sensitive machine identifiers.",
-  "x-ceml-status": "bootstrap-draft",
+  "title": "CEML Sanitized Local Machine/Build Profile",
+  "description": "I1-frozen sanitized profile schema. Populated only by C1; prohibited stable identifiers must never appear.",
+  "x-ceml-status": "frozen-engineering-i1",
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "experiment",
     "schema_version",
-    "profile_version",
+    "machine_profile_digest",
+    "source_commit",
+    "build_digest",
+    "hardware_report_digest",
+    "benchmark_summary_digest",
+    "engineering_decision_log_digest",
     "system",
     "cpu",
     "memory",
-    "storage",
-    "toolchains",
-    "bigint_libraries",
-    "privacy_attestation",
-    "profile_digest"
+    "checkpoint_storage",
+    "toolchain",
+    "dependencies",
+    "engineering_choices",
+    "resource_limits",
+    "unavailable_constraints",
+    "evidence_refs",
+    "privacy_attestation"
   ],
   "properties": {
-    "schema_version": {
-      "type": "string"
+    "experiment": {
+      "const": "CEML"
     },
-    "profile_version": {
-      "type": "string"
+    "schema_version": {
+      "const": "CEML-LOCAL-MACHINE-PROFILE-1"
+    },
+    "machine_profile_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "build_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "hardware_report_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "benchmark_summary_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "engineering_decision_log_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "system": {
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
+      "required": [
+        "os_family",
+        "os_release",
+        "kernel_release",
+        "architecture",
+        "abi",
+        "virtualization"
+      ],
       "properties": {
-        "os": {
-          "type": [
-            "string",
-            "null"
-          ]
+        "os_family": {
+          "type": "string",
+          "minLength": 1
         },
-        "os_version": {
-          "type": [
-            "string",
-            "null"
-          ]
+        "os_release": {
+          "type": "string",
+          "minLength": 1
         },
-        "kernel": {
-          "type": [
-            "string",
-            "null"
-          ]
+        "kernel_release": {
+          "type": "string",
+          "minLength": 1
         },
         "architecture": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": "string",
+          "minLength": 1
         },
-        "filesystem": {
+        "abi": {
+          "type": "string",
+          "minLength": 1
+        },
+        "virtualization": {
           "type": [
             "string",
             "null"
@@ -63,7 +100,15 @@
     },
     "cpu": {
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
+      "required": [
+        "vendor",
+        "model",
+        "physical_cores",
+        "logical_threads",
+        "instruction_features",
+        "cache_summary"
+      ],
       "properties": {
         "vendor": {
           "type": [
@@ -77,165 +122,433 @@
             "null"
           ]
         },
-        "microarchitecture": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "physical_cores": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 1
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          ]
         },
         "logical_threads": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 1
-        },
-        "frequency_info": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
           ]
         },
-        "cache_hierarchy": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "instruction_sets": {
+        "instruction_features": {
           "type": "array",
           "items": {
             "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "cache_summary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "level",
+              "kind",
+              "bytes"
+            ],
+            "properties": {
+              "level": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "bytes": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]*$"
+              }
+            }
           }
         }
       }
     },
     "memory": {
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
+      "required": [
+        "installed_bytes",
+        "available_bytes_at_audit",
+        "swap_capacity_bytes",
+        "page_size_bytes"
+      ],
       "properties": {
         "installed_bytes": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 0
-        },
-        "available_bytes_at_audit": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 0
-        },
-        "swap": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
           ]
         },
-        "bandwidth_observation": {
-          "type": [
-            "string",
-            "null"
+        "available_bytes_at_audit": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          ]
+        },
+        "swap_capacity_bytes": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          ]
+        },
+        "page_size_bytes": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
           ]
         }
       }
     },
-    "storage": {
+    "checkpoint_storage": {
       "type": "object",
-      "additionalProperties": true,
+      "additionalProperties": false,
+      "required": [
+        "filesystem_class",
+        "local_or_remote",
+        "durability_supported",
+        "durability_decision_id",
+        "strategy"
+      ],
       "properties": {
-        "device_class": {
-          "type": [
-            "string",
-            "null"
+        "filesystem_class": {
+          "type": "string",
+          "minLength": 1
+        },
+        "local_or_remote": {
+          "enum": [
+            "local",
+            "remote",
+            "unknown"
           ]
         },
-        "capacity_bytes": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 0
+        "durability_supported": {
+          "type": "boolean"
         },
-        "available_bytes_at_audit": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 0
+        "durability_decision_id": {
+          "type": "string",
+          "minLength": 1
         },
-        "filesystem": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "checkpoint_write_observation": {
-          "type": [
-            "string",
-            "null"
-          ]
+        "strategy": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },
-    "toolchains": {
+    "toolchain": {
       "type": "object",
-      "additionalProperties": true
+      "additionalProperties": false,
+      "required": [
+        "language_family",
+        "compiler",
+        "compiler_version",
+        "linker",
+        "linker_version",
+        "target_triple",
+        "abi",
+        "flags",
+        "native_tuning",
+        "non_portable"
+      ],
+      "properties": {
+        "language_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compiler": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compiler_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "linker": {
+          "type": "string",
+          "minLength": 1
+        },
+        "linker_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_triple": {
+          "type": "string",
+          "minLength": 1
+        },
+        "abi": {
+          "type": "string",
+          "minLength": 1
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "native_tuning": {
+          "type": "boolean"
+        },
+        "non_portable": {
+          "type": "boolean"
+        }
+      }
     },
-    "bigint_libraries": {
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "version",
+          "source_channel",
+          "artifact_digest",
+          "linkage",
+          "features"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_channel": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifact_digest": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            ]
+          },
+          "linkage": {
+            "type": "string",
+            "minLength": 1
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "engineering_choices": {
       "type": "object",
-      "additionalProperties": true
-    },
-    "thermal": {
-      "type": [
-        "object",
-        "null"
+      "additionalProperties": false,
+      "required": [
+        "backend_route",
+        "state_representation",
+        "small_block_width",
+        "hierarchical_divisor",
+        "hierarchical_k_cap",
+        "allocation_strategy",
+        "parallelism_route",
+        "thread_count",
+        "terminal_handoff",
+        "audit_mode",
+        "checkpoint_strategy"
       ],
-      "additionalProperties": true
+      "properties": {
+        "backend_route": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state_representation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "small_block_width": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          ]
+        },
+        "hierarchical_divisor": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          ]
+        },
+        "hierarchical_k_cap": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          ]
+        },
+        "allocation_strategy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parallelism_route": {
+          "type": "string",
+          "minLength": 1
+        },
+        "thread_count": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "terminal_handoff": {
+          "type": "string",
+          "minLength": 1
+        },
+        "audit_mode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checkpoint_strategy": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     },
-    "power": {
-      "type": [
-        "object",
-        "null"
+    "resource_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_available_memory_bytes",
+        "maximum_process_memory_bytes",
+        "minimum_free_storage_bytes",
+        "swap_pressure_rule",
+        "maximum_processes",
+        "maximum_threads",
+        "thermal_stop_rule",
+        "maximum_case_seconds",
+        "power_sleep_precondition"
       ],
-      "additionalProperties": true
+      "properties": {
+        "minimum_available_memory_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "maximum_process_memory_bytes": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "minimum_free_storage_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "swap_pressure_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "maximum_processes": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "maximum_threads": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "thermal_stop_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "maximum_case_seconds": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "power_sleep_precondition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     },
-    "performance_counters": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "additionalProperties": true
+    "unavailable_constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
-    "engineering_recommendations": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "additionalProperties": true
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
     },
     "privacy_attestation": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
-        "sensitive_identifiers_excluded"
+        "sensitive_identifiers_excluded",
+        "scan_passed",
+        "scan_artifact_digest"
       ],
       "properties": {
         "sensitive_identifiers_excluded": {
           "const": true
+        },
+        "scan_passed": {
+          "const": true
+        },
+        "scan_artifact_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
         }
       }
-    },
-    "profile_digest": {
-      "type": "string"
     }
   }
 }

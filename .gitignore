@@ -1,7 +1,14 @@
 # Local-only CEML state
 local/*
 !local/README.md
-local_reports/
+local_reports/*
+!local_reports/README.md
+!local_reports/HARDWARE_REPORT.json
+!local_reports/HARDWARE_REPORT.md
+!local_reports/BENCHMARK_SUMMARY.json
+!local_reports/ENGINEERING_DECISIONS.json
+!local_reports/BENCHMARK_BUNDLES.json
+!local_reports/BUILD_MANIFEST.json
 .ceml/
 checkpoints/
 checkpoint-*

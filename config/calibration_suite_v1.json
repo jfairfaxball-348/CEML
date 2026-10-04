@@ -1,0 +1,101 @@
+{
+  "suite_version": "CEML-CAL-1",
+  "purpose": "engineering-only",
+  "random_domain_label": "CEML-CALIBRATION-RANDOM-V1",
+  "public_seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "size_bits": [
+    "256",
+    "1024",
+    "4096",
+    "16384",
+    "65536",
+    "131072"
+  ],
+  "case_indices": [
+    "0",
+    "1",
+    "2"
+  ],
+  "family_order": [
+    "01-route-crossover",
+    "02-small-block-sweep",
+    "03-hierarchical-sweep",
+    "04-backend-multiplication",
+    "05-representation",
+    "06-allocation",
+    "07-compiler-build",
+    "08-parallelism",
+    "09-checkpoint",
+    "10-terminal-handoff",
+    "11-audit-cost",
+    "12-memory-scaling"
+  ],
+  "small_block_widths": [
+    "4",
+    "8",
+    "12",
+    "16"
+  ],
+  "hierarchical_divisors": [
+    "2",
+    "3",
+    "4",
+    "6",
+    "8"
+  ],
+  "hierarchical_k_caps": [
+    "1024",
+    "4096",
+    "16384"
+  ],
+  "parallel_thread_candidates": [
+    "1",
+    "2",
+    "4",
+    "8",
+    "16"
+  ],
+  "checkpoint_state_magnitude_bytes": [
+    "1024",
+    "4096",
+    "16384",
+    "32768"
+  ],
+  "terminal_exponents": [
+    "8",
+    "64",
+    "256",
+    "1024",
+    "4096"
+  ],
+  "bounds": {
+    "max_generated_operand_bits": "131072",
+    "max_fixed_shortcut_steps_per_case": "4096",
+    "max_affine_macro_shortcut_steps": "16384",
+    "max_small_table_width": "16",
+    "warmup_runs_timing": "1",
+    "measured_repeats_timing": "5",
+    "warmup_runs_filesystem": "1",
+    "measured_repeats_filesystem": "3",
+    "max_concurrent_benchmark_processes": "2",
+    "max_auxiliary_threads": "16",
+    "max_checkpoint_state_magnitude_bytes": "32768",
+    "max_scratch_bytes_per_case": "536870912",
+    "max_wall_seconds_per_case": "120",
+    "max_aggregate_measured_wall_seconds": "5400"
+  },
+  "scientific_master_seed_permitted": false,
+  "scientific_start_permitted": false,
+  "generator_test_vector": {
+    "family": "route-crossover",
+    "size_bits": "256",
+    "case_index": "0",
+    "stream_index": "0",
+    "input_id": "cal1/01/route-crossover/256/0",
+    "shake_output_hex": "c32fdab88656f59d41b5e77e8c34ac9fb77fe883438b85499979c2f596fabc0c",
+    "state_hex": "c32fdab88656f59d41b5e77e8c34ac9fb77fe883438b85499979c2f596fabc0d",
+    "descriptor_jcs": "{\"case_index\":\"0\",\"family\":\"route-crossover\",\"generator\":\"shake256-ceml-calibration-random-v1\",\"input_id\":\"cal1/01/route-crossover/256/0\",\"operand_roles\":[{\"forced_odd\":true,\"role\":\"state\",\"size_bits\":\"256\",\"stream_index\":\"0\"}],\"size_bits\":\"256\",\"suite_version\":\"CEML-CAL-1\"}",
+    "input_digest": "84b55262e1b0543c0201479122d92f19cf8ab38550db60a3075c5564b3b7fc0a",
+    "initial_state_digest": "95eef319edc55bd8a1aa5f9f210fea3f3b9bae480913f7ae1af9bc59332e6271"
+  }
+}

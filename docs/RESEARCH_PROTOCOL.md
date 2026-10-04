@@ -1,10 +1,10 @@
 # CEML Research Protocol
 
-Status: **R1–R4 COMPLETE; CEML-I1 SPECIFICATION SYNTHESIS CURRENT**
+Status: **R1–R4 AND I1 COMPLETE; CEML-C1 CURRENT**
 
 ## Purpose
 
-Repository-driven research and specification work must make scientific and engineering decisions auditable before implementation. A session is not complete when an answer is written in chat; it is complete when evidence, reasoning, open questions and any approved decision are committed here.
+Repository-driven research, specification, implementation and validation must make decisions auditable before scientific execution. A session is not complete when an answer is written in chat; it is complete when its required evidence, reasoning, open questions and approved decisions are committed here.
 
 ## Required sequence
 
@@ -12,12 +12,12 @@ Repository-driven research and specification work must make scientific and engin
 - **R2:** algorithm and implementation audit — PASS;
 - **R3:** reproducibility and validation audit — PASS;
 - **R4:** hardware-audit specification — PASS;
-- **I1:** synthesis into a self-contained Codex implementation brief — CURRENT;
-- **C1:** local hardware audit, bounded calibration, implementation/build/profile freeze;
-- **V1:** frozen validation suite;
+- **I1:** executable implementation/audit specification — PASS;
+- **C1:** local hardware audit, bounded calibration, implementation/build/profile freeze — CURRENT;
+- **V1:** frozen validation suite execution;
 - **E1:** scientific ladder.
 
-The sequence is mandatory because later decisions depend on earlier evidence.
+The sequence is mandatory because later evidence depends on earlier frozen semantics.
 
 ## Evidence rules
 
@@ -25,56 +25,50 @@ For every material external claim record:
 
 - source and stable locator;
 - author/publisher;
-- publication or version date where available;
+- publication/version date where available;
 - date accessed;
-- whether the source is primary, peer-reviewed, preprint, code, documentation, benchmark report, or secondary discussion;
-- the exact proposition CEML uses it to support;
-- relevant experimental conditions;
-- known caveats or conflicts;
-- whether CEML independently reproduced the claim.
+- source class;
+- exact proposition CEML uses;
+- relevant conditions;
+- caveats/conflicts;
+- whether CEML independently reproduced it.
 
-Do not equate a source's availability with correctness. Do not call an implementation audited unless the nature and scope of that audit are documented.
+For local hardware work, `docs/HARDWARE_AUDIT_SPEC.md` and `docs/CODEX_HANDOFF.md` control evidence classes, privacy, measurement, route activation, bounded calibration, decision sufficiency and provenance.
 
-For local hardware work, docs/HARDWARE_AUDIT_SPEC.md additionally controls evidence classes, privacy, measurement, sanitization, route activation, bounded calibration and decision provenance.
+Do not equate source availability with correctness. Do not call an implementation audited unless the nature/scope of that audit is documented.
 
 ## Decision taxonomy
 
-Each conclusion must be marked as one of:
+Each repository conclusion is one of:
 
 - **OBSERVATION:** evidence collected, no decision;
 - **PROVISIONAL:** preferred direction pending a later gate;
-- **FROZEN-SCIENTIFIC:** invariant requiring protocol version change to alter;
-- **FROZEN-AUDIT:** R4 hardware-audit contract requirement;
-- **FROZEN-ENGINEERING:** local build/profile choice requiring build/profile version change to alter;
+- **FROZEN-SCIENTIFIC:** change requires scientific protocol versioning;
+- **FROZEN-AUDIT:** R4 audit-contract requirement;
+- **FROZEN-IMPLEMENTATION-SPEC:** I1 implementation/calibration/profile requirement;
+- **FROZEN-ENGINEERING:** C1 build/profile choice requiring build/profile version change to alter;
 - **REJECTED:** considered and not selected, with reason;
 - **OPEN:** unresolved.
 
-During C1, machine evidence additionally uses the R4 record classes OBSERVED_FACT, CALIBRATION_MEASUREMENT, ENGINEERING_DECISION and UNAVAILABLE_OR_UNSUPPORTED.
+C1 machine evidence uses exactly OBSERVED_FACT, CALIBRATION_MEASUREMENT, ENGINEERING_DECISION and UNAVAILABLE_OR_UNSUPPORTED.
 
-## Research/specification deliverable
+## C1 execution discipline
 
-Each R-session must update its principal document with:
+C1 must follow the I1 order:
+`authorized audit -> local safety ceilings -> bounded deterministic calibration -> evidence-backed decisions -> implementation -> build -> checkpoint-filesystem proof -> sanitized profile`.
 
-1. research questions;
-2. search/source strategy;
-3. evidence table where external evidence is used;
-4. findings;
-5. contradictions/caveats;
-6. decisions and their status;
-7. unresolved questions;
-8. implications for later gates;
-9. repository files changed.
+C1 calibration is non-scientific engineering work. It uses only CEML-CAL-1 public inputs, never the scientific master seed or a scientific start, and remains within the I1 suite maxima and stricter measured local ceilings.
 
-I1 must instead produce a complete executable specification in docs/CODEX_HANDOFF.md that is sufficient for C1 without inventing local measurements.
+No missing local observation may be replaced by inference, an internet specification, another machine's result or an unmeasured default. A performance record is admissible only with exact correctness agreement and required route activation.
 
 ## Independence rule
 
 Other Collatz repositories are not baseline evidence. If a fact from one is useful, locate its primary basis or explicitly cite and assess that repository as an external source. Never import its research state wholesale.
 
-## No-compute boundary before C1
+## Non-substitution rule
 
-Research and I1 specification sessions may use small deterministic examples needed to understand mathematics or interfaces, but may not perform a scientific rung, generate the scientific seed, inspect the real local machine as a C1 audit, or run an input near the intended extreme scale.
+A local observation is not calibration. Calibration is not V1. V1 is not scientific execution. C1 may use direct reference checks to invalidate a performance candidate, but C1 calibration records cannot satisfy CEML-V1-SUITE-1.
 
-## C1 non-substitution rule
+## Gate closure
 
-When C1 is authorized, a missing local observation remains missing. Calibration is engineering evidence only. It cannot substitute for V1, and neither calibration nor V1 is scientific execution.
+Each gate closes only when its required repository evidence and status transition appear in the same reviewed history state. C1 must stop after committing its sanitized evidence/build/profile package; V1 requires a separate authorization transition.

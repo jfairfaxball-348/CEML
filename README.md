@@ -10,9 +10,11 @@ CEML is **not** a proof-oriented divergence search, a contiguous verification pr
 
 ## Current authorization state
 
-**BOOTSTRAP / GOVERNANCE ONLY — NO SCIENTIFIC COMPUTATION AUTHORIZED.**
+**CEML-R3 — REPRODUCIBILITY / VALIDATION AUDIT. R1 AND R2 HAVE PASSED. NO SCIENTIFIC COMPUTATION OR PRODUCTION IMPLEMENTATION IS AUTHORIZED.**
 
-The provisional magnitude ladder is `10^6, 10^7, 10^8, 10^9, 10^10` decimal digits. It is deliberately **not frozen**. No scientific master seed may be generated. No production arithmetic engine may be implemented. No giant Collatz start may be run.
+R2 completed the source-level algorithm audit and established a machine-neutral shortlist plus a correctness threat model. R3 is limited to freezing scientific semantics, randomness/reproducibility rules, canonical manifests/hashes, checkpoint/restart semantics, validation architecture, V1 acceptance criteria, and anomaly handling.
+
+The provisional magnitude ladder is `10^6, 10^7, 10^8, 10^9, 10^10` decimal digits. It remains deliberately **not frozen**. No scientific master seed may be generated. No production arithmetic engine may be implemented. No giant Collatz start may be run.
 
 Required gates:
 
@@ -38,10 +40,10 @@ Engineering parameters may be chosen from measured local hardware only after the
 
 ## Repository map
 
-Start with [START_HERE.md](START_HERE.md), then read [PROJECT_CHARTER.md](PROJECT_CHARTER.md), [ROADMAP.md](ROADMAP.md), and [docs/RESEARCH_PROTOCOL.md](docs/RESEARCH_PROTOCOL.md).
+Start with [START_HERE.md](START_HERE.md), then read [PROJECT_CHARTER.md](PROJECT_CHARTER.md), [ROADMAP.md](ROADMAP.md), [docs/LITERATURE_AUDIT.md](docs/LITERATURE_AUDIT.md), [docs/ALGORITHM_AUDIT.md](docs/ALGORITHM_AUDIT.md), and [docs/RESEARCH_PROTOCOL.md](docs/RESEARCH_PROTOCOL.md).
 
-The `docs/` directory contains bootstrap-stage research and protocol specifications. `schemas/` contains draft machine-readable schemas. `src/` intentionally contains no production engine. `local/` documents local-only artifacts that Git must not track.
+The `docs/` directory contains the research and protocol specifications. `schemas/` contains machine-readable schemas that R3 must now make mutually consistent and scientifically precise. `src/` intentionally contains no production engine. `local/` documents local-only artifacts that Git must not track.
 
 ## Authority
 
-This repository becomes the sole authoritative state for CEML. A claim, parameter, seed, rung, implementation choice, or result is not part of CEML merely because it exists elsewhere.
+This repository is the sole authoritative state for CEML. A claim, parameter, seed, rung, implementation choice, or result is not part of CEML merely because it exists elsewhere.

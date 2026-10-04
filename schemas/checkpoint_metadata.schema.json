@@ -2,99 +2,124 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/jfairfaxball-348/CEML/schemas/checkpoint_metadata.schema.json",
   "title": "CEML Checkpoint Metadata",
-  "description": "Bootstrap draft sidecar metadata; exact binary body format is not yet frozen.",
-  "x-ceml-status": "bootstrap-draft",
+  "description": "R3-frozen metadata for CEML-CKPT-1.",
+  "x-ceml-status": "frozen-scientific-r3",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
     "checkpoint_format_version",
+    "metadata_digest",
     "run_id",
-    "slot",
+    "sequence",
+    "previous_metadata_digest",
+    "manifest_digest",
     "original_start_digest",
+    "protocol_version",
+    "protocol_commit",
+    "engine_commit",
+    "build_digest",
+    "machine_profile_digest",
+    "validation_evidence_digest",
+    "map_semantics_version",
+    "body_bytes",
+    "body_digest",
     "current_value_digest",
     "shortcut_steps",
-    "macro_blocks",
-    "current_bits",
-    "maximum_bits",
-    "engine_version",
-    "protocol_version",
-    "integrity_digest"
+    "odd_steps",
+    "standard_steps",
+    "terminal_reached"
   ],
   "properties": {
     "schema_version": {
-      "type": "string"
+      "const": "CEML-CHECKPOINT-METADATA-1"
     },
     "checkpoint_format_version": {
-      "type": "string"
+      "const": "CEML-CKPT-1"
+    },
+    "metadata_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "run_id": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
     },
-    "slot": {
-      "enum": [
-        "A",
-        "B",
-        "other"
+    "sequence": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "previous_metadata_digest": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       ]
     },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
     "original_start_digest": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "protocol_version": {
+      "const": "CEML-SCI-1"
+    },
+    "protocol_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "engine_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "build_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "machine_profile_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "validation_evidence_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "map_semantics_version": {
+      "const": "CEML-COLLATZ-1"
+    },
+    "body_bytes": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "body_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "current_value_digest": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "shortcut_steps": {
       "type": "string",
-      "pattern": "^[0-9]+$"
+      "pattern": "^(0|[1-9][0-9]*)$"
     },
-    "macro_blocks": {
+    "odd_steps": {
       "type": "string",
-      "pattern": "^[0-9]+$"
+      "pattern": "^(0|[1-9][0-9]*)$"
     },
-    "current_bits": {
+    "standard_steps": {
       "type": "string",
-      "pattern": "^[0-9]+$"
+      "pattern": "^(0|[1-9][0-9]*)$"
     },
-    "maximum_bits": {
-      "type": "string",
-      "pattern": "^[0-9]+$"
-    },
-    "elapsed_wall_seconds": {
-      "type": [
-        "number",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "elapsed_cpu_seconds": {
-      "type": [
-        "number",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "engine_version": {
-      "type": "string"
-    },
-    "protocol_version": {
-      "type": "string"
-    },
-    "machine_profile_version": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "body_bytes": {
-      "type": [
-        "integer",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "integrity_digest": {
-      "type": "string"
+    "terminal_reached": {
+      "type": "boolean"
     }
   }
 }

@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jfairfaxball-348/CEML/schemas/validation_evidence.schema.json",
+  "title": "CEML V1 Validation Evidence",
+  "description": "R3-frozen machine-readable evidence envelope for V1 acceptance.",
+  "x-ceml-status": "frozen-scientific-r3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment",
+    "schema_version",
+    "evidence_digest",
+    "protocol_version",
+    "protocol_commit",
+    "engine_commit",
+    "build_digest",
+    "machine_profile_digest",
+    "suite_version",
+    "validation_seed_hex",
+    "status",
+    "required_classes",
+    "unexplained_arithmetic_disagreements",
+    "canonicalization_digest_disagreements",
+    "undetected_fault_injections",
+    "uncovered_enabled_routes",
+    "unresolved_blocking_issues"
+  ],
+  "properties": {
+    "experiment": {
+      "const": "CEML"
+    },
+    "schema_version": {
+      "const": "CEML-VALIDATION-EVIDENCE-1"
+    },
+    "evidence_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "protocol_version": {
+      "const": "CEML-SCI-1"
+    },
+    "protocol_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "engine_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "build_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "machine_profile_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "suite_version": {
+      "const": "CEML-V1-SUITE-1"
+    },
+    "validation_seed_hex": {
+      "const": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "fail"
+      ]
+    },
+    "required_classes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "elementary_identities",
+        "exhaustive_small_residues",
+        "randomized_bounded_differential",
+        "adversarial_patterns",
+        "odd_split_lengths",
+        "terminal_overshoot",
+        "serialization_digest_roundtrip",
+        "checkpoint_restart_equivalence",
+        "fault_injection",
+        "feature_route_activation",
+        "formula_defined_fixtures",
+        "checked_sanitized_builds"
+      ],
+      "properties": {
+        "elementary_identities": {
+          "$ref": "#/$defs/class_result"
+        },
+        "exhaustive_small_residues": {
+          "$ref": "#/$defs/class_result"
+        },
+        "randomized_bounded_differential": {
+          "$ref": "#/$defs/class_result"
+        },
+        "adversarial_patterns": {
+          "$ref": "#/$defs/class_result"
+        },
+        "odd_split_lengths": {
+          "$ref": "#/$defs/class_result"
+        },
+        "terminal_overshoot": {
+          "$ref": "#/$defs/class_result"
+        },
+        "serialization_digest_roundtrip": {
+          "$ref": "#/$defs/class_result"
+        },
+        "checkpoint_restart_equivalence": {
+          "$ref": "#/$defs/class_result"
+        },
+        "fault_injection": {
+          "$ref": "#/$defs/class_result"
+        },
+        "feature_route_activation": {
+          "$ref": "#/$defs/class_result"
+        },
+        "formula_defined_fixtures": {
+          "$ref": "#/$defs/class_result"
+        },
+        "checked_sanitized_builds": {
+          "$ref": "#/$defs/class_result"
+        }
+      }
+    },
+    "unexplained_arithmetic_disagreements": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "canonicalization_digest_disagreements": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "undetected_fault_injections": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "uncovered_enabled_routes": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "unresolved_blocking_issues": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    }
+  },
+  "$defs": {
+    "class_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executed",
+        "passed",
+        "cases",
+        "failures",
+        "artifact_digest"
+      ],
+      "properties": {
+        "executed": {
+          "type": "boolean"
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "cases": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "failures": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "artifact_digest": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          ]
+        }
+      }
+    },
+    "class_pass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executed",
+        "passed",
+        "cases",
+        "failures",
+        "artifact_digest"
+      ],
+      "properties": {
+        "executed": {
+          "const": true
+        },
+        "passed": {
+          "const": true
+        },
+        "cases": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "failures": {
+          "const": "0"
+        },
+        "artifact_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "pass"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "required_classes": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "elementary_identities",
+              "exhaustive_small_residues",
+              "randomized_bounded_differential",
+              "adversarial_patterns",
+              "odd_split_lengths",
+              "terminal_overshoot",
+              "serialization_digest_roundtrip",
+              "checkpoint_restart_equivalence",
+              "fault_injection",
+              "feature_route_activation",
+              "formula_defined_fixtures",
+              "checked_sanitized_builds"
+            ],
+            "properties": {
+              "elementary_identities": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "exhaustive_small_residues": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "randomized_bounded_differential": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "adversarial_patterns": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "odd_split_lengths": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "terminal_overshoot": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "serialization_digest_roundtrip": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "checkpoint_restart_equivalence": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "fault_injection": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "feature_route_activation": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "formula_defined_fixtures": {
+                "$ref": "#/$defs/class_pass"
+              },
+              "checked_sanitized_builds": {
+                "$ref": "#/$defs/class_pass"
+              }
+            }
+          },
+          "unexplained_arithmetic_disagreements": {
+            "const": "0"
+          },
+          "canonicalization_digest_disagreements": {
+            "const": "0"
+          },
+          "undetected_fault_injections": {
+            "const": "0"
+          },
+          "uncovered_enabled_routes": {
+            "const": "0"
+          },
+          "unresolved_blocking_issues": {
+            "const": "0"
+          }
+        }
+      }
+    }
+  ]
+}

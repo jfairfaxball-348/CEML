@@ -1,56 +1,95 @@
 # CEML Experiment Protocol
 
-Status: **DRAFT — scientific semantics require R3 freeze**
+Status: **FROZEN-SCIENTIFIC — CEML-SCI-1**
 
-## Experimental unit
+## 1. Experimental unit
 
-The intended experimental unit is one exact, predetermined, positive odd integer for one frozen magnitude rung. There is exactly one such scientific start per rung.
+One experimental unit is one exact predetermined positive odd integer for one frozen decimal-digit rung. There is exactly one scientific start per rung. R3 freezes what a rung means, not the final ladder values.
 
-No rerolling is allowed because a candidate looks uninteresting. No choice among multiple candidates, survivor ranking, peak chasing, or post-hoc substitution is permitted.
+No rerolling, ranking, peak chasing, survivor selection or post-hoc substitution is permitted.
 
-## Provisional ladder
+## 2. Magnitude rung
 
-The bootstrap targets are `10^6`, `10^7`, `10^8`, `10^9`, and `10^10` decimal digits. They remain provisional until literature, algorithm, resource, implementation, and local-hardware audits support a final ladder.
+A rung value is decimal digit count `D>=1`.
 
-R3 must decide whether a rung is defined by decimal digits, exact bit length, or an explicit conversion/sampling rule.
+The permitted set is
+`R_D={n odd: 10^(D-1)<=n<=10^D-1}`.
 
-## Provisional map
+Boundary inclusion is exact. Base-10 rendering has exactly D digits and no leading zero. Bit length is descriptive only and never changes rung membership.
 
-The current candidate convention is the shortened map
+The bootstrap values `10^6,10^7,10^8,10^9,10^10` decimal digits remain provisional and are not frozen by R3.
 
-[
-T(n)=
-\begin{cases}
-n/2, & n\equiv0\pmod2,\\
-(3n+1)/2, & n\equiv1\pmod2.
-\end{cases}
-]
+## 3. Collatz maps and terminal semantics
 
-This convention is not frozen during bootstrap. If a different internal convention is used later, exact conversion formulas and exhaustive small-value tests are mandatory. Every macro operation must preserve the exact number of underlying shortened-map iterations represented.
+Reference standard map:
+`C(n)=n/2` when n is even; `C(n)=3n+1` when n is odd.
 
-## Exactness
+Shortcut map:
+`T(n)=n/2` when n is even; `T(n)=(3n+1)/2` when n is odd.
 
-All candidate-affecting arithmetic is exact. Floating-point approximations may be used only for ancillary engineering estimates when they cannot alter the candidate, trajectory state, step count, checkpoint state, or result.
+A completed trajectory begins at the generated start and ends at the **first occurrence of 1**. No conforming completed execution applies C or T to 1.
 
-## Scientific run lifecycle
+The standard-map orbit is the mathematical reference. A production implementation may use T, odd-only stepping, affine blocks or another exact representation only if it preserves the same first-1 orbit and exact counters.
 
-A future run must have:
+## 4. Mandatory exact counters
 
-1. frozen protocol version;
-2. frozen rung definition;
-3. frozen deterministic generator and seed policy;
-4. generated start digest before trajectory observation;
-5. validated engine/build;
-6. frozen local machine/build profile;
-7. run manifest;
-8. restartable checkpoints;
-9. compact result record;
-10. result/artifact hashes.
+All counters are mathematical non-negative integers with no implementation-size bound.
 
-## Progression
+- `shortcut_steps`: exact number of T applications represented.
+- `odd_steps`: exact number of those T applications whose input was odd.
+- `standard_steps`: exact number of C applications represented.
 
-A normal completion is preserved and authorizes consideration of the next rung. An anomaly trigger halts automatic progression and freezes exact state for audit.
+Invariant at every checkpoint and result:
+`standard_steps = shortcut_steps + odd_steps`.
 
-## Scientific boundary
+For odd-only `U(n)=(3n+1)/2^v`, `v=v2(3n+1)`, one U transition increments:
+`shortcut_steps += v`, `odd_steps += 1`, `standard_steps += v+1`.
 
-A single completion supports a statement about that exact integer under that exact protocol. It does not support a claim about every integer of the same magnitude or a convergence probability.
+"Total stopping time" must always be qualified. `standard_steps` is the standard-map total stopping time to first 1; `shortcut_steps` is the shortcut-map total stopping time.
+
+## 5. First-1 safety
+
+A macro/batched transform may be accepted only when it cannot hide an earlier 1. A scheduler may satisfy this either by a proof that 1 cannot occur before the block end for the current state/block, or by exact decomposition/direct stepping until the first-1 boundary is exposed.
+
+A block that steps past 1 and later returns to 1/2/4 is invalid for CEML completion accounting.
+
+## 6. Exactness
+
+All candidate-affecting arithmetic, state, counters, serialization and digests are exact. Floating point may be used only for ancillary engineering observations that cannot alter a start, state, count, checkpoint, result or acceptance decision.
+
+## 7. Scientific trajectory metrics
+
+CEML-SCI-1 freezes no maximum/minimum/peak trajectory metric. Macro implementations may skip internal states, and R2 did not establish a common exact peak-observation contract. Engineering logs may record clearly labelled diagnostics, but they are not certified scientific result fields.
+
+Adding a scientifically interpreted peak/minimum metric requires a new protocol/schema version.
+
+## 8. Scientific run authorization lifecycle
+
+A scientific run may start only when all of the following exist and agree:
+
+1. CEML-SCI-1 or later explicitly approved protocol;
+2. frozen final ladder;
+3. completed seed commitment/start-precommit/disclosure procedure;
+4. regenerated start digest matching the precommit;
+5. V1-PASS validation evidence for the exact engine/build/profile;
+6. frozen machine/build profile;
+7. schema-valid run manifest with `authorization_gate="E1"`;
+8. supported checkpoint format and integrity policy.
+
+R3 itself authorizes none of these execution steps.
+
+## 9. Completion and non-completion
+
+`completed` requires the exact first occurrence of 1, valid counter invariant, valid provenance and valid result digest.
+
+All other statuses are non-completions. Resource exhaustion, operator stop, crash, corruption, validation failure, reproducibility failure, provenance mismatch or anomaly freeze is not evidence of divergence.
+
+## 10. Automatic progression
+
+Automatic progression to another scientific rung is permitted only after a `completed` result has passed all artifact-integrity checks and no anomaly/failure remains open.
+
+Any frozen anomaly or integrity/reproducibility/validation/provenance failure stops progression and preserves evidence for audit.
+
+## 11. Claim boundary
+
+A completed result supports a statement only about that exact predetermined integer under its exact protocol/build/profile. One start per rung does not establish a verified interval, a population convergence probability, or representativeness of all numbers at that magnitude.

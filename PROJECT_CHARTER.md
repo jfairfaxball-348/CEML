@@ -1,6 +1,6 @@
 # CEML Project Charter
 
-Status: **Bootstrap charter v0.1 — scientific protocol not yet frozen**
+Status: **Charter v0.1 — CEML-SCI-1 scientific semantics frozen at R3**
 
 ## Root purpose
 
@@ -14,7 +14,7 @@ For each frozen magnitude rung, CEML will choose exactly one reproducibly random
 
 The programme is intentionally narrow. Its baseline output is a sequence of individually auditable isolated-start experiments at rapidly increasing magnitudes.
 
-The provisional ladder is one start at each of `10^6`, `10^7`, `10^8`, `10^9`, and `10^10` decimal digits. Those targets are hypotheses for due diligence, not commitments.
+R3 freezes a magnitude rung as an exact decimal-digit count D whose sampling set is all positive odd D-digit integers. The provisional ladder values remain `10^6`, `10^7`, `10^8`, `10^9`, and `10^10` decimal digits; those values are hypotheses, not commitments.
 
 ## Explicit exclusions
 
@@ -29,13 +29,13 @@ CEML is not:
 - a continuation of another Collatz repository;
 - a cloud-first computation programme.
 
-No prior Collatz project supplies CEML architecture, terminology, assumptions, or research state by default.
+No prior Collatz project supplies CEML architecture, terminology, assumptions or research state by default.
 
 ## Scientific invariants versus engineering choices
 
-Scientific invariants are frozen by research protocol and may not be altered by hardware convenience. They include exact map semantics, deterministic generation, one start per rung, no cherry-picking, exact arithmetic, exact step accounting, reproducibility, checkpoint integrity, result hashing, and anomaly/freeze behaviour.
+CEML-SCI-1 freezes standard/shortcut map semantics, first-1 termination, exact standard/shortcut/odd counts, decimal-digit rung meaning, deterministic one-start generation, exact arithmetic, canonical integrity/provenance rules, checkpoint/restart equivalence, result statuses, validation independence and anomaly/freeze behaviour.
 
-Engineering choices are allowed to depend on the measured local machine: language, arithmetic backend, compiler, flags, macro-block parameters, allocation strategy, thread count, checkpoint cadence, storage layout, and bounded validation/calibration parameters.
+Engineering choices may depend on the later measured local machine: language, arithmetic backend, compiler, flags, macro/block parameters, allocation strategy, thread count, checkpoint cadence, storage layout and bounded validation/calibration parameters. They may not change a frozen scientific invariant.
 
 ## Success criterion
 

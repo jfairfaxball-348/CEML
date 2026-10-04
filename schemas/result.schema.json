@@ -2,101 +2,112 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/jfairfaxball-348/CEML/schemas/result.schema.json",
   "title": "CEML Result",
-  "description": "Bootstrap draft compact result schema.",
-  "x-ceml-status": "bootstrap-draft",
+  "description": "R3-frozen deterministic scientific result record for CEML-SCI-1.",
+  "x-ceml-status": "frozen-scientific-r3",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "experiment",
     "schema_version",
+    "result_digest",
+    "run_id",
+    "manifest_digest",
     "protocol_version",
-    "machine_profile_version",
-    "magnitude_rung",
+    "protocol_commit",
+    "rung",
     "generator_version",
+    "seed_commitment",
     "start_digest",
     "engine_commit",
     "build_digest",
-    "hardware_profile_digest",
+    "machine_profile_digest",
+    "validation_evidence_digest",
+    "map_semantics_version",
     "status",
+    "status_detail",
     "shortcut_steps",
-    "macro_blocks",
-    "maximum_bits",
-    "elapsed_wall_seconds",
-    "elapsed_cpu_seconds",
+    "odd_steps",
+    "standard_steps",
     "final_value",
-    "result_digest"
+    "final_checkpoint_digest"
   ],
   "properties": {
     "experiment": {
       "const": "CEML"
     },
     "schema_version": {
-      "type": "string"
+      "const": "CEML-RESULT-1"
+    },
+    "result_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
     "protocol_version": {
-      "type": "string"
+      "const": "CEML-SCI-1"
     },
-    "machine_profile_version": {
-      "type": "string"
+    "protocol_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
     },
-    "magnitude_rung": {
-      "type": "string"
-    },
-    "generator_version": {
-      "type": "string"
-    },
-    "start_digest": {
-      "type": "string"
-    },
-    "start_bits": {
-      "type": [
-        "string",
-        "null"
+    "rung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "definition_version",
+        "decimal_digits",
+        "rung_index"
       ],
-      "pattern": "^[0-9]+$"
-    },
-    "start_decimal_digits": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[0-9]+$"
-    },
-    "engine_commit": {
-      "type": "string"
-    },
-    "build_digest": {
-      "type": "string"
-    },
-    "compiler": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "compiler_flags": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "type": "string"
+      "properties": {
+        "definition_version": {
+          "const": "decimal-digits-v1"
+        },
+        "decimal_digits": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "rung_index": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        }
       }
     },
-    "gmp_version": {
-      "type": [
-        "string",
-        "null"
-      ]
+    "generator_version": {
+      "const": "ceml-start-v1"
     },
-    "flint_version": {
-      "type": [
-        "string",
-        "null"
-      ]
+    "seed_commitment": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
     },
-    "hardware_profile_digest": {
-      "type": "string"
+    "start_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "engine_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "build_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "machine_profile_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "validation_evidence_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "map_semantics_version": {
+      "const": "CEML-COLLATZ-1"
     },
     "status": {
       "enum": [
@@ -105,51 +116,97 @@
         "operator_abort",
         "validation_failure",
         "resource_stop",
-        "integrity_failure"
+        "integrity_failure",
+        "reproducibility_failure",
+        "provenance_failure",
+        "unexpected_termination"
+      ]
+    },
+    "status_detail": {
+      "type": [
+        "string",
+        "null"
       ]
     },
     "shortcut_steps": {
       "type": "string",
-      "pattern": "^[0-9]+$"
+      "pattern": "^(0|[1-9][0-9]*)$"
     },
-    "macro_blocks": {
+    "odd_steps": {
       "type": "string",
-      "pattern": "^[0-9]+$"
+      "pattern": "^(0|[1-9][0-9]*)$"
     },
-    "maximum_bits": {
+    "standard_steps": {
       "type": "string",
-      "pattern": "^[0-9]+$"
-    },
-    "minimum_bits_after_start": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[0-9]+$"
-    },
-    "elapsed_wall_seconds": {
-      "type": "number",
-      "minimum": 0
-    },
-    "elapsed_cpu_seconds": {
-      "type": "number",
-      "minimum": 0
+      "pattern": "^(0|[1-9][0-9]*)$"
     },
     "final_value": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "pattern": "^[0-9]+$"
-    },
-    "final_checkpoint_digest": {
-      "type": [
-        "string",
-        "null"
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        }
       ]
     },
-    "result_digest": {
-      "type": "string"
+    "final_checkpoint_digest": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "final_value": {
+            "const": "1"
+          },
+          "status_detail": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "not": {
+              "const": "completed"
+            }
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status_detail": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  ]
 }

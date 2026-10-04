@@ -6,76 +6,50 @@ This roadmap is gate-based. Dates are intentionally absent; evidence, not schedu
 
 Deliver repository scaffold, charter, research protocol, claim boundaries, hardware-audit framework, schemas, integrity rules, and a gate model. No production implementation or scientific computation.
 
-## CEML-R1 — state-of-the-art and literature audit
+## CEML-R1 — state-of-the-art and literature audit — PASS
 
-Research and cite:
+Research the current literature, implementations, reproductions, performance evidence and correctness caveats.
 
-- largest credible isolated-start Collatz computations;
-- published high-magnitude evaluation algorithms;
-- Elsenhans-style Collatz-polynomial/batching methods;
-- peer-review and publication status;
-- public implementations and independent reproductions;
-- claimed performance and the conditions under which it was measured;
-- known correctness caveats.
+**Exit evidence:** `docs/LITERATURE_AUDIT.md`.
 
-**Exit evidence:** completed `docs/LITERATURE_AUDIT.md` with source-level citations, claim confidence, reproducibility notes, unresolved questions, and no inherited authority.
+## CEML-R2 — algorithm and implementation audit — PASS
 
-## CEML-R2 — algorithm and implementation audit
+Compare viable exact evaluation families and reconstruct invariants, correctness risks and local benchmark questions without choosing machine-specific parameters.
 
-Compare naive stepping, odd-only stepping, affine batching, Collatz-polynomial batching, binary splitting, super-batching, GMP, FLINT, Rust, C/C++, and Python orchestration.
+**Exit evidence:** `docs/ALGORITHM_AUDIT.md`.
 
-**Exit evidence:** `docs/ALGORITHM_AUDIT.md` identifies viable architecture families, mathematical invariants, correctness risks, and what must be benchmarked locally. It must not choose machine-specific parameters.
+## CEML-R3 — reproducibility and validation audit — PASS
 
-## CEML-R3 — reproducibility and validation audit
+Freeze magnitude/rung definition; deterministic start generation and seed handling; exact map/count semantics; canonical manifests/digests; checkpoint/restart semantics; independent validation architecture; fixtures; V1 acceptance; anomaly/freeze rules; and result certification.
 
-Freeze scientific semantics for:
+**Exit evidence:** `docs/REPRODUCIBILITY_VALIDATION_AUDIT.md`, CEML-SCI-1 protocol documents and R3-frozen schemas. The scientific master seed remains ungenerated and final ladder values remain unfrozen.
 
-- magnitude/rung definition;
-- deterministic random-start generation and seed handling;
-- exact Collatz map and step accounting;
-- manifests and hashes;
-- independent reference oracle;
-- fixtures and differential tests;
-- checkpoint semantics;
-- anomaly/freeze rules;
-- result certification requirements.
+## CEML-R4 — hardware-audit specification — CURRENT
 
-**Exit evidence:** approved protocol versions and machine-readable schemas. Scientific master seed still need not be generated at this gate.
+Freeze what a later C1 local audit may inspect, sanitize, benchmark and optimize, with privacy exclusions, bounded-work limits, evidence requirements and clear separation between observation and engineering choice.
 
-## CEML-R4 — Codex hardware-audit specification
-
-Freeze what C1 may inspect, record, benchmark, and optimize, with privacy exclusions and bounded-work limits.
-
-**Exit evidence:** `docs/HARDWARE_AUDIT_SPEC.md` is complete enough to constrain a local automated audit without inventing a machine profile.
+**Exit evidence:** `docs/HARDWARE_AUDIT_SPEC.md` complete enough to constrain a local automated audit without inventing a machine profile or changing CEML-SCI-1.
 
 ## CEML-I1 — hardware-adaptive implementation specification
 
-Produce the one self-contained Codex brief. It must distinguish frozen scientific invariants from hardware-dependent engineering choices and define acceptance tests, interfaces, dependencies, checkpoint semantics, and prohibited scientific execution.
+Produce the self-contained implementation/Codex brief. It must map frozen scientific invariants into interfaces and acceptance tests while leaving measured hardware choices to C1.
 
-**Exit evidence:** `docs/CODEX_HANDOFF.md` changes from NOT READY to APPROVED with references to all frozen prerequisites.
+**Exit evidence:** `docs/CODEX_HANDOFF.md` APPROVED.
 
 ## CEML-C1 — local hardware audit and implementation
 
-On the dedicated local machine, Codex must:
+On the dedicated local machine: inspect/sanitize the environment, run bounded deterministic calibration, select engineering choices from measurements, build the system, freeze the local machine/build profile and document every choice.
 
-1. inspect and sanitize the environment;
-2. write human- and machine-readable hardware reports;
-3. run bounded deterministic engineering benchmarks;
-4. choose architecture from measured evidence;
-5. implement/build the system;
-6. freeze the local machine/build profile;
-7. document every hardware-dependent choice.
-
-**Prohibition:** no giant scientific rung.
+**Prohibition:** no scientific rung and no scientific seed generation.
 
 ## CEML-V1 — local implementation validation
 
-Run layered offline validation: identities, independent oracle comparisons, randomized differential tests, known fixtures, implementation diversity where practical, and scale-ladder validation below scientific magnitude.
+Execute the R3-frozen layered validation contract, including independent direct-oracle checks, deterministic differential testing, restart equivalence, fault injection, canonicalization/digest agreement and feature-route coverage.
 
-**Exit evidence:** all required checks pass with recorded hashes and environment/build identity.
+**Exit evidence:** schema-valid V1-PASS evidence with zero unexplained disagreements.
 
-## CEML-E1 — first scientific ladder
+## CEML-E1 — scientific ladder
 
-Only now may the final ladder and seed protocol be frozen and executed. One predetermined start per rung; no rerolling for interest. Every completed rung produces a compact result record and reproducible provenance.
+Only after V1 may the final executable ladder values be frozen and the already specified scientific seed event be authorized. Generate exactly one master seed under CEML-SCI-1, commit its commitment, precommit all starts, disclose/regenerate, then evaluate one predetermined start per rung with no rerolls.
 
-An anomaly freezes progression and enters a separate audit state. A possible nonconvergent object would require a distinct certification programme rather than silently expanding CEML.
+An anomaly freezes progression and enters a separate audit/certification state. A resource stop or failure to finish is not divergence.

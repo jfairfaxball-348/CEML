@@ -2,84 +2,70 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/jfairfaxball-348/CEML/schemas/run_manifest.schema.json",
   "title": "CEML Run Manifest",
-  "description": "Bootstrap draft. Scientific semantics freeze in R3/I1.",
-  "x-ceml-status": "bootstrap-draft",
+  "description": "R3-frozen scientific run manifest for CEML-SCI-1.",
+  "x-ceml-status": "frozen-scientific-r3",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "experiment",
     "schema_version",
+    "manifest_digest",
     "run_id",
     "protocol_version",
     "protocol_commit",
     "rung",
     "generator",
-    "map_convention",
+    "map_semantics_version",
     "exact_arithmetic",
-    "authorization_gate"
+    "engine_commit",
+    "build_digest",
+    "machine_profile_digest",
+    "validation_evidence_digest",
+    "checkpoint_format_version",
+    "authorization_gate",
+    "created_at"
   ],
   "properties": {
     "experiment": {
       "const": "CEML"
     },
     "schema_version": {
+      "const": "CEML-RUN-MANIFEST-1"
+    },
+    "manifest_digest": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[0-9a-f]{64}$"
     },
     "run_id": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
     },
     "protocol_version": {
-      "type": "string",
-      "minLength": 1
+      "const": "CEML-SCI-1"
     },
     "protocol_commit": {
       "type": "string",
       "pattern": "^[0-9a-f]{40,64}$"
     },
-    "machine_profile_version": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "machine_profile_digest": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "engine_commit": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "build_digest": {
-      "type": [
-        "string",
-        "null"
-      ]
-    },
     "rung": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "unit",
-        "value"
+        "definition_version",
+        "decimal_digits",
+        "rung_index"
       ],
       "properties": {
-        "unit": {
-          "enum": [
-            "decimal_digits",
-            "bit_length",
-            "unfrozen"
-          ]
+        "definition_version": {
+          "const": "decimal-digits-v1"
         },
-        "value": {
+        "decimal_digits": {
           "type": "string",
-          "pattern": "^[0-9]+$"
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "rung_index": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
         }
       }
     },
@@ -87,67 +73,78 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "name",
         "version",
-        "derivation",
-        "seed_reference",
-        "start_digest"
+        "primitive",
+        "seed_commitment",
+        "seed_hex",
+        "retry",
+        "start_digest",
+        "start_bit_length",
+        "start_decimal_digits"
       ],
       "properties": {
-        "name": {
-          "type": "string"
-        },
         "version": {
-          "type": "string"
+          "const": "ceml-start-v1"
         },
-        "derivation": {
-          "type": "string"
+        "primitive": {
+          "const": "SHAKE256-FIPS202-2015"
         },
-        "seed_reference": {
+        "seed_commitment": {
           "type": "string",
-          "description": "Seed or commitment reference according to frozen policy."
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "seed_hex": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "retry": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
         },
         "start_digest": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
         },
-        "start_bits": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "pattern": "^[0-9]+$"
+        "start_bit_length": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
         },
         "start_decimal_digits": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "pattern": "^[0-9]+$"
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
         }
       }
     },
-    "map_convention": {
-      "type": "string",
-      "minLength": 1
+    "map_semantics_version": {
+      "const": "CEML-COLLATZ-1"
     },
     "exact_arithmetic": {
       "const": true
     },
+    "engine_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "build_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "machine_profile_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "validation_evidence_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
     "checkpoint_format_version": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "const": "CEML-CKPT-1"
     },
     "authorization_gate": {
-      "type": "string",
-      "minLength": 1
+      "const": "E1"
     },
     "created_at": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": "string",
       "format": "date-time"
     }
   }

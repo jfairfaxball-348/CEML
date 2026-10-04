@@ -6,44 +6,40 @@ Its narrow purpose is:
 
 > Choose exactly one reproducibly random positive odd integer at each successively larger magnitude, evaluate its Collatz trajectory exactly using a validated high-magnitude implementation, and preserve enough provenance to reproduce and independently verify every result.
 
-CEML is **not** a proof-oriented divergence search, a contiguous verification project, a high-throughput search, an anomaly-ranking project, or a continuation of any previous Collatz repository. No other repository is authoritative for CEML. External work is evidence to audit and cite, not state to inherit.
+CEML is **not** a proof-oriented divergence search, a contiguous verification project, a high-throughput search, an anomaly-ranking project, or a continuation of any previous Collatz repository. No other repository is authoritative for CEML.
 
 ## Current authorization state
 
-**CEML-R3 — REPRODUCIBILITY / VALIDATION AUDIT. R1 AND R2 HAVE PASSED. NO SCIENTIFIC COMPUTATION OR PRODUCTION IMPLEMENTATION IS AUTHORIZED.**
+**CEML-R3 HAS PASSED. THE CURRENT GATE IS CEML-R4 — HARDWARE-AUDIT SPECIFICATION. NO SCIENTIFIC COMPUTATION, SCIENTIFIC SEED GENERATION, PRODUCTION IMPLEMENTATION OR LOCAL HARDWARE AUDIT IS AUTHORIZED YET.**
 
-R2 completed the source-level algorithm audit and established a machine-neutral shortlist plus a correctness threat model. R3 is limited to freezing scientific semantics, randomness/reproducibility rules, canonical manifests/hashes, checkpoint/restart semantics, validation architecture, V1 acceptance criteria, and anomaly handling.
-
-The provisional magnitude ladder is `10^6, 10^7, 10^8, 10^9, 10^10` decimal digits. It remains deliberately **not frozen**. No scientific master seed may be generated. No production arithmetic engine may be implemented. No giant Collatz start may be run.
+R3 froze CEML-SCI-1 scientific semantics and the reproducibility/validation contract. The meaning of a decimal-digit rung is frozen, but the final ladder values remain **not frozen**. The actual scientific master seed remains **ungenerated**.
 
 Required gates:
 
 `BOOTSTRAP -> R1 -> R2 -> R3 -> R4 -> I1 -> C1 -> V1 -> E1`
 
-See [PROGRAM_STATUS.md](PROGRAM_STATUS.md) for the authoritative authorization boundary.
+See [PROGRAM_STATUS.md](PROGRAM_STATUS.md) for the authoritative boundary.
 
-## Scientific invariants
+## Frozen scientific invariants
 
-Future hardware-specific engineering choices may not alter:
+Hardware-specific engineering may not alter:
 
-- exact Collatz map semantics once frozen;
-- deterministic precommitted start generation;
-- exactly one start per frozen rung;
-- no rerolling for trajectory behaviour;
-- exact arithmetic for candidate-affecting operations;
-- exact underlying step accounting;
-- checkpoint integrity and restartability;
-- provenance and result hashing;
-- anomaly/freeze rules.
+- standard-map/shortcut-map exact semantics and first-1 termination;
+- exact standard/shortcut/odd step accounting;
+- decimal-digit rung definition;
+- deterministic precommitted `ceml-start-v1` generation with no behavioural rerolls;
+- exact arithmetic;
+- SHA3-256/JCS integrity rules and provenance binding;
+- checkpoint/restart equivalence;
+- result status semantics;
+- independent validation and anomaly/freeze rules.
 
-Engineering parameters may be chosen from measured local hardware only after the hardware-audit gate.
+Engineering parameters may be chosen only from measured local evidence at the later authorized gates.
 
 ## Repository map
 
-Start with [START_HERE.md](START_HERE.md), then read [PROJECT_CHARTER.md](PROJECT_CHARTER.md), [ROADMAP.md](ROADMAP.md), [docs/LITERATURE_AUDIT.md](docs/LITERATURE_AUDIT.md), [docs/ALGORITHM_AUDIT.md](docs/ALGORITHM_AUDIT.md), and [docs/RESEARCH_PROTOCOL.md](docs/RESEARCH_PROTOCOL.md).
-
-The `docs/` directory contains the research and protocol specifications. `schemas/` contains machine-readable schemas that R3 must now make mutually consistent and scientifically precise. `src/` intentionally contains no production engine. `local/` documents local-only artifacts that Git must not track.
+Start with [START_HERE.md](START_HERE.md). R1/R2/R3 decision records live under `docs/`; frozen machine-readable R3 contracts live under `schemas/`. `src/` intentionally contains no production engine. `local/` is for local-only artifacts that Git must not track.
 
 ## Authority
 
-This repository is the sole authoritative state for CEML. A claim, parameter, seed, rung, implementation choice, or result is not part of CEML merely because it exists elsewhere.
+This repository is the sole authoritative state for CEML. A claim, parameter, seed, rung value, implementation choice or result is not part of CEML merely because it exists elsewhere.

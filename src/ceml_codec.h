@@ -36,6 +36,11 @@ void ceml_domain_digest(const char *label, const unsigned char *data, size_t len
 int ceml_is_hex(const char *text, size_t minimum, size_t maximum);
 int ceml_is_decimal(const char *text);
 
+/* UENC(x) = U64BE(len(MAG(x))) || MAG(x) for x >= 0, MAG(0) = 00. The decoder
+ * rejects non-minimal magnitudes, length mismatch and trailing bytes. */
+int ceml_uenc_append(ceml_buffer *out, const mpz_t value);
+int ceml_uenc_decode(const unsigned char *data, size_t length, mpz_t value);
+
 /* state.bin = "CEML-CKPT-BODY-V1" || 00 || U64BE(len(MAG(n))) || MAG(n), n >= 1. */
 int ceml_body_encode(const mpz_t n, ceml_buffer *body);
 /* Rejects wrong label, zero, non-minimal magnitude, length mismatch and trailing bytes. */

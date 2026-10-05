@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
     if (!pressure_only) {
         if (argc < 3 || argc > 14) return 2;
         if (strcmp(argv[1], "cal1_case.exe") && strcmp(argv[1], "cal1_case_checked.exe") &&
-            strcmp(argv[1], "ckpt_case.exe")) return 2;
+            strcmp(argv[1], "ckpt_case.exe") && strcmp(argv[1], "ceml.exe") && strcmp(argv[1], "ceml_checked.exe")) return 2;
         used = (size_t)sprintf_s(command, sizeof(command), "%s --calibration-only", argv[1]);
         for (a = 2; a < argc; ++a) {
             const char *c;

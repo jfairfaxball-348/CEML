@@ -343,3 +343,31 @@ int ceml_checkpoint_validate(const ceml_metadata *m, const unsigned char *body, 
     mpz_clear(sum);
     return ok;
 }
+
+int ceml_uenc_append(ceml_buffer *out, const mpz_t value) {
+    size_t bytes, written = 0, i;
+    unsigned char frame[8], *magnitude;
+    if (mpz_sgn(value) < 0) return 0;
+    bytes = mpz_sgn(value) == 0 ? 1 : (mpz_sizeinbase(value, 2) + 7) >> 3;
+    for (i = 0; i < 8; ++i) frame[i] = (unsigned char)((unsigned long long)bytes >> (8*(7 - i)));
+    if (!ceml_buffer_append(out, frame, 8)) return 0;
+    magnitude = reserve(out, bytes);
+    if (!magnitude) return 0;
+    if (mpz_sgn(value) == 0) { magnitude[0] = 0; return 1; }      /* MAG(0) = 00 */
+    mpz_export(magnitude, &written, 1, 1, 1, 0, value);
+    return written == bytes;
+}
+
+int ceml_uenc_decode(const unsigned char *data, size_t length, mpz_t value) {
+    unsigned long long declared = 0;
+    size_t i;
+    if (length < 9) return 0;
+    for (i = 0; i < 8; ++i) declared = (declared << 8) | data[i];
+    if (declared != (unsigned long long)(length - 8)) return 0;      /* length mismatch or trailing bytes */
+    if (declared > 1 && data[8] == 0) return 0;                      /* non-minimal magnitude */
+    mpz_import(value, (size_t)declared, 1, 1, 1, 0, data + 8);
+    return 1;
+}
+
+#include "ceml_records.h"
+#include "ceml_records.inc"

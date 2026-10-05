@@ -42,6 +42,7 @@ FAMILIES = {'route-crossover': 1, 'small-block-sweep': 2, 'hierarchical-sweep': 
             'memory-scaling': 12}
 HIER_DEFAULT = ('4', '4096')        # labelled harness default for families that do not sweep the scheduler
 _VALIDATOR = None
+EXECUTABLE = {}                  # harness name -> production executable when --engine is given
 
 
 def generated(family, bits, index, stream, odd):
@@ -202,7 +203,8 @@ def build_context(build, commit, executable, thread_note):
                             {'name': 'Windows SDK', 'version': build['toolchain']['windows_sdk_version']}],
                 flags=flags + ['-link', '-Brepro'],
                 dependencies=[{'name': 'GMP', 'version': '6.3.0-2', 'linkage': 'dynamic-public-C', 'features': ['mpz']}],
-                enabled_features=['bounded-engineering-only', 'python-definition-C-reference', 'in-process-warmup-plus-five'],
+                enabled_features=['bounded-engineering-only', 'python-definition-C-reference', 'in-process-warmup-plus-five']
+                + (['production-engine-executable'] if EXECUTABLE else []),
                 process_count='1', thread_count='1', affinity=thread_note)
 
 
@@ -226,6 +228,7 @@ def evaluate(row, operands, parsed):
 
 def one_case(row, folder, build, commit, attempt):
     family, bits, candidate, index, maker, executable, args, required, kind, budget = row
+    executable = EXECUTABLE.get(executable, executable)
     operands, (descriptor, input_digest) = maker(bits, index)
     binaries = CAL1 / 'bin'
     for name in (executable, 'cal1_guard.exe'):
@@ -328,7 +331,12 @@ def main():
     parser.add_argument('--family', required=True, choices=sorted(FAMILIES, key=FAMILIES.get))
     parser.add_argument('--resume-after-refusal', action='store_true')
     parser.add_argument('--list', action='store_true')
+    parser.add_argument('--engine', action='store_true', help='measure the production executable itself')
     args = parser.parse_args()
+    if args.engine:
+        global CAL1
+        CAL1 = ROOT / 'local/c1/engine'
+        EXECUTABLE.update({'cal1_case.exe': 'ceml.exe', 'cal1_case_checked.exe': 'ceml_checked.exe'})
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,40}', args.run_id):
         raise Refusal('Run ID must contain only lowercase letters, digits and hyphens')
     vector = self_test_vector()

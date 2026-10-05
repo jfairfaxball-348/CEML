@@ -38,6 +38,8 @@ BUNDLES = ROOT / 'local/c1/benchmark_bundles'
 BUDGET = ROOT / 'local/c1/cal1-budget.json'
 AGGREGATE_NS = 900 * 10**9
 CASE_NS = 5 * 10**9
+CASE = 'ckpt_case.exe'           # replaced by the production executable when --engine is given
+BUILD = 'ckpt_build.json'
 STRATEGIES = {'buffered': 'checkpoint.buffered', 'streaming': 'checkpoint.streaming'}
 PRE_PUBLICATION = ('body-partial', 'body-complete', 'metadata-partial', 'metadata-complete-before-flush',
                    'after-flush-before-verify', 'after-verify-before-promote')
@@ -153,7 +155,7 @@ def stdin_for(directory, ident, state=None):
 def launch(arguments, stdin, guarded=False):
     """One fresh process per call. Returns (exit code, parsed JSON lines)."""
     binaries = CAL1 / 'bin'
-    command = [str(binaries / 'cal1_guard.exe'), 'ckpt_case.exe'] if guarded else [str(binaries / 'ckpt_case.exe'), '--calibration-only']
+    command = [str(binaries / 'cal1_guard.exe'), CASE] if guarded else [str(binaries / CASE), '--calibration-only']
     process = subprocess.run(command + arguments, cwd=WORK, input=stdin, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              timeout=30)
     if process.stderr or len(process.stdout) > 400000:
@@ -349,11 +351,11 @@ def prepare(run_id, suffix):
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,40}', run_id):
         raise Refusal('Run ID must contain only lowercase letters, digits and hyphens')
     frozen_vector()
-    build = json.loads((CAL1 / 'ckpt_build.json').read_text())
+    build = json.loads((CAL1 / BUILD).read_text())
     for name, meta in build['committed_sources'].items():
         if hashes(subprocess.check_output(['git', 'show', 'HEAD:' + name], cwd=ROOT)) != meta:
             raise Refusal('Checkpoint sources must be committed unchanged before the tests')
-    for name in ('ckpt_case.exe', 'cal1_guard.exe'):
+    for name in (CASE, 'cal1_guard.exe'):
         if hashes((CAL1 / 'bin' / name).read_bytes()) != build['executables'][name]:
             raise Refusal('Checkpoint executable changed')
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT).decode().strip()
@@ -477,8 +479,8 @@ def run_performance(run_id):
                             record_id=f'cal1.09.{8*magnitude}.{strategy}.{index}.a1.r{repeat}', suite_version='CEML-CAL-1',
                             case_id=chr(47).join((descriptor['input_id'], 'checkpoint-' + strategy)), input_id=descriptor['input_id'],
                             input_digest=input_digest, candidate_id='checkpoint-' + strategy,
-                            build_id='c1-ckpt-' + build['executables']['ckpt_case.exe']['sha3_256'][:16],
-                            executable_digest=build['executables']['ckpt_case.exe']['sha3_256'], build_context=context,
+                            build_id='c1-ckpt-' + build['executables'][CASE]['sha3_256'][:16],
+                            executable_digest=build['executables'][CASE]['sha3_256'], build_context=context,
                             wall_clock_method='QueryPerformanceCounter around one complete promotion including recovery scan, write, flush, verification, publication, pointer and retirement; integer floor to nanoseconds',
                             cpu_time_method='Not separated per promotion; unavailable',
                             peak_rss_method='GetProcessMemoryInfo PeakWorkingSetSize of the whole child observed by the guard; bytes',
@@ -521,7 +523,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', choices=('matrix', 'performance'))
     parser.add_argument('--run-id', required=True)
+    parser.add_argument('--engine', action='store_true', help='test the production executable itself')
     args = parser.parse_args()
+    if args.engine:
+        global CAL1, CASE, BUILD
+        CAL1, CASE, BUILD = ROOT / 'local/c1/engine', 'ceml.exe', 'build.json'
     return run_matrix(args.run_id) if args.command == 'matrix' else run_performance(args.run_id)
 
 

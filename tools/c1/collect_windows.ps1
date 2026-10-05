@@ -1,11 +1,13 @@
 # Stage: hardware characterization. C1 observations only; no calibration.
 [CmdletBinding()]
-param()
+param(
+    [ValidatePattern('^[a-z0-9][a-z0-9-]{0,63}$')]
+    [string]$AuditRun = 'c1-20261004-a'
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $RepoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
-$AuditRun = 'c1-20261004-a'
 $Records = New-Object 'System.Collections.Generic.List[object]'
 $StatusText = [IO.File]::ReadAllText((Join-Path $RepoRoot 'PROGRAM_STATUS.md'))
 if ($StatusText -notmatch 'Authoritative current phase:\*\* C1' -or
@@ -300,7 +302,7 @@ foreach ($Entry in @(
         'Not probed by this narrow observation adapter; no inference from model text.' @($Entry[3])
 }
 
-$OutputDirectory = Join-Path $RepoRoot 'local\c1'
+$OutputDirectory = Join-Path (Join-Path $RepoRoot 'local\c1') $AuditRun
 [IO.Directory]::CreateDirectory($OutputDirectory) | Out-Null
 $OutputFile = Join-Path $OutputDirectory 'audit_observations.json'
 $Json = ConvertTo-Json -InputObject @($Records.ToArray()) -Depth 12
@@ -309,7 +311,7 @@ $Json = ConvertTo-Json -InputObject @($Records.ToArray()) -Depth 12
 [ordered]@{
     stage = 'hardware characterization'
     audit_run_id = $AuditRun
-    logical_output = 'local/c1/audit_observations.json'
+    logical_output = "local/c1/$AuditRun/audit_observations.json"
     observed_records = @($Records | Where-Object record_class -eq 'OBSERVED_FACT').Count
     unavailable_records = @($Records | Where-Object record_class -eq 'UNAVAILABLE_OR_UNSUPPORTED').Count
     frozen_report = $false

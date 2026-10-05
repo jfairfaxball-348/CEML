@@ -1,0 +1,34 @@
+# Exact candidate package/tool pins; no production architecture selection.
+stage = "hardware characterization"
+component = "GMP"
+version = "6.3.0"
+distribution_package = "mingw-w64-ucrt-x86_64-gmp"
+distribution_release = "6.3.0-2"
+binary_url = "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-gmp-6.3.0-2-any.pkg.tar.zst"
+binary_sha256 = "e82a75968a556484a50084578238a84eb60fb93e34986fd6695c537975bd39ea"
+binary_sha3_256 = "f9657bbd612ff84b5c23df35ac5b1eec5977bc0e7ac45ea6accfb378316c16f5"
+source_url = "https://mirror.msys2.org/mingw/sources/mingw-w64-gmp-6.3.0-2.src.tar.zst"
+source_sha256 = "f288f944fd9609db220bcf6a8dd0703a5674eeb906ef35eb8485bb8192135994"
+source_sha3_256 = "88453154634288954d97c875b6358d2c76f50d787346055fbffdff03d49471e2"
+header_sha3_256 = "69f6f7fa09466586c737a404a41b07f9b432fdbe61e64a479e03b6b2f19413bc"
+dll_sha3_256 = "3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf"
+msvc_tools_version = "14.44.35207"
+windows_sdk_version = "10.0.26100.0"
+python_version = "3.12.10"
+zstandard_version = "0.25.0"
+target = "x86_64-pc-windows-msvc"
+abi = "LLP64"
+linkage = "dynamic-GMP-and-UCRT"
+smoke_source_sha3_256 = "d09b5456e9952967c0f347f0ae7ecf92a2400c086d39d53c396ddded1a84072e"
+smoke_executable_sha3_256 = "83642cac3a3c6b92b5b64e6fe5b7a2bb9227de600ea5c6b244b258dc33a5ec83"
+compiler_flags = ["-nologo", "-std:c17", "-W4", "-WX", "-O2", "-MD", "-D_CRT_SECURE_NO_WARNINGS", "-Brepro", "-external:I.", "-external:W0"]
+linker_flags = ["-Brepro"]
+license = "LGPL-3.0-or-later OR GPL-2.0-or-later"
+production_selection = false
+
+[tool_sha3_256]
+"cl.exe" = "66a0ad5274cfed76c1c33323612280e4066a09afc59b3af8bb4497b090a795a9"
+"link.exe" = "22c20f3744d0e11af1b1a92e481bb1dea13083c7af6164ca4fb6ddc0a053338e"
+"lib.exe" = "d907b67a6f37ff537e1297fefd6a23ebe605b74a3c00a3b855e4838e045b9fdc"
+"c1.dll" = "4e6736cb20af2cadd2734075bf528cdd1132393133a366dd06932b59428b152f"
+"c2.dll" = "a5cdf00c3fae9e7c7d00de3b7f80ab9fb69fa5e65ebc1d648c95f805e3e021f5"

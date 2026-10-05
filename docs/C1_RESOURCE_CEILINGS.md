@@ -42,7 +42,41 @@ started. A later session may replace these initial ceilings only with a new,
 explicitly recorded observation-backed decision within I1 maxima. No global
 power, swap, firmware or thermal policy is changed.
 
-## Source methods
+## Enforcement for the initial route subset
+
+On 2026-10-05 the native `cal_guard` and fixed `route_subset` driver implement
+these same ceilings for the first route-crossover subset. This does not expand
+the permitted operand sizes or select a production architecture. The driver
+accepts no arbitrary seed/start/size/work inputs. It uses only the prescribed
+1024/4096-bit engineering cases, three case indices, width 4, 256 T steps and
+one warm-up plus five measured repeats, in I1 ordering.
+
+The guard takes two one-second-separated PDH pressure samples and reads narrow
+Windows memory, target storage, AC and active sleep-index APIs. It creates the
+child suspended, assigns a non-inherited kill-on-close Job with 256 MiB process
+and job memory limits and one active process, then resumes it. One allowed
+logical processor is assigned; the bounded native source has one arithmetic
+thread and creates none. The guard checks the same conditions during execution
+and after child exit. Its wall watchdog checks at intervals of at most 100 ms;
+crossing five seconds invalidates and terminates the child. OS scheduling can
+delay termination; no timeout result is accepted as a valid measurement.
+
+The driver locks a shared local budget, durably reserves the full five-second
+case allowance before launching, and reconciles it only after a verified child
+outcome. Warm-up child wall time is charged as well, which is stricter than the
+measured-only aggregate limit. A crash leaves the reservation charged. The
+native case writes no scratch artifacts; bounded evidence is written afterward.
+The Python timeout kills the guard, which closes its Job and kills the child.
+Any refusal stops the ordered subset and is retained. No automatic retry,
+discard, ceiling expansion or power-policy change is performed.
+
+CPU measurements cover the whole native child, including reference work;
+candidate wall measurements cover only its transition loop. They are labeled
+separately. Peak RSS covers the whole native child. The local storage reserve
+is evaluated on the repository filesystem, the currently intended checkpoint
+target class. This supervisor does not establish checkpoint durability.
+
+## Original observation methods
 
 Field-selective `Win32_OperatingSystem`, target-volume query,
 `Win32_PerfFormattedData_PerfOS_Memory`, `GetSystemPowerStatus`,

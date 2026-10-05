@@ -1,4 +1,9 @@
 # Stage: hardware characterization. No installs, environment activation or builds.
+[CmdletBinding()]
+param(
+    [ValidatePattern('^[a-z0-9][a-z0-9-]{0,63}$')]
+    [string]$AuditRun = 'c1-20261004-a'
+)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -17,7 +22,7 @@ function Observed($id, $name, $value, $method, $note) {
     $records.Add([ordered]@{
         record_class='OBSERVED_FACT'; record_id=$id; category='toolchain'; fact_name=$name
         value=$value; source_adapter='windows-narrow-tool-discovery'; source_method=$method
-        audit_run_id='c1-20261004-a'; source_state_kind='active_configuration'
+        audit_run_id=$AuditRun; source_state_kind='active_configuration'
         uncertainty=$note; sanitization=@('Only selected versions, counts and availability are emitted; locator paths omitted')
         observed_at=[DateTime]::UtcNow.ToString('o')
     })
@@ -192,11 +197,11 @@ try {
 }
 Observed 'tools.gmp-locators' 'gmp_header_at_narrow_candidate_locations' $headers 'Existence probes for named development-package header locators only' 'Not a whole-machine search; headers alone would not establish library compatibility or provenance'
 if (-not ($headers.Values -contains $true) -and $cacheCounts['rug-*'] -eq '0' -and $cacheCounts['gmp-mpfr-sys-*'] -eq '0') {
-    Unavailable 'tools.gmp-unavailable' 'I1-eligible GMP development package and offline source/package inputs' 'Named development-package header locators and Cargo candidate cache probes' 'No usable package established within the checked scope; no download, installation, replacement or activation authorized'
+    Unavailable 'tools.gmp-unavailable' 'I1-eligible GMP development package at the standard external locators' 'Named development-package header locators and Cargo candidate cache probes' 'No usable package established within these locators; repository-local acquired candidates require their own package and build evidence'
 }
 Unavailable 'tools.flint-unavailable' 'Optional public FLINT backend' 'Not probed beyond prerequisite assessment' 'A usable GMP-backed production prerequisite is not established by locator probes; optional FLINT candidate not activated or measured'
 try {
-    $out = Join-Path $root 'local/c1'
+    $out = Join-Path (Join-Path $root 'local/c1') $AuditRun
     [IO.Directory]::CreateDirectory($out) | Out-Null
     [IO.File]::WriteAllText((Join-Path $out 'tool_observations.json'),(ConvertTo-Json -InputObject @($records.ToArray()) -Depth 12),[Text.UTF8Encoding]::new($false))
 } catch {
@@ -204,8 +209,8 @@ try {
 }
 [ordered]@{
     stage='hardware characterization'
-    audit_run_id='c1-20261004-a'
-    logical_output='local/c1/tool_observations.json'
+    audit_run_id=$AuditRun
+    logical_output="local/c1/$AuditRun/tool_observations.json"
     observed_records=@($records | Where-Object record_class -eq 'OBSERVED_FACT').Count
     unavailable_records=@($records | Where-Object record_class -eq 'UNAVAILABLE_OR_UNSUPPORTED').Count
     frozen_report=$false

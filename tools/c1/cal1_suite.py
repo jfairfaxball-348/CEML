@@ -269,7 +269,9 @@ def one_case(row, folder, build, commit, attempt):
     context = build_context(build, commit, executable, 'One allowed logical processor; lowest set bit of inherited process affinity')
     pressure = ('PDH pages input/output over intervals of at least one second; intervals=' + guard.get('pressure_intervals', '0')
                 + '; input excursions above 100=' + guard.get('pages_input_excursion_intervals', '0')
-                + '; maximum input rounded=' + guard.get('maximum_pages_input_rounded', '0') + '; output required zero')
+                + '; maximum input rounded=' + guard.get('maximum_pages_input_rounded', '0') + '; output required zero'
+                + '; admission intervals=' + guard.get('admission_intervals', '2')
+                + '; admission deferrals=' + guard.get('admission_deferrals', '0'))
     performance = guard.get('minimum_processor_performance_percent')
     frequency = ('PDH processor performance percent of nominal; minimum over case intervals=' + performance
                  if performance else 'Processor performance counter unavailable')

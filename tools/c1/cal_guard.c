@@ -13,6 +13,8 @@
 typedef struct { ULONGLONG available, free_storage; double input, output; } Observation;
 static PDH_HQUERY query;
 static PDH_HCOUNTER input_counter, output_counter;
+static ULONGLONG pressure_sample_at;
+static double sampled_input, sampled_output;
 
 static int pressure_counter(PDH_HCOUNTER counter, double *value) {
     PDH_FMT_COUNTERVALUE result;
@@ -44,8 +46,13 @@ static const char *observe(Observation *value) {
     LocalFree(scheme);
     if (status != ERROR_SUCCESS) return "power-policy-unavailable";
     if (standby_ac || standby_dc || hibernate_ac || hibernate_dc) return "sleep-policy-refusal";
-    if (PdhCollectQueryData(query) != ERROR_SUCCESS || !pressure_counter(input_counter, &value->input) ||
-        !pressure_counter(output_counter, &value->output)) return "pressure-monitor-unavailable";
+    /* Rate comparisons use intervals of at least one second throughout. */
+    if (GetTickCount64()-pressure_sample_at >= 1000) {
+        if (PdhCollectQueryData(query) != ERROR_SUCCESS || !pressure_counter(input_counter, &sampled_input) ||
+            !pressure_counter(output_counter, &sampled_output)) return "pressure-monitor-unavailable";
+        pressure_sample_at = GetTickCount64();
+    }
+    value->input = sampled_input; value->output = sampled_output;
     if (!(value->input <= 100.0 && value->output == 0.0)) return "paging-pressure";
     return NULL;
 }
@@ -72,10 +79,11 @@ int main(int argc, char **argv) {
     ULONGLONG elapsed_ms;
     size_t i, length;
     int aborted = 0;
-    if (argc != 3 || (strcmp(argv[1], "t-direct") && strcmp(argv[1], "affine-small-public"))) return 2;
-    length = strlen(argv[2]);
+    int pressure_only = argc == 2 && strcmp(argv[1], "--pressure-check") == 0;
+    if (!pressure_only && (argc != 3 || (strcmp(argv[1], "t-direct") && strcmp(argv[1], "affine-small-public")))) return 2;
+    length = pressure_only ? 256 : strlen(argv[2]);
     if (length != 256 && length != 1024) return 2;
-    for (i=0; i<length; ++i) if (!((argv[2][i]>='0' && argv[2][i]<='9') ||
+    for (i=0; !pressure_only && i<length; ++i) if (!((argv[2][i]>='0' && argv[2][i]<='9') ||
         (argv[2][i]>='a' && argv[2][i]<='f'))) return 2;
     swprintf_s(input_path, 80, L"%cMemory%cPages Input%csec", 92, 92, 47);
     swprintf_s(output_path, 80, L"%cMemory%cPages Output%csec", 92, 92, 47);
@@ -83,6 +91,7 @@ int main(int argc, char **argv) {
         PdhAddEnglishCounterW(query, input_path, 0, &input_counter) != ERROR_SUCCESS ||
         PdhAddEnglishCounterW(query, output_path, 0, &output_counter) != ERROR_SUCCESS ||
         PdhCollectQueryData(query) != ERROR_SUCCESS) reason = "pressure-monitor-unavailable";
+    pressure_sample_at = GetTickCount64();
     if (!reason) { Sleep(1000); reason = observe(&first); last = first; }
     if (!reason) { Sleep(1000); reason = observe(&second); last = second; }
     if (reason) {
@@ -91,6 +100,13 @@ int main(int argc, char **argv) {
                reason, last.available, last.input, last.output);
         if (query) PdhCloseQuery(query);
         return 10;
+    }
+    if (pressure_only) {
+        printf("{\"kind\":\"pressure_check\",\"ok\":true,\"samples\":\"2\","
+               "\"first_pages_input\":\"%.3f\",\"second_pages_input\":\"%.3f\","
+               "\"pages_output\":\"%.3f\",\"available_bytes\":\"%llu\"}\n",
+               first.input, second.input, second.output, second.available);
+        PdhCloseQuery(query); return 0;
     }
     job = CreateJobObjectW(NULL, NULL);
     if (!job || !GetProcessAffinityMask(GetCurrentProcess(), &process_affinity, &system_affinity)) return 11;
@@ -122,6 +138,10 @@ int main(int argc, char **argv) {
         waited = WaitForSingleObject(process.hProcess, 100);
         if (!QueryPerformanceCounter(&end)) { reason = "timer-unavailable"; break; }
         elapsed_ms = (ULONGLONG)((end.QuadPart-begin.QuadPart)*1000/frequency.QuadPart);
+        if (waited == WAIT_OBJECT_0) {
+            ULONGLONG age = GetTickCount64()-pressure_sample_at;
+            if (age < 1000) Sleep((DWORD)(1000-age));
+        }
         reason = observe(&last);
         if (reason || waited == WAIT_FAILED || elapsed_ms >= 5000) {
             if (!reason) reason = elapsed_ms >= 5000 ? "case-timeout" : "process-monitor-unavailable";

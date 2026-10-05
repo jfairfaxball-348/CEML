@@ -300,7 +300,28 @@
         "C1 remains open; no V1 or scientific execution"
       ],
       "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.pressure-intervals-v2",
+      "question": "Consistent paging-rate measurement intervals",
+      "candidates_considered": [
+        "Mixed one-second admission and short post-child intervals",
+        "Intervals of at least one second throughout"
+      ],
+      "evidence_record_ids": [
+        "calibration.first-attempt"
+      ],
+      "eliminated": [],
+      "selection": "Use at least one-second pressure intervals, retain frequent memory/power checks, and require a complete final interval after short child completion",
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "The retained child interval was approximately 38 ms, while admission intervals were one second. Make rate intervals consistent; retain the prior invalid record. All thresholds and work/resource ceilings remain unchanged. This is a monitor-method correction, not performance tuning or proof of actual pagefile pressure.",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
     }
   ],
-  "artifact_digest": "198a0dd684abcecd7208123a5b03051e28ee697c6518af658476afcfaaf681e3"
+  "artifact_digest": "f0f8415b0509ae5ad86e4702baf3b7bf2cef4355054d641a3fc1839c19a74d53"
 }

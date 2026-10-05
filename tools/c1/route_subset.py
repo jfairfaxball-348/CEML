@@ -6,12 +6,14 @@ Stop at the first refusal; retain it and every completed repeat.
 from __future__ import annotations
 
 import hashlib
+import argparse
 import json
 import msvcrt
 import os
 from pathlib import Path
 import subprocess
 import sys
+import re
 
 from engineering_codec import artifact_digest, blob, canonical_bytes, self_test_vector, uenc
 from gmp_setup import LOCAL, ROOT, Refusal, hashes
@@ -141,6 +143,13 @@ def one_case(build, context, bits, candidate, index, repeat):
 
 
 def main():
+    global BUNDLE
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--bundle-id', default='c1-20261005-route-subset')
+    args = parser.parse_args()
+    if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,63}', args.bundle_id):
+        raise Refusal('Bundle ID must contain only lowercase letters, digits and hyphens')
+    BUNDLE = ROOT / 'local/c1/benchmark_bundles' / args.bundle_id
     self_test_vector()
     if BUNDLE.exists():
         raise Refusal('Existing subset evidence retained; no automatic overwrite or repeat')
@@ -174,7 +183,8 @@ def main():
                         save_budget(budget, charged)
                         print(json.dumps({'record_id':record['record_id'], 'valid':record['valid'], 'abort_code':record['abort_code']}), flush=True)
                         if not record['valid']:
-                            return
+                            raise Refusal('Ordered subset stopped at the retained invalid record')
+        print('Completed initial route subset. This does not establish a production winner or C1 PASS.', flush=True)
 
 
 if __name__ == '__main__':

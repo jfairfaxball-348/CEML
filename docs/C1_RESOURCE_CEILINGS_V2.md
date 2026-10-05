@@ -118,6 +118,46 @@ Revised:
 - Families that do not sweep the hierarchical scheduler use the labelled
   harness default divisor 4 and cap 4096. That default is not a selection.
 
+## Amendment 2.1 — bounded admission wait (2026-10-05)
+
+Recorded before the calibration it governs. Run `cal1-20261005-a` completed
+the route-crossover family (150 children) under the rules above, with three
+retained refusals and two explicit resumes:
+
+| Case | Outcome | Observation |
+|---|---|---|
+| route-crossover 65536 `affine-small-w04` index 1 | `C1_RESOURCE_ABORT` | two consecutive intervals of about 2053 and 2978 pages per second input; output zero |
+| route-crossover 65536 `affine-small-w16` index 2 | `C1_PREFLIGHT_REFUSAL` | two consecutive admission intervals above 100; the case never started |
+| small-block-sweep 4096 `affine-small-w16` index 1 | `C1_PREFLIGHT_REFUSAL` | same, with the session otherwise idle; the case never started |
+
+Among the 92 route-crossover children before the first refusal, 7 recorded an
+isolated input excursion and none recorded page output; processor performance
+never fell below 170 percent of nominal; available memory stayed near 8.4 GB.
+Sustained input bursts therefore recur every few minutes from activity that is
+not CEML arithmetic. Two of the three refusals occurred before any case work.
+
+Decision `decision.resource-ceilings-v2.1`, changing admission only:
+
+- Admission still requires two consecutive one-second intervals, and now each
+  of them must be at or below the 100-page input ceiling with zero output (an
+  isolated excursion no longer counts toward admission, which is stricter).
+- When page input alone is above the ceiling, the guard defers and keeps
+  sampling, for at most 30 one-second intervals in total, then refuses with
+  `C1_PREFLIGHT_REFUSAL`. No case work and no measurement occurs while
+  waiting, so no sample is being selected; the number of admission intervals
+  and deferrals is written into every record.
+- Page output, headroom, power, sleep-index, monitor and processor-performance
+  conditions still refuse immediately, without waiting.
+- The in-case and post-case rules, the abort codes, the resume limits and all
+  work bounds are unchanged. A sustained burst during a case still aborts it.
+
+Because the guard program changes, the remaining families run under a new run
+identifier, `cal1-20261005-b`, starting again at the small-block sweep. The
+partial `cal1-20261005-a` small-block bundle (11 valid children and one
+refusal) is retained and indexed but is not used for any decision. Comparisons
+are made only within one family and one build identity; the guard is outside
+every timed region.
+
 ## Not established
 
 No temperature, no power-loss behaviour, no pagefile-specific pressure

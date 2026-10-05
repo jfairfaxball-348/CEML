@@ -26,7 +26,8 @@ static PDH_HQUERY query;
 static PDH_HCOUNTER input_counter, output_counter, performance_counter;
 static ULONGLONG pressure_sample_at;
 static double sampled_input, sampled_output, sampled_performance = -1.0, maximum_input, minimum_performance = -1.0;
-static int performance_available, consecutive_high, excursions, intervals;
+static int performance_available, consecutive_high, excursions, intervals, admission_intervals, admission_deferrals;
+#define ADMISSION_INTERVALS 30
 
 static int counter_value(PDH_HCOUNTER counter, double *value) {
     PDH_FMT_COUNTERVALUE result;
@@ -125,8 +126,22 @@ int main(int argc, char **argv) {
     if (!reason) performance_available = PdhAddEnglishCounterW(query, path, 0, &performance_counter) == ERROR_SUCCESS;
     if (!reason && PdhCollectQueryData(query) != ERROR_SUCCESS) reason = "pressure-monitor-unavailable";
     pressure_sample_at = GetTickCount64();
-    if (!reason) { Sleep(1000); reason = observe(&first); last = first; }
-    if (!reason) { Sleep(1000); reason = observe(&second); last = second; }
+    /* Admission: two consecutive accepted one-second intervals. Sustained page
+     * input alone defers admission for a bounded time; nothing is measured while
+     * waiting and every other condition still refuses at once. */
+    if (!reason) {
+        int accepted = 0;
+        while (accepted < 2) {
+            Sleep(1000);
+            first = second;
+            reason = observe(&second); last = second;
+            if (!reason && consecutive_high == 0) { ++accepted; continue; }
+            if (!reason) reason = "paging-input-sustained";      /* an excursion never counts toward admission */
+            if (strcmp(reason, "paging-input-sustained") != 0 || intervals >= ADMISSION_INTERVALS) break;
+            reason = NULL; accepted = 0; ++admission_deferrals;
+        }
+    }
+    admission_intervals = intervals;
     if (reason) {
         printf("{\"kind\":\"guard\",\"abort_code\":\"C1_PREFLIGHT_REFUSAL\",\"reason\":\"%s\","
                "\"available_bytes\":\"%llu\",\"pages_input_rounded\":\"%.0f\",\"pages_output_rounded\":\"%.0f\"}\n",
@@ -200,6 +215,7 @@ int main(int argc, char **argv) {
     if (aborted) printf("\"cpu_time_ns\":null,\"peak_rss_bytes\":null,");
     else printf("\"cpu_time_ns\":\"%llu\",\"peak_rss_bytes\":\"%llu\",",
                 (time_value(kernel) + time_value(user_time))*100, (ULONGLONG)memory.PeakWorkingSetSize);
+    printf("\"admission_intervals\":\"%d\",\"admission_deferrals\":\"%d\",", admission_intervals, admission_deferrals);
     printf("\"available_bytes\":\"%llu\",\"free_storage_bytes\":\"%llu\",\"pressure_intervals\":\"%d\","
            "\"pages_input_excursion_intervals\":\"%d\",\"maximum_pages_input_rounded\":\"%.0f\","
            "\"final_pages_input_rounded\":\"%.0f\",\"final_pages_output_rounded\":\"%.0f\","

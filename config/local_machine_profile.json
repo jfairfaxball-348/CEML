@@ -1,0 +1,144 @@
+{
+  "experiment": "CEML",
+  "schema_version": "CEML-LOCAL-MACHINE-PROFILE-1",
+  "source_commit": "5c354aadc85d7e80372d3c49547b1c73bc2d449f",
+  "build_digest": "14f2811832f052c84cadd83759e6d23e14f657cbf7c9d6cc0fa7f24dceaa312b",
+  "hardware_report_digest": "bdb5c72757780e4f27073fc8e2a4e512005110ef7988bebce14fb80eb6370014",
+  "benchmark_summary_digest": "b3f3be0f8013934a32ebd5c799362829937b9014f620eede1aa187f86a213fef",
+  "engineering_decision_log_digest": "c0b1773e4ebb4b6797db434017d7baea78c379b122229d5439be84e372b05312",
+  "system": {
+    "os_family": "Windows",
+    "os_release": "Microsoft Windows 11 Home 10.0.26200",
+    "kernel_release": "Windows NT build 26200",
+    "architecture": "x86_64 (64-bit)",
+    "abi": "LLP64",
+    "virtualization": null
+  },
+  "cpu": {
+    "vendor": "GenuineIntel",
+    "model": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+    "physical_cores": "8",
+    "logical_threads": "16",
+    "instruction_features": [],
+    "cache_summary": []
+  },
+  "memory": {
+    "installed_bytes": "17179869184",
+    "available_bytes_at_audit": "8186925056",
+    "swap_capacity_bytes": "1140850688",
+    "page_size_bytes": "4096"
+  },
+  "checkpoint_storage": {
+    "filesystem_class": "NTFS on a fixed local volume",
+    "local_or_remote": "local",
+    "durability_supported": true,
+    "durability_decision_id": "decision.checkpoint.filesystem",
+    "strategy": "win32-ntfs-generation-directory-v1: write and FlushFileBuffers both files, flush the directory, re-read and validate, publish by one same-directory MoveFileExW write-through rename, flush the parent directory, update the pointer hint, re-read, retain the previous generation, retire older ones; recovery by content only"
+  },
+  "toolchain": {
+    "language_family": "C17",
+    "compiler": "Microsoft C compiler cl.exe",
+    "compiler_version": "19.44.35228.0 (MSVC tools 14.44.35207)",
+    "linker": "Microsoft linker link.exe",
+    "linker_version": "14.44.35228.0",
+    "target_triple": "x86_64-pc-windows-msvc",
+    "abi": "LLP64",
+    "flags": [
+      "-nologo",
+      "-std:c17",
+      "-W4",
+      "-WX",
+      "-O2",
+      "-MD",
+      "-D_CRT_SECURE_NO_WARNINGS",
+      "-Brepro",
+      "-external:I.",
+      "-external:W0",
+      "-link",
+      "-Brepro",
+      "gmp_public.lib",
+      "psapi.lib"
+    ],
+    "native_tuning": false,
+    "non_portable": false
+  },
+  "dependencies": [
+    {
+      "name": "GMP",
+      "version": "6.3.0 (distribution release 6.3.0-2)",
+      "source_channel": "MSYS2 UCRT64 binary package mingw-w64-ucrt-x86_64-gmp from the official mirror; published SHA-256 verified; matching source package retained in the content-addressed local cache",
+      "artifact_digest": "3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf",
+      "linkage": "dynamic; import library generated locally from the documented public mpz exports and the custom-allocation functions",
+      "features": [
+        "custom-allocation-interface",
+        "mpz"
+      ]
+    },
+    {
+      "name": "Microsoft Universal C Runtime and Visual C++ runtime",
+      "version": "Windows SDK 10.0.26100.0, MSVC tools 14.44.35207",
+      "source_channel": "Installed toolchain; dynamic runtime selected by the MD option",
+      "artifact_digest": null,
+      "linkage": "dynamic",
+      "features": []
+    }
+  ],
+  "engineering_choices": {
+    "backend_route": "arith.gmp.public",
+    "state_representation": "state.dense",
+    "small_block_width": null,
+    "hierarchical_divisor": "2",
+    "hierarchical_k_cap": "16384",
+    "allocation_strategy": "alloc.copy",
+    "parallelism_route": "parallel.single",
+    "thread_count": "1",
+    "terminal_handoff": "terminal.direct_t",
+    "audit_mode": "audit.divisibility",
+    "checkpoint_strategy": "checkpoint.buffered; promotion at the first macro boundary after 600 seconds and at the terminal state"
+  },
+  "resource_limits": {
+    "minimum_available_memory_bytes": "4294967296",
+    "maximum_process_memory_bytes": "268435456",
+    "minimum_free_storage_bytes": "17179869184",
+    "swap_pressure_rule": "Any page output in a one-second interval, or page input above 100 pages per second in two consecutive one-second intervals, refuses or aborts; admission waits at most 30 intervals for page input only",
+    "maximum_processes": "1",
+    "maximum_threads": "1",
+    "thermal_stop_rule": "Temperature unavailable; stop when processor performance reads below 100 percent of nominal at a sampled interval; bounded cases of at most 5 seconds separated by monitoring",
+    "maximum_case_seconds": "5",
+    "power_sleep_precondition": "AC power and zero standby and hibernate idle indices, checked at every polling boundary; no power policy is changed"
+  },
+  "unavailable_constraints": [
+    "Temperature telemetry unavailable; no thermal-safety claim",
+    "Instruction-set features, cache hierarchy, topology and virtualization status were not probed; none is inferred",
+    "No native-tuned build mode exists for the pinned compiler; the build is portable-release",
+    "FLINT, Rust with rug, sparse state, value-threaded recursion and auxiliary parallelism are unavailable or not implemented",
+    "Checkpoint durability rests on documented flush semantics and forced process-termination tests; no power-loss evidence",
+    "The resource limits above are the bounded-calibration ceilings; resource limits for scientific-scale states are not established by C1",
+    "The pinned LLP64 GMP counts bits in 32 bits: states and generator masks of 2^32 bits or more (about 1.29e9 decimal digits) are outside this build",
+    "The hierarchical cap and divisor were chosen among performance-tied candidates, not as a measured winner",
+    "Scientific-scale performance and memory behaviour are not measured"
+  ],
+  "evidence_refs": [
+    "decision.checkpoint.filesystem",
+    "decision.language-toolchain",
+    "decision.matrix.01.route-crossover",
+    "decision.matrix.02.small-block-sweep",
+    "decision.matrix.03.hierarchical-sweep",
+    "decision.matrix.04.backend-multiplication",
+    "decision.matrix.05.representation",
+    "decision.matrix.06.allocation",
+    "decision.matrix.07.compiler-build",
+    "decision.matrix.08.parallelism",
+    "decision.matrix.09.checkpoint",
+    "decision.matrix.10.terminal-handoff",
+    "decision.matrix.11.audit-cost",
+    "decision.matrix.12.memory-scaling",
+    "decision.resource-ceilings-v2"
+  ],
+  "privacy_attestation": {
+    "sensitive_identifiers_excluded": true,
+    "scan_passed": true,
+    "scan_artifact_digest": "ab37af1da6165fcc8ccfc225d804c263eea4049c888f210d97b534efff954459"
+  },
+  "machine_profile_digest": "fed3d3c38d5ec932e0f0c311344e19c15190dcfca77d9c026bcb82a178116a9e"
+}

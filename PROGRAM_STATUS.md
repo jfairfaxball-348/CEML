@@ -1,18 +1,18 @@
 # CEML Programme Status
 
-**Authoritative current phase:** C1 — LOCAL HARDWARE AUDIT AND IMPLEMENTATION  
+**Authoritative current phase:** C1 — COMPLETE, STOPPED FOR OPERATOR REVIEW (V1 NOT ENTERED)  
 **Scientific execution authorization:** DENIED  
 **Production implementation authorization:** AUTHORIZED ONLY UNDER THE APPROVED C1 HANDOFF AND REQUIRED AUDIT/CALIBRATION ORDER  
 **Scientific master-seed generation:** DENIED  
 **Magnitude-rung semantics:** FROZEN as decimal-digits-v1  
 **Final executable ladder values:** PROVISIONAL / NOT FROZEN  
-**Local machine profile:** NOT YET MEASURED / NOT FROZEN  
+**Local machine profile:** MEASURED AND FROZEN — `config/local_machine_profile.json`, digest `fed3d3c38d5ec932e0f0c311344e19c15190dcfca77d9c026bcb82a178116a9e`  
 **Scientific protocol version:** CEML-SCI-1  
 **Checkpoint format:** CEML-CKPT-1  
 **Hardware-audit contract:** R4 FROZEN  
 **Implementation specification:** I1 FROZEN / APPROVED  
 **Calibration suite:** CEML-CAL-1 FROZEN  
-**Last status update:** 2026-10-04
+**Last status update:** 2026-10-05
 
 ## Gate decisions
 
@@ -24,8 +24,8 @@
 | R3 | **PASS — 2026-10-04** | `docs/REPRODUCIBILITY_VALIDATION_AUDIT.md` plus CEML-SCI-1 documents/schemas freeze scientific semantics, deterministic start generation, canonical integrity, checkpoint/restart, V1 and anomaly rules. |
 | R4 | **PASS — 2026-10-04** | `docs/HARDWARE_AUDIT_SPEC.md` freezes privacy-safe observation, bounded calibration, route activation, resource safety, filesystem-durability testing and evidence/refusal rules. |
 | I1 | **PASS — 2026-10-04** | `docs/CODEX_HANDOFF.md`, `config/calibration_suite_v1.json`, `schemas/c1_evidence.schema.json` and `schemas/hardware_profile.schema.json` provide an executable C1 specification without machine guessing or production implementation. |
-| C1 | **OPEN — CURRENT GATE** | Authorized local sequence: audit -> safety ceilings -> bounded CEML-CAL-1 -> evidence-backed decisions -> implementation -> build -> sanitized profile. Stop before V1. |
-| V1 | NOT ENTERED | Production validation is not authorized merely by entering C1. |
+| C1 | **PASS — 2026-10-05 (agent-assessed; operator review required)** | `docs/C1_COMPLETION.md`, the sanitized `local_reports/` artifacts, `local_reports/BUILD_MANIFEST.json` (build digest `14f2811832f052c84cadd83759e6d23e14f657cbf7c9d6cc0fa7f24dceaa312b`, engine commit `5c354aadc85d7e80372d3c49547b1c73bc2d449f`) and `config/local_machine_profile.json`. Limitations are listed in the completion record. C1 has stopped. |
+| V1 | NOT ENTERED | Not authorized by C1 completion. Requires operator review of the C1 package and a separate reviewed status transition. |
 | E1 | NOT ENTERED | Scientific ladder execution, final ladder freeze and scientific seed event remain unauthorized. |
 
 ## I1 acceptance summary
@@ -64,6 +64,10 @@ C1 may not:
 - claim V1 or proceed to E1 automatically.
 
 C1 completion requires the sanitized reports, benchmark summary/bundle index, engineering decision log, exact build manifest, offline lock/pin evidence, target-filesystem checkpoint durability evidence, sensitive-data-scan PASS and `config/local_machine_profile.json`. C1 then stops for review.
+
+## C1 result
+
+C1 produced its required package and stopped. Scientific execution, scientific master-seed generation, final ladder freeze, V1 and E1 remain exactly as stated above. The engine executable refuses `validate`, `prepare` and `run` under this status. A rejection of any recorded C1 interpretation or decision on review reopens C1 through additive history; it is never patched silently.
 
 ## Non-substitution rule
 

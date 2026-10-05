@@ -1,0 +1,155 @@
+{
+  "experiment": "CEML",
+  "schema_version": "CEML-BUILD-MANIFEST-1",
+  "source_commit": "5c354aadc85d7e80372d3c49547b1c73bc2d449f",
+  "target_triple": "x86_64-pc-windows-msvc",
+  "abi": "LLP64",
+  "toolchains": [
+    {
+      "name": "Microsoft C compiler cl.exe",
+      "version": "19.44.35228.0"
+    },
+    {
+      "name": "Microsoft linker link.exe",
+      "version": "14.44.35228.0"
+    },
+    {
+      "name": "MSVC tools",
+      "version": "14.44.35207"
+    },
+    {
+      "name": "Windows SDK",
+      "version": "10.0.26100.0"
+    },
+    {
+      "name": "Python build driver",
+      "version": "3.12.10"
+    },
+    {
+      "name": "zstandard extraction module",
+      "version": "0.25.0"
+    },
+    {
+      "name": "tool content SHA3-256 c1.dll",
+      "version": "4e6736cb20af2cadd2734075bf528cdd1132393133a366dd06932b59428b152f"
+    },
+    {
+      "name": "tool content SHA3-256 c2.dll",
+      "version": "a5cdf00c3fae9e7c7d00de3b7f80ab9fb69fa5e65ebc1d648c95f805e3e021f5"
+    },
+    {
+      "name": "tool content SHA3-256 cl.exe",
+      "version": "66a0ad5274cfed76c1c33323612280e4066a09afc59b3af8bb4497b090a795a9"
+    },
+    {
+      "name": "tool content SHA3-256 lib.exe",
+      "version": "d907b67a6f37ff537e1297fefd6a23ebe605b74a3c00a3b855e4838e045b9fdc"
+    },
+    {
+      "name": "tool content SHA3-256 link.exe",
+      "version": "22c20f3744d0e11af1b1a92e481bb1dea13083c7af6164ca4fb6ddc0a053338e"
+    }
+  ],
+  "flags": [
+    "-nologo",
+    "-std:c17",
+    "-W4",
+    "-WX",
+    "-O2",
+    "-MD",
+    "-D_CRT_SECURE_NO_WARNINGS",
+    "-Brepro",
+    "-external:I.",
+    "-external:W0",
+    "-link",
+    "-Brepro",
+    "gmp_public.lib",
+    "psapi.lib"
+  ],
+  "native_tuning": false,
+  "non_portable": false,
+  "dependencies": [
+    {
+      "name": "GMP",
+      "version": "6.3.0 (distribution release 6.3.0-2)",
+      "source_channel": "MSYS2 UCRT64 binary package mingw-w64-ucrt-x86_64-gmp from the official mirror; published SHA-256 verified; matching source package retained in the content-addressed local cache",
+      "artifact_digest": "3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf",
+      "build_options": [
+        "prebuilt distribution shared library, not rebuilt locally",
+        "package SHA-256 e82a75968a556484a50084578238a84eb60fb93e34986fd6695c537975bd39ea",
+        "source package SHA-256 f288f944fd9609db220bcf6a8dd0703a5674eeb906ef35eb8485bb8192135994",
+        "header SHA3-256 69f6f7fa09466586c737a404a41b07f9b432fdbe61e64a479e03b6b2f19413bc"
+      ],
+      "linkage": "dynamic; import library generated locally from the documented public mpz exports and the custom-allocation functions",
+      "features": [
+        "custom-allocation-interface",
+        "mpz"
+      ]
+    },
+    {
+      "name": "Microsoft Universal C Runtime and Visual C++ runtime",
+      "version": "Windows SDK 10.0.26100.0, MSVC tools 14.44.35207",
+      "source_channel": "Installed toolchain; dynamic runtime selected by the MD option",
+      "artifact_digest": null,
+      "build_options": [
+        "operating-system and toolchain component; content not pinned by digest"
+      ],
+      "linkage": "dynamic",
+      "features": []
+    }
+  ],
+  "enabled_routes": [
+    "arith.gmp.public",
+    "alloc.copy",
+    "audit.divisibility",
+    "checkpoint.buffered",
+    "engine.hier_affine.explicit",
+    "oracle.c.direct",
+    "oracle.t.direct",
+    "oracle.u.odd_only",
+    "parallel.single",
+    "state.dense",
+    "terminal.direct_t"
+  ],
+  "lock_artifacts": [
+    {
+      "logical_path": "config/c1_dependency_manifest.toml",
+      "sha3_256": "b638ebbe7f44625a315cc9221193555a5ccafb6179680fbf2abcedb6c2c86dd7"
+    },
+    {
+      "logical_path": "config/c1_gmp_pin.toml",
+      "sha3_256": "61de847143c167ac4b5eb839a6b8da8b94a23c4219f39372fc8a7de7182b357b"
+    }
+  ],
+  "build_artifacts": [
+    {
+      "logical_name": "ceml.exe",
+      "sha3_256": "507f36c9f870372ebe97e8a6675dd2dc63c569a0dba7ee36040e259633b276a9",
+      "bytes": "104448"
+    },
+    {
+      "logical_name": "ceml_checked.exe",
+      "sha3_256": "b15c486840f1efa09dc6c3ef482fe11fd7cac8636c32993659fb619bf2a3bc5d",
+      "bytes": "143872"
+    },
+    {
+      "logical_name": "cal1_guard.exe",
+      "sha3_256": "06b7f8202d08d6111126f06e95d703ec89f2f47dac8f75edf2469c22cd347117",
+      "bytes": "19456"
+    },
+    {
+      "logical_name": "libgmp-10.dll",
+      "sha3_256": "3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf",
+      "bytes": "681231"
+    }
+  ],
+  "offline_rebuild_recipe": [
+    "Populate local/c1/cache/sha256 with the two pinned GMP archives named in config/c1_gmp_pin.toml (the only network step: python tools/c1/gmp_setup.py acquire)",
+    "python tools/c1/gmp_setup.py build",
+    "python tools/c1/gmp_setup.py offline-smoke",
+    "python tools/c1/engine_build.py",
+    "The build and engine_build steps never fetch; they refuse if a pinned archive, header, library, compiler binary, flag or source differs",
+    "Compare the SHA3-256 of each produced artifact with build_artifacts"
+  ],
+  "build_digest": "14f2811832f052c84cadd83759e6d23e14f657cbf7c9d6cc0fa7f24dceaa312b"
+}

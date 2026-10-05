@@ -1,10 +1,10 @@
 # C1 sanitized hardware report
 
-Stage: **hardware characterization**. **CEML-C1 REMAINS OPEN.**
+Stage: **implementation and build/profile freeze**. Calibration evidence was measured on the production executable.
 
-Audit: `c1-20261005-final`. Generated: 2026-10-05T15:09:02Z.
+Audit: `c1-20261005-final`. Generated: 2026-10-05T16:19:29Z.
 
-JSON artifact digest: `191e27941a733c4219c26a5973d16e81385fb69c0af60acb8c28e7b7df7448ea`.
+JSON artifact digest: `bdb5c72757780e4f27073fc8e2a4e512005110ef7988bebce14fb80eb6370014`.
 
 Generated mechanically from HARDWARE_REPORT.json. Observations are not benchmarks,
 benchmarks are not V1, and nothing here is scientific evidence.
@@ -671,7 +671,7 @@ pinned_gmp_public_c_candidate: `{"abi":"LLP64","distribution_release":"6.3.0-2",
 
 Source: Checksum-verified package, public C compile and link with installed MSVC, exact product and import-export smoke, strict offline rebuild.
 
-Observation kind: active_configuration. Time: 2026-10-05T14:47:55Z.
+Observation kind: active_configuration. Time: 2026-10-05T16:15:53Z.
 
 Uncertainty: The GMP binary is a distribution build; GMP itself was not rebuilt from source locally
 
@@ -703,7 +703,7 @@ Uncertainty: Thirty-five samples; page input includes mapped-file reads; not a p
 
 Class: `OBSERVED_FACT`.
 
-retained_guard_refusals_and_aggregate_budget: `{"aggregate_ceiling_ns":"900000000000","aggregate_child_wall_ns":"19526603300","explicit_resumes":{"cal1-20261005-a":"2","cal1-20261005-b":"1"},"refusals":[{"abort_code":"C1_RESOURCE_ABORT","bundle_id":"c1-20261005-route-subset","maximum_pages_input_rounded":"1917","member":"1024-affine-small-public-0-0-detail.json","pages_output_rounded":"0","reason":"paging-pressure"},{"abort_code":"C1_RESOURCE_ABORT","bundle_id":"cal1-20261005-a-01-route-crossover","maximum_pages_input_rounded":"2978","member":"065536-affine-small-w04-1-a1-detail.json","pages_output_rounded":"0","reason":"paging-input-sustained"},{"abort_code":"C1_PREFLIGHT_REFUSAL","bundle_id":"cal1-20261005-a-01-route-crossover","maximum_pages_input_rounded":"112","member":"065536-affine-small-w16-2-a1-detail.json","pages_output_rounded":"0","reason":"paging-input-sustained"},{"abort_code":"C1_PREFLIGHT_REFUSAL","bundle_id":"cal1-20261005-a-02-small-block-sweep","maximum_pages_input_rounded":"414","member":"004096-affine-small-w16-1-a1-detail.json","pages_output_rounded":"0","reason":"paging-input-sustained"},{"abort_code":"C1_PREFLIGHT_REFUSAL","bundle_id":"cal1-20261005-b-03-hierarchical-sweep","maximum_pages_input_rounded":"0","member":"131072-hier-explicit-d6-k16384-1-a1-detail.json","pages_output_rounded":"33","reason":"paging-output"},{"abort_code":"C1_RESOURCE_ABORT","bundle_id":"manual-20261005-134907","maximum_pages_input_rounded":"138","member":"1024-affine-small-public-0-0-detail.json","pages_output_rounded":"0","reason":"paging-pressure"}]}`
+retained_guard_refusals_and_aggregate_budget: `{"aggregate_ceiling_ns":"900000000000","aggregate_child_wall_ns":"39101987500","explicit_resumes":{"cal1-20261005-a":"2","cal1-20261005-b":"1","final-20261005-a":"2"},"refusals":[{"abort_code":"C1_RESOURCE_ABORT","bundle_id":"c1-20261005-route-subset","maximum_pages_input_rounded":"1917","member":"1024-affine-small-public-0-0-detail.json","pages_output_rounded":"0","reason":"paging-pressure"},{"abort_code":"C1_RESOURCE_ABORT","bundle_id":"cal1-20261005-a-01-route-crossover","maximum_pages_input_rounded":"2978","member":"065536-affine-small-w04-1-a1-detail.json","pages_output_rounded":"0","reason":"paging-input-sustained"},{"abort_code":"C1_PREFLIGHT_REFUSAL","bundle_id":"cal1-20261005-a-01-route-crossover","maximum_pages_input_rounded":"112","member":"065536-affine-small-w16-2-a1-detail.json","pages_output_rounded":"0","reason":"paging-input-sustained"},{"abort_code":"C1_PREFLIGHT_REFUSAL","bundle_id":"cal1-20261005-a-02-small-block-sweep","maximum_pages_input_rounded":"414","member":"004096-affine-small-w16-1-a1-detail.json","pages_output_rounded":"0","reason":"paging-input-sustained"},{"abort_code":"C1_PREFLIGHT_REFUSAL","bundle_id":"cal1-20261005-b-03-hierarchical-sweep","maximum_pages_input_rounded":"0","member":"131072-hier-explicit-d6-k16384-1-a1-detail.json","pages_output_rounded":"33","reason":"paging-output"},{"abort_code":"C1_RESOURCE_ABORT","bundle_id":"final-20261005-a-05-representation","maximum_pages_input_rounded":"8","member":"131072-dense-gmp-4-a1-detail.json","pages_output_rounded":"547","reason":"paging-output"},{"abort_code":"C1_PREFLIGHT_REFUSAL","bundle_id":"final-20261005-a-12-memory-scaling","maximum_pages_input_rounded":"0","member":"001024-mem-small-w04-0-a1-detail.json","pages_output_rounded":"114","reason":"paging-output"},{"abort_code":"C1_RESOURCE_ABORT","bundle_id":"manual-20261005-134907","maximum_pages_input_rounded":"138","member":"1024-affine-small-public-0-0-detail.json","pages_output_rounded":"0","reason":"paging-pressure"}]}`
 
 Source: Guard outcomes retained in the indexed local bundles; shared durable budget file.
 
@@ -833,7 +833,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"1d3e78d7f46147cac780263d065a553cb06cc01bd846ab603a34ac55875732f6","member_count":"1065","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"1d3e78d7f46147cac780263d065a553cb06cc01bd846ab603a34ac55875732f6","member_count":"1065","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -857,7 +857,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"d550bebaa37712961496040307f30fa273ffab5eae672fdada889037e364b591","member_count":"253","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"d550bebaa37712961496040307f30fa273ffab5eae672fdada889037e364b591","member_count":"253","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -869,7 +869,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"bdd75664754947e673bb9f71e1fb7fb96aa72504f9efac62d88bfd2ed3bbb467","member_count":"953","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"bdd75664754947e673bb9f71e1fb7fb96aa72504f9efac62d88bfd2ed3bbb467","member_count":"953","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -881,7 +881,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"ce46503b5f7b291a11b4f5a4ee5732a8709fef995cb2fcfdf1779606b22dc589","member_count":"379","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"ce46503b5f7b291a11b4f5a4ee5732a8709fef995cb2fcfdf1779606b22dc589","member_count":"379","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -893,7 +893,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"7210181db873d7b6813f5a4f853ebd5b4535add6142ed2453c002e432744c40e","member_count":"169","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"7210181db873d7b6813f5a4f853ebd5b4535add6142ed2453c002e432744c40e","member_count":"169","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -905,7 +905,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"8cb443a07ca59befc8f16629e5f50b55eb82905e3a781d40f2f21bb4e3b7762c","member_count":"253","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"8cb443a07ca59befc8f16629e5f50b55eb82905e3a781d40f2f21bb4e3b7762c","member_count":"253","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -917,7 +917,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"0b179b726814ae00f78c22d39a34d5b29783c75c5380b0c24e45fd76e7dedf99","member_count":"127","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"0b179b726814ae00f78c22d39a34d5b29783c75c5380b0c24e45fd76e7dedf99","member_count":"127","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -929,7 +929,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"514f682ebe091ec448df9c86a86f47c672453c219d7bae0818605edba493bdb7","member_count":"211","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"514f682ebe091ec448df9c86a86f47c672453c219d7bae0818605edba493bdb7","member_count":"211","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -941,7 +941,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"87c6a6431be9665eddcde468509ef2f20503f16efb82c747c9d5bc1779e977e9","member_count":"190","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"87c6a6431be9665eddcde468509ef2f20503f16efb82c747c9d5bc1779e977e9","member_count":"190","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -953,7 +953,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"2f57323798cedc7e10b575613d8adf14ce2245e289120a789d185ea1034b9065","member_count":"505","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"2f57323798cedc7e10b575613d8adf14ce2245e289120a789d185ea1034b9065","member_count":"505","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -965,7 +965,7 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"002cb3d7368ed31f88ce360f1aef7ee60f9da1c6a6c80113b216df468359d82f","member_count":"81","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"002cb3d7368ed31f88ce360f1aef7ee60f9da1c6a6c80113b216df468359d82f","member_count":"81","role":"retained refusal or superseded evidence; not used for selection"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 
@@ -977,7 +977,151 @@ Uncertainty: Raw records stay local; this digest binds them
 
 Class: `OBSERVED_FACT`.
 
-retained_local_bundle: `{"bundle_digest":"72a5cfc6cb6282c5b99f05e7ca01c27a44d2d1f30bd3ba216d54e54a733d4ef7","member_count":"121","role":"decision evidence"}`
+retained_local_bundle: `{"bundle_digest":"72a5cfc6cb6282c5b99f05e7ca01c27a44d2d1f30bd3ba216d54e54a733d4ef7","member_count":"121","role":"retained refusal or superseded evidence; not used for selection"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-01-route-crossover
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"39e7a104ed14b922b71f2d19455ed5199ba11fca83aa81f34e46eb0e0c7993b2","member_count":"1051","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-02-small-block-sweep
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"18405a738af71f3df1bd43671dc48d774d9cb972a6b30174b8e94c8530c7de16","member_count":"253","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-03-hierarchical-sweep
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"9e30d164477a8e8e58dafad04a0fd3f517f5583cdcb2082968478d0fef034e2e","member_count":"946","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-04-backend-multiplication
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"45597cd78cc59fe28f96ff038d3ccec4b9968c16d3c43b55c39115cde7c0c673","member_count":"379","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-05-representation
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"96a9c63d2def3d6fc24685b2c496a2d4874761e77889ba6e44dfc0fc4e89af0f","member_count":"176","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-06-allocation
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"422880827c7e99aaf2bb4d435c7d0b9401eecf2d9cb88fb0583d45b2481f9fa8","member_count":"253","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-07-compiler-build
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"53a5538adf2abfcb9e73d27af368c8fc65bbcd26d02880614502940603f493e4","member_count":"127","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-09-checkpoint-durability
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"9ab1299506378477e1369cfdc96eff163110e75c0e8b088d52e3f83e7a7cf64b","member_count":"81","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-09-checkpoint-performance
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"680cdae37e7632b21d6b0b35610876ab28900c37d547c7c81473cf80d0c87899","member_count":"121","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-10-terminal-handoff
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"06eab20bf46878a8f71b00e0bb08ac3caeebca3f5a4f92f8653021a1e2c5c73f","member_count":"211","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-11-audit-cost
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"6a1000dea62b8ee27a27365de19370e172965f609e138c8c5d1cbc6018f03303","member_count":"190","role":"decision evidence"}`
+
+Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
+
+Observation kind: active_configuration. Time: not retained.
+
+Uncertainty: Raw records stay local; this digest binds them
+
+## bundle.final-20261005-a-12-memory-scaling
+
+Class: `OBSERVED_FACT`.
+
+retained_local_bundle: `{"bundle_digest":"0e00debfbf40fd2a4fdc817c67ba4da15b2cdb351fa2a0e7fff51c4e7385e870","member_count":"512","role":"decision evidence"}`
 
 Source: I1 benchmark bundle digest over lexicographically ordered member names and raw bytes.
 

@@ -20,6 +20,7 @@ import statistics
 import sys
 
 from engineering_codec import artifact_digest, blob, canonical_bytes, self_test_vector
+from cal1_suite import validator
 from gmp_setup import ROOT
 from privacy_gate import inspect_text, validate_artifact
 
@@ -97,11 +98,16 @@ def bundle_digest(folder):
     return digest.hexdigest(), len(members)
 
 
+_CACHE = {}
+
+
 def load_records(bundle):
-    records = []
+    if bundle in _CACHE:
+        return _CACHE[bundle]
+    records = _CACHE.setdefault(bundle, [])
     for path in sorted((BUNDLES / bundle).glob('*-record.json')):
         record = json.loads(path.read_text('ascii'))
-        if artifact_digest(record) != record['artifact_digest'] or validate_artifact(record, 'record.json', ROOT):
+        if artifact_digest(record) != record['artifact_digest'] or not validator().is_valid(record):
             raise ValueError('Raw calibration record integrity failed')
         records.append(record)
     return records
@@ -134,8 +140,9 @@ class Family:
             return None, True, False
         for key in keys:
             values = sorted(self.cases[key])
-            if len(values) < 5:
+            if len(values) < 5:      # fewer than five valid measured repetitions cannot carry a timing winner
                 complete = False
+            if not values:
                 continue
             median = values[len(values)//2]
             mad = sorted(abs(v - median) for v in values)[len(values)//2]
@@ -396,7 +403,7 @@ def assemble(stage):
         'then the smallest divisor, which gives the longest terminal-safe macros and fewest scheduler iterations below that size. '
         f'Selected {choice}.',
         limitations=['This is a tie-break choice, not a measured performance winner',
-                     'A stricter reading that lets a 7 KiB live-byte difference decide would select cap 1024; a reviewer may require that',
+                     'A stricter reading that lets a few KiB of allocator live bytes decide would select cap 1024; a reviewer may require that',
                      'No claim is made about schedules or sizes outside the bounded sweep']))
     decisions.append(decision(
         did[4][0], 'Arbitrary-precision backend and multiplication route', ['arith.gmp.public', 'arith.flint.public'],
@@ -454,7 +461,8 @@ def assemble(stage):
         did[9][0], 'Checkpoint serialization strategy and cadence', f9.candidates, f9.evidence() + ['decision.checkpoint.filesystem'],
         'checkpoint.buffered' if not streaming_wins else 'checkpoint.streaming',
         ('Buffered beats streaming. ' if buffered_wins else 'Streaming beats buffered. ' if streaming_wins else
-         'Neither strategy beats the other under the stated rule (flush-dominated and noisy classes). ')
+         'Neither strategy beats the other under the stated rule: filesystem cases have one warm-up and three measured '
+         'repetitions under I1, fewer than the five a timing winner requires, and the classes are flush-dominated. ')
         + json.dumps(f9.table(), sort_keys=True) + '. Both strategies passed the complete interruption matrix. '
         + ('' if buffered_wins or streaming_wins else 'Tie-break: the buffered path writes one fully formed body and is the smaller correctness surface. ')
         + 'Cadence: a promotion at the first macro boundary after 600 seconds since the previous one, and always at the terminal state; '

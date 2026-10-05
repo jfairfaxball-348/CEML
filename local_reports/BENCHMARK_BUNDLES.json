@@ -19,7 +19,7 @@
       "member_count": "1065",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.01.route-crossover"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -39,7 +39,7 @@
       "member_count": "253",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.02.small-block-sweep"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -49,7 +49,7 @@
       "member_count": "953",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.03.hierarchical-sweep"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -59,7 +59,7 @@
       "member_count": "379",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.04.backend-multiplication"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -69,7 +69,7 @@
       "member_count": "169",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.05.representation"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -79,7 +79,7 @@
       "member_count": "253",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.06.allocation"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -89,7 +89,7 @@
       "member_count": "127",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.07.compiler-build"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -99,7 +99,7 @@
       "member_count": "211",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.10.terminal-handoff"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -109,7 +109,7 @@
       "member_count": "190",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.11.audit-cost"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -119,7 +119,7 @@
       "member_count": "505",
       "retained_local": true,
       "decision_ids": [
-        "decision.matrix.12.memory-scaling"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -129,7 +129,7 @@
       "member_count": "81",
       "retained_local": true,
       "decision_ids": [
-        "decision.checkpoint.filesystem"
+        "decision.resource-ceilings-v2"
       ]
     },
     {
@@ -139,7 +139,127 @@
       "member_count": "121",
       "retained_local": true,
       "decision_ids": [
+        "decision.resource-ceilings-v2"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-01-route-crossover",
+      "bundle_digest": "39e7a104ed14b922b71f2d19455ed5199ba11fca83aa81f34e46eb0e0c7993b2",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-01-route-crossover/",
+      "member_count": "1051",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.01.route-crossover"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-02-small-block-sweep",
+      "bundle_digest": "18405a738af71f3df1bd43671dc48d774d9cb972a6b30174b8e94c8530c7de16",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-02-small-block-sweep/",
+      "member_count": "253",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.02.small-block-sweep"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-03-hierarchical-sweep",
+      "bundle_digest": "9e30d164477a8e8e58dafad04a0fd3f517f5583cdcb2082968478d0fef034e2e",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-03-hierarchical-sweep/",
+      "member_count": "946",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.03.hierarchical-sweep"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-04-backend-multiplication",
+      "bundle_digest": "45597cd78cc59fe28f96ff038d3ccec4b9968c16d3c43b55c39115cde7c0c673",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-04-backend-multiplication/",
+      "member_count": "379",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.04.backend-multiplication"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-05-representation",
+      "bundle_digest": "96a9c63d2def3d6fc24685b2c496a2d4874761e77889ba6e44dfc0fc4e89af0f",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-05-representation/",
+      "member_count": "176",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.05.representation"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-06-allocation",
+      "bundle_digest": "422880827c7e99aaf2bb4d435c7d0b9401eecf2d9cb88fb0583d45b2481f9fa8",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-06-allocation/",
+      "member_count": "253",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.06.allocation"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-07-compiler-build",
+      "bundle_digest": "53a5538adf2abfcb9e73d27af368c8fc65bbcd26d02880614502940603f493e4",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-07-compiler-build/",
+      "member_count": "127",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.07.compiler-build"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-09-checkpoint-durability",
+      "bundle_digest": "9ab1299506378477e1369cfdc96eff163110e75c0e8b088d52e3f83e7a7cf64b",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-09-checkpoint-durability/",
+      "member_count": "81",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.checkpoint.filesystem"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-09-checkpoint-performance",
+      "bundle_digest": "680cdae37e7632b21d6b0b35610876ab28900c37d547c7c81473cf80d0c87899",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-09-checkpoint-performance/",
+      "member_count": "121",
+      "retained_local": true,
+      "decision_ids": [
         "decision.matrix.09.checkpoint"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-10-terminal-handoff",
+      "bundle_digest": "06eab20bf46878a8f71b00e0bb08ac3caeebca3f5a4f92f8653021a1e2c5c73f",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-10-terminal-handoff/",
+      "member_count": "211",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.10.terminal-handoff"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-11-audit-cost",
+      "bundle_digest": "6a1000dea62b8ee27a27365de19370e172965f609e138c8c5d1cbc6018f03303",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-11-audit-cost/",
+      "member_count": "190",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.11.audit-cost"
+      ]
+    },
+    {
+      "bundle_id": "final-20261005-a-12-memory-scaling",
+      "bundle_digest": "0e00debfbf40fd2a4fdc817c67ba4da15b2cdb351fa2a0e7fff51c4e7385e870",
+      "logical_locator": "local/c1/benchmark_bundles/final-20261005-a-12-memory-scaling/",
+      "member_count": "512",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.matrix.12.memory-scaling"
       ]
     },
     {
@@ -153,5 +273,5 @@
       ]
     }
   ],
-  "artifact_digest": "4b26858e0a27385784ea5150c41e2926a7cb8f3120d1e44ed0924007c13ff558"
+  "artifact_digest": "011638c295febd18dbc055639bf4556390aa6e3addf8a82aab45335ec09026d2"
 }

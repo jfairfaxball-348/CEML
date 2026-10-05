@@ -36,8 +36,10 @@ by this adapter:
 
 ## Current gate (summary only; `PROGRAM_STATUS.md` governs)
 
-C1 — local hardware audit and implementation — is open. R1, R2, R3, R4 and I1
-passed. V1 and E1 are not entered. Scientific execution and scientific
+C1 — local hardware audit and implementation — produced its package and
+stopped for operator review (see `docs/C1_COMPLETION.md`). R1, R2, R3, R4 and
+I1 passed. V1 and E1 are not entered; `docs/V1_HANDOVER_PROMPT.md` is inactive
+until a reviewed status transition names V1. Scientific execution and scientific
 master-seed generation are denied.
 
 Mandatory C1 order (I1 section 1):

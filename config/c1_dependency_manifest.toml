@@ -1,0 +1,44 @@
+# CEML dependency manifest (I1 section 9, second lock layer).
+# Referenced by local_reports/BUILD_MANIFEST.json. The exact package, source
+# and tool content pins are in config/c1_gmp_pin.toml (first layer).
+manifest_version = "CEML-C1-DEPENDENCY-MANIFEST-1"
+stage = "implementation"
+network_at_build_time = "prohibited; only the explicit acquire command may fetch"
+cache = "content-addressed local cache local/c1/cache/sha256/<sha256>/<archive name>, ignored by Git"
+
+[[component]]
+name = "GMP"
+version = "6.3.0"
+distribution_release = "6.3.0-2"
+role = "exact arbitrary-precision integer arithmetic"
+interface = "documented public C mpz functions plus mp_set_memory_functions and mp_get_memory_functions; no structure fields, no mpn or internal symbols"
+source_channel = "MSYS2 UCRT64 binary package from the official mirror"
+package_archive = "mingw-w64-ucrt-x86_64-gmp-6.3.0-2-any.pkg.tar.zst"
+package_sha256 = "e82a75968a556484a50084578238a84eb60fb93e34986fd6695c537975bd39ea"
+source_archive = "mingw-w64-gmp-6.3.0-2.src.tar.zst"
+source_sha256 = "f288f944fd9609db220bcf6a8dd0703a5674eeb906ef35eb8485bb8192135994"
+library_file = "libgmp-10.dll"
+library_sha3_256 = "3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf"
+header_sha3_256 = "69f6f7fa09466586c737a404a41b07f9b432fdbe61e64a479e03b6b2f19413bc"
+build_options = "prebuilt distribution shared library; not rebuilt locally; package recipe provenance retained with the source archive"
+link_mode = "dynamic; import library generated locally from the public export subset"
+abi = "x86_64 LLP64; 64-bit limbs; zero nail bits; 32-bit bit counts"
+wrapper = "none"
+license = "LGPL-3.0-or-later OR GPL-2.0-or-later"
+provenance_note = "Published binary checksum verified. Source archive authenticity rests on the official HTTPS channel; no independent signature verification is claimed."
+
+[[component]]
+name = "Microsoft C toolchain"
+version = "MSVC tools 14.44.35207 with Windows SDK 10.0.26100.0"
+role = "C17 compiler, linker, librarian and dynamic C runtime"
+source_channel = "installed local toolchain; compiler, linker and librarian binaries pinned by content digest in config/c1_gmp_pin.toml"
+link_mode = "dynamic C runtime"
+license = "Microsoft toolchain license terms"
+provenance_note = "The SDK headers, import libraries and runtime are identified by version, not by content digest."
+
+[[component]]
+name = "Python and zstandard"
+version = "Python 3.12.10 with zstandard 0.25.0"
+role = "build driver and archive extraction only; not part of the engine executable"
+source_channel = "installed local interpreter and module; versions enforced by the offline build"
+license = "PSF-2.0 and BSD-3-Clause"

@@ -1,8 +1,8 @@
 {
   "experiment": "CEML",
   "schema_version": "CEML-HARDWARE-REPORT-1",
-  "audit_run_id": "c1-20261004-a",
-  "generated_at": "2026-10-05T07:05:45Z",
+  "audit_run_id": "c1-20261005-post-setup",
+  "generated_at": "2026-10-05T12:35:30Z",
   "records": [
     {
       "record_class": "OBSERVED_FACT",
@@ -15,14 +15,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected Caption",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.299Z"
+      "observed_at": "2026-10-05T12:16:13.802Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -35,14 +35,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected Version",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.305Z"
+      "observed_at": "2026-10-05T12:16:13.806Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -55,14 +55,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected BuildNumber",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.306Z"
+      "observed_at": "2026-10-05T12:16:13.807Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -75,14 +75,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected OSArchitecture",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.307Z"
+      "observed_at": "2026-10-05T12:16:13.808Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -95,14 +95,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected TotalVisibleMemorySize",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Provider-reported value; virtual-memory fields are not physical RAM capacity.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.313Z"
+      "observed_at": "2026-10-05T12:16:13.813Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -110,19 +110,19 @@
       "category": "memory",
       "fact_name": "FreePhysicalMemory",
       "value": {
-        "value": "6395804",
+        "value": "6772324",
         "units": "KiB"
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected FreePhysicalMemory",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "Provider-reported value; virtual-memory fields are not physical RAM capacity.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.314Z"
+      "observed_at": "2026-10-05T12:16:13.814Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -135,14 +135,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected TotalVirtualMemorySize",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Provider-reported value; virtual-memory fields are not physical RAM capacity.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.315Z"
+      "observed_at": "2026-10-05T12:16:13.815Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -150,19 +150,19 @@
       "category": "memory",
       "fact_name": "FreeVirtualMemory",
       "value": {
-        "value": "7455440",
+        "value": "7190996",
         "units": "KiB"
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected FreeVirtualMemory",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "Provider-reported value; virtual-memory fields are not physical RAM capacity.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.316Z"
+      "observed_at": "2026-10-05T12:16:13.816Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -175,14 +175,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected SizeStoredInPagingFiles",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Provider-reported value; virtual-memory fields are not physical RAM capacity.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.316Z"
+      "observed_at": "2026-10-05T12:16:13.817Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -190,19 +190,19 @@
       "category": "memory",
       "fact_name": "FreeSpaceInPagingFiles",
       "value": {
-        "value": "1062080",
+        "value": "1055856",
         "units": "KiB"
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_OperatingSystem selected FreeSpaceInPagingFiles",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "Provider-reported value; virtual-memory fields are not physical RAM capacity.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.317Z"
+      "observed_at": "2026-10-05T12:16:13.818Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -215,14 +215,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_Processor selected Manufacturer; enumerated entry 0",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "static_capability",
       "uncertainty": "Enumeration position is not a persistent processor identity.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.333Z"
+      "observed_at": "2026-10-05T12:16:13.833Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -235,14 +235,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_Processor selected Name; enumerated entry 0",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "static_capability",
       "uncertainty": "Enumeration position is not a persistent processor identity.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.334Z"
+      "observed_at": "2026-10-05T12:16:13.834Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -255,14 +255,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_Processor selected NumberOfCores; enumerated entry 0",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "static_capability",
       "uncertainty": "Provider-reported capability; does not establish active frequency, instruction use or topology.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.337Z"
+      "observed_at": "2026-10-05T12:16:13.837Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -275,14 +275,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_Processor selected NumberOfLogicalProcessors; enumerated entry 0",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "static_capability",
       "uncertainty": "Provider-reported capability; does not establish active frequency, instruction use or topology.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.338Z"
+      "observed_at": "2026-10-05T12:16:13.838Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -295,14 +295,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_Processor selected MaxClockSpeed; enumerated entry 0",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "static_capability",
       "uncertainty": "Provider-reported capability; does not establish active frequency, instruction use or topology.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:08.339Z"
+      "observed_at": "2026-10-05T12:16:13.839Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -315,14 +315,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "Get-Volume for repository checkpoint filesystem; selected FileSystemType",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Observed volume class alone does not establish CEML-CKPT-1 durability.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:09.827Z"
+      "observed_at": "2026-10-05T12:16:16.461Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -335,14 +335,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "Get-Volume for repository checkpoint filesystem; selected DriveType",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Observed volume class alone does not establish CEML-CKPT-1 durability.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:09.828Z"
+      "observed_at": "2026-10-05T12:16:16.463Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -355,14 +355,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "Get-Volume for repository checkpoint filesystem; selected Size",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:09.829Z"
+      "observed_at": "2026-10-05T12:16:16.464Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -370,19 +370,19 @@
       "category": "checkpoint_storage",
       "fact_name": "SizeRemaining",
       "value": {
-        "value": "208097054720",
+        "value": "209086918656",
         "units": "bytes"
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "Get-Volume for repository checkpoint filesystem; selected SizeRemaining",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:09.831Z"
+      "observed_at": "2026-10-05T12:16:16.465Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -395,14 +395,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "Get-Volume for repository checkpoint filesystem; selected AllocationUnitSize",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:09.832Z"
+      "observed_at": "2026-10-05T12:16:16.466Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -415,14 +415,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "GetSystemPowerStatus; ACLineStatus only retained",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.208Z"
+      "observed_at": "2026-10-05T12:16:16.813Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -435,14 +435,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "GetPhysicallyInstalledSystemMemory",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "static_capability",
       "uncertainty": "API-reported installed capacity, distinct from OS-visible or available memory.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.213Z"
+      "observed_at": "2026-10-05T12:16:16.816Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -455,14 +455,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "System.Environment.SystemPageSize",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "static_capability",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.214Z"
+      "observed_at": "2026-10-05T12:16:16.817Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -475,14 +475,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "System.IntPtr.Size",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.215Z"
+      "observed_at": "2026-10-05T12:16:16.818Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -495,14 +495,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "powercfg query current sleep policy STANDBYIDLE; normalized AC index only",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Zero means no idle timeout for this setting; other sleep triggers and power-loss risk are not assessed.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.256Z"
+      "observed_at": "2026-10-05T12:16:16.856Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -515,14 +515,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "powercfg query current sleep policy STANDBYIDLE; normalized DC index only",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Zero means no idle timeout for this setting; other sleep triggers and power-loss risk are not assessed.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.257Z"
+      "observed_at": "2026-10-05T12:16:16.857Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -535,14 +535,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "powercfg query current sleep policy HIBERNATEIDLE; normalized AC index only",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Zero means no idle timeout for this setting; other sleep triggers and power-loss risk are not assessed.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.276Z"
+      "observed_at": "2026-10-05T12:16:16.877Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -555,14 +555,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "powercfg query current sleep policy HIBERNATEIDLE; normalized DC index only",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Zero means no idle timeout for this setting; other sleep triggers and power-loss risk are not assessed.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.277Z"
+      "observed_at": "2026-10-05T12:16:16.877Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -570,19 +570,19 @@
       "category": "memory",
       "fact_name": "AvailableBytes",
       "value": {
-        "value": "6430892032",
+        "value": "6775320576",
         "units": "bytes"
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_PerfFormattedData_PerfOS_Memory selected AvailableBytes",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "Single provider-formatted sample; paging includes file-backed activity and does not establish sustained swap pressure.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.871Z"
+      "observed_at": "2026-10-05T12:16:22.616Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -590,19 +590,19 @@
       "category": "memory",
       "fact_name": "PagesInputPersec",
       "value": {
-        "value": "81",
+        "value": "0",
         "units": "pages_per_second"
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_PerfFormattedData_PerfOS_Memory selected PagesInputPersec",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "Single provider-formatted sample; paging includes file-backed activity and does not establish sustained swap pressure.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.872Z"
+      "observed_at": "2026-10-05T12:16:22.617Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -615,14 +615,14 @@
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_PerfFormattedData_PerfOS_Memory selected PagesOutputPersec",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "Single provider-formatted sample; paging includes file-backed activity and does not establish sustained swap pressure.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.881Z"
+      "observed_at": "2026-10-05T12:16:22.627Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -630,19 +630,19 @@
       "category": "memory",
       "fact_name": "PageReadsPersec",
       "value": {
-        "value": "11",
+        "value": "0",
         "units": "read_operations_per_second"
       },
       "source_adapter": "windows-minimized-v1",
       "source_method": "CIM Win32_PerfFormattedData_PerfOS_Memory selected PageReadsPersec",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
       "uncertainty": "Single provider-formatted sample; paging includes file-backed activity and does not establish sustained swap pressure.",
       "sanitization": [
         "Explicit property selection; no raw inventory persisted.",
         "Paths and identifying provider metadata excluded."
       ],
-      "observed_at": "2026-10-04T19:10:10.882Z"
+      "observed_at": "2026-10-05T12:16:22.628Z"
     },
     {
       "record_class": "UNAVAILABLE_OR_UNSUPPORTED",
@@ -829,13 +829,13 @@
       },
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Get-Command for named I1 candidates only",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Absence from command search does not prove absence from the machine",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.5990774Z"
+      "observed_at": "2026-10-05T12:16:23.0603303Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -845,13 +845,13 @@
       "value": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Resolved Application version query; automatic toolchain acquisition disabled",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Version availability is not an offline rebuild proof",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.6756464Z"
+      "observed_at": "2026-10-05T12:16:23.1207408Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -861,13 +861,13 @@
       "value": "cargo 1.97.1 (c980f4866 2026-06-30)",
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Resolved Application version query; automatic toolchain acquisition disabled",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Version availability is not an offline rebuild proof",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.7259971Z"
+      "observed_at": "2026-10-05T12:16:23.1706668Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -877,13 +877,13 @@
       "value": "Python 3.12.10",
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Resolved Application version query; automatic toolchain acquisition disabled",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Version availability is not an offline rebuild proof",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.7465369Z"
+      "observed_at": "2026-10-05T12:16:23.1892369Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -893,13 +893,13 @@
       "value": "x86_64-pc-windows-msvc",
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Resolved rustc verbose version; host field only",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "No production candidate compiled",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.7995469Z"
+      "observed_at": "2026-10-05T12:16:23.2480535Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -912,13 +912,13 @@
       },
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Named rug and gmp-mpfr-sys entries in configured/default Cargo registry source/package caches",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "No unrelated package names or cache paths collected; alternate caches not excluded; null means unavailable, not zero",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.8226750Z"
+      "observed_at": "2026-10-05T12:16:23.2670717Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -933,13 +933,13 @@
       },
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Selected executable file-version fields located using the Visual C++ component query",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Toolchain environment not activated; executable metadata does not establish successful compilation, linking or offline rebuild",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.9161035Z"
+      "observed_at": "2026-10-05T12:16:23.3555867Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -954,13 +954,13 @@
       },
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Selected executable file-version fields located using the Visual C++ component query",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Toolchain environment not activated; executable metadata does not establish successful compilation, linking or offline rebuild",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.9177295Z"
+      "observed_at": "2026-10-05T12:16:23.3565607Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -975,21 +975,21 @@
       },
       "source_adapter": "windows-narrow-tool-discovery",
       "source_method": "Existence probes for named development-package header locators only",
-      "audit_run_id": "c1-20261004-a",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
       "uncertainty": "Not a whole-machine search; headers alone would not establish library compatibility or provenance",
       "sanitization": [
         "Only selected versions, counts and availability are emitted; locator paths omitted"
       ],
-      "observed_at": "2026-10-05T07:05:44.9206674Z"
+      "observed_at": "2026-10-05T12:16:23.3587849Z"
     },
     {
       "record_class": "UNAVAILABLE_OR_UNSUPPORTED",
       "record_id": "tools.gmp-unavailable",
       "category": "toolchain",
-      "requested_item": "I1-eligible GMP development package and offline source/package inputs",
+      "requested_item": "I1-eligible GMP development package at the standard external locators",
       "attempted_method": "Named development-package header locators and Cargo candidate cache probes",
-      "reason": "No usable package established within the checked scope; no download, installation, replacement or activation authorized",
+      "reason": "No usable package established within these locators; repository-local acquired candidates require their own package and build evidence",
       "downstream_effects": [
         "Decisions requiring this fact remain unsupported; no production stack is selected by this adapter"
       ]
@@ -1007,65 +1007,599 @@
     },
     {
       "record_class": "OBSERVED_FACT",
-      "record_id": "initial.resource-observation",
+      "record_id": "dependency.pre-setup",
       "category": "resource_safety",
-      "fact_name": "initial_selected_resource_fields",
+      "fact_name": "before_setup_resource_snapshot",
       "value": {
-        "installed_memory_bytes": "17179869184",
-        "os_visible_memory_bytes": "16866881536",
-        "free_physical_memory_bytes": "5730615296",
-        "free_target_storage_bytes": "208232972288",
-        "later_available_bytes": "5612523520",
-        "pages_input_per_second": "1566",
-        "pages_output_per_second": "0",
-        "page_reads_per_second": "948",
-        "ac_connected": true,
-        "standby_ac_seconds": "0",
-        "standby_dc_seconds": "0",
-        "hibernate_ac_seconds": "0",
-        "hibernate_dc_seconds": "0"
+        "obs.power.source": {
+          "value": "AC",
+          "units": "class"
+        },
+        "obs.power.standby.AC": {
+          "value": "0",
+          "units": "seconds"
+        },
+        "obs.power.standby.DC": {
+          "value": "0",
+          "units": "seconds"
+        },
+        "obs.power.hibernate.AC": {
+          "value": "0",
+          "units": "seconds"
+        },
+        "obs.power.hibernate.DC": {
+          "value": "0",
+          "units": "seconds"
+        },
+        "obs.memory.performance.AvailableBytes": {
+          "value": "6691520512",
+          "units": "bytes"
+        },
+        "obs.memory.performance.PagesInputPersec": {
+          "value": "0",
+          "units": "pages_per_second"
+        },
+        "obs.memory.performance.PagesOutputPersec": {
+          "value": "0",
+          "units": "pages_per_second"
+        },
+        "obs.memory.performance.PageReadsPersec": {
+          "value": "0",
+          "units": "read_operations_per_second"
+        }
       },
-      "source_adapter": "c1-initial-session",
-      "source_method": "Initial field-selective CIM, target-volume, kernel32 power/installed-memory APIs and filtered powercfg indices before dependency discovery",
-      "audit_run_id": "c1-20261004-a",
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Narrow Windows collector before acquisition and compilation",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "momentary_state",
-      "uncertainty": "Two successive initial snapshots, distinct from later collector samples; exact timestamps not retained; paging includes mapped-file activity",
+      "uncertainty": "Transient conditions; initial calibration ceilings remain in force",
       "sanitization": [
-        "Only explicitly permitted fields retained; paths and identifiers excluded"
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
       ],
       "observed_at": null
     },
     {
       "record_class": "OBSERVED_FACT",
-      "record_id": "initial.authorization",
+      "record_id": "dependency.authorization",
       "category": "authorization",
-      "fact_name": "verified_local_main_baseline",
-      "value": "e2148e47f4cc71ba33bfc5c05140d2adef32f479",
-      "source_adapter": "c1-initial-session",
-      "source_method": "git status, git log main and merge-base ancestry; controlling-document read",
-      "audit_run_id": "c1-20261004-a",
+      "fact_name": "dependency_setup_authorized",
+      "value": true,
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Explicit operator message on 2026-10-05 authorizing installation, builds and required setup",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
-      "uncertainty": "Local main and local remote-tracking state inspected; no network fetch performed",
+      "uncertainty": "Authorization persists; it does not authorize scientific work or production selection",
       "sanitization": [
-        "Only explicitly permitted fields retained; paths and identifiers excluded"
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
       ],
       "observed_at": null
     },
     {
       "record_class": "OBSERVED_FACT",
-      "record_id": "tools.jsonschema",
+      "record_id": "dependency.acquisition",
       "category": "toolchain",
-      "fact_name": "jsonschema_version",
-      "value": "4.26.0",
-      "source_adapter": "c1-initial-session",
-      "source_method": "Existing Python importlib.metadata version query",
-      "audit_run_id": "c1-20261004-a",
+      "fact_name": "acquisition",
+      "value": {
+        "stage": "hardware characterization",
+        "observed_at": "2026-10-05T12:10:10Z",
+        "binary": {
+          "name": "mingw-w64-ucrt-x86_64-gmp-6.3.0-2-any.pkg.tar.zst",
+          "url": "https://mirror.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-gmp-6.3.0-2-any.pkg.tar.zst",
+          "sha256": "e82a75968a556484a50084578238a84eb60fb93e34986fd6695c537975bd39ea",
+          "sha3_256": "f9657bbd612ff84b5c23df35ac5b1eec5977bc0e7ac45ea6accfb378316c16f5",
+          "bytes": "592359"
+        },
+        "source": {
+          "name": "mingw-w64-gmp-6.3.0-2.src.tar.zst",
+          "url": "https://mirror.msys2.org/mingw/sources/mingw-w64-gmp-6.3.0-2.src.tar.zst",
+          "sha256": "f288f944fd9609db220bcf6a8dd0703a5674eeb906ef35eb8485bb8192135994",
+          "sha3_256": "88453154634288954d97c875b6358d2c76f50d787346055fbffdff03d49471e2",
+          "bytes": "2097066"
+        },
+        "source_authentication": "Official HTTPS channel; no independent signature verification claimed"
+      },
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Explicit acquisition, safe archive inspection, public C compile/link and fixed arithmetic capability probe",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
-      "uncertainty": "Audit schema checker only; no dependency installation",
+      "uncertainty": "Engineering candidate evidence only; offline production toolchain closure and stack selection remain open",
       "sanitization": [
-        "Only explicitly permitted fields retained; paths and identifiers excluded"
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
       ],
-      "observed_at": "2026-10-05T07:05:45Z"
+      "observed_at": "2026-10-05T12:10:10Z"
+    },
+    {
+      "record_class": "OBSERVED_FACT",
+      "record_id": "dependency.source-provenance",
+      "category": "toolchain",
+      "fact_name": "source_provenance",
+      "value": {
+        "stage": "hardware characterization",
+        "observed_at": "2026-10-05T12:14:38Z",
+        "source_material": {
+          "do-not-use-dllimport.diff": {
+            "sha256": "385ab704f82c47f3aecc9141f43c96e7b8de2bf0e654dc457ce0f1a039db2c68",
+            "sha3_256": "a202ea7c81081dd75ac22ce22bbf5d072232a3ae32520e6b9b0d02e2e4f957db",
+            "bytes": "491"
+          },
+          "gmp-6.3.0.tar.xz": {
+            "sha256": "a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898",
+            "sha3_256": "025f4fc3c5f68a0faae40cb8579dc7979eded558edfbc58ac030a072a6b5a6e7",
+            "bytes": "2094196"
+          },
+          "gmp-6.3.0.tar.xz.sig": {
+            "sha256": "94def8c1a731854de684689126046ec93589147abd4cd0025f12d741d323aa82",
+            "sha3_256": "6dc5910b7b96baef21728c41be93df2d9131e28027cf6f5b7ddcc69bacaf1ebe",
+            "bytes": "374"
+          },
+          "gmp-staticlib.diff": {
+            "sha256": "7c3cde2634baa2cb1c31404bbfed2d8d7ba33556971ac842a08f2e87667849ab",
+            "sha3_256": "502e12f8b86aff5e2a4e1968463c77c9c7356427351c160d63f85ab145fdf787",
+            "bytes": "900"
+          },
+          "PKGBUILD": {
+            "sha256": "b9d3bb2b5b12cb0fc47c4dc17a9a2aa82513236eaefa34c8dfc57dd0d92bc42a",
+            "sha3_256": "c994b704be0e79587f0c513ed385609349966f0461b445d30287364a575e0ef2",
+            "bytes": "2288"
+          },
+          "COPYING": {
+            "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+            "sha3_256": "040444d59237d8142345043e4aec153ef10c8291c8932e5f9e1eba6e791e71e7",
+            "bytes": "35147"
+          },
+          "COPYINGv2": {
+            "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+            "sha3_256": "32fac3e90cdea91b37289b9ca09d781a364bf22864e52d5c5d6a6fa40080be17",
+            "bytes": "18092"
+          },
+          "COPYINGv3": {
+            "sha256": "e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195",
+            "sha3_256": "dafc0b870e82d76b16cbcc06bf994a031619b8bba9f7498dbfd6888f287f10c1",
+            "bytes": "35150"
+          },
+          "COPYING.LESSERv3": {
+            "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+            "sha3_256": "8dac4a2dd3799d07bec9dd706b109a40286d4ba7c6cd21d51b35d6bffb3ec83e",
+            "bytes": "7639"
+          }
+        },
+        "upstream_archive_matches_distribution_recipe": true
+      },
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Explicit acquisition, safe archive inspection, public C compile/link and fixed arithmetic capability probe",
+      "audit_run_id": "c1-20261005-post-setup",
+      "source_state_kind": "active_configuration",
+      "uncertainty": "Engineering candidate evidence only; offline production toolchain closure and stack selection remain open",
+      "sanitization": [
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
+      ],
+      "observed_at": "2026-10-05T12:14:38Z"
+    },
+    {
+      "record_class": "OBSERVED_FACT",
+      "record_id": "dependency.probe-build",
+      "category": "toolchain",
+      "fact_name": "probe_build",
+      "value": {
+        "stage": "hardware characterization",
+        "observed_at": "2026-10-05T12:14:00Z",
+        "offline": false,
+        "package_sha256": "e82a75968a556484a50084578238a84eb60fb93e34986fd6695c537975bd39ea",
+        "header": {
+          "sha256": "178db66910305eed62d2d3fdd1f203a45febaa2aaa64690b608c7d95f2a1a3cc",
+          "sha3_256": "69f6f7fa09466586c737a404a41b07f9b432fdbe61e64a479e03b6b2f19413bc",
+          "bytes": "84402"
+        },
+        "dll": {
+          "sha256": "c2567ccf3f410c3411ba7cd4b7ba14f393a0e70a1d0c0593297df6706b5fba96",
+          "sha3_256": "3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf",
+          "bytes": "681231"
+        },
+        "definition": {
+          "sha256": "a4c424976559f5a12312f3c2c5fc35249f997a74dd649c35e938147d26882b8d",
+          "sha3_256": "802a861d30f6ecd6141d829e004422b386088449b67ccf39c4e01b6a3d323a58",
+          "bytes": "2731"
+        },
+        "import_library": {
+          "sha256": "9760887ab67cfb63990c64c776745c6c1b35a355adef8d3f8c16dfeada99f75b",
+          "sha3_256": "466b597c4222446daf0446274738294521690a9d4d24d7331fcc127f27d29b58",
+          "bytes": "35754"
+        },
+        "source": {
+          "sha256": "71db457cd7d39d80736b1b2d26fa470560f295e5a2a98e1470523fa3738f8f52",
+          "sha3_256": "d09b5456e9952967c0f347f0ae7ecf92a2400c086d39d53c396ddded1a84072e",
+          "bytes": "2722"
+        },
+        "executable": {
+          "sha256": "e13bc9d24cd8ad3bdf80214642f795e03ba6955bacf9bc4ddff69bf1e420dee8",
+          "sha3_256": "83642cac3a3c6b92b5b64e6fe5b7a2bb9227de600ea5c6b244b258dc33a5ec83",
+          "bytes": "12800"
+        },
+        "compiler_flags": [
+          "-nologo",
+          "-std:c17",
+          "-W4",
+          "-WX",
+          "-O2",
+          "-MD",
+          "-D_CRT_SECURE_NO_WARNINGS",
+          "-Brepro",
+          "-external:I.",
+          "-external:W0"
+        ],
+        "linker_flags": [
+          "-Brepro"
+        ],
+        "toolchain": {
+          "msvc_tools_version": "14.44.35207",
+          "windows_sdk_version": "10.0.26100.0",
+          "target": "x86_64-pc-windows-msvc",
+          "abi": "LLP64",
+          "linkage": "dynamic-GMP-and-UCRT",
+          "tool_bytes": {
+            "cl.exe": {
+              "sha256": "88c8344236a27a6e727e0a8edc49aaa2690bdc7a9464b9d18cc7abe70a9f1c0d",
+              "sha3_256": "66a0ad5274cfed76c1c33323612280e4066a09afc59b3af8bb4497b090a795a9",
+              "bytes": "677736"
+            },
+            "link.exe": {
+              "sha256": "ca11e6c45debd34bf652dfe984c5360a531a005ed78bf72852330c9c2590cf0d",
+              "sha3_256": "22c20f3744d0e11af1b1a92e481bb1dea13083c7af6164ca4fb6ddc0a053338e",
+              "bytes": "3252576"
+            },
+            "lib.exe": {
+              "sha256": "3d694c782f93e998fec5db0c2df78153565da23a028ee4618561fa0c33408489",
+              "sha3_256": "d907b67a6f37ff537e1297fefd6a23ebe605b74a3c00a3b855e4838e045b9fdc",
+              "bytes": "23376"
+            },
+            "c1.dll": {
+              "sha256": "48bb561939cfd8fbf194bb73b111b2083912da4fb81af2c181cbe8f4b89e5ad1",
+              "sha3_256": "4e6736cb20af2cadd2734075bf528cdd1132393133a366dd06932b59428b152f",
+              "bytes": "3430200"
+            },
+            "c2.dll": {
+              "sha256": "98050f97d60f7e95fcaf3525a7103e4818fba498a43563922476819ce88ed162",
+              "sha3_256": "a5cdf00c3fae9e7c7d00de3b7f80ab9fb69fa5e65ebc1d648c95f805e3e021f5",
+              "bytes": "10462008"
+            }
+          }
+        },
+        "dll_imports": [
+          "KERNEL32.dll",
+          "api-ms-win-crt-convert-l1-1-0.dll",
+          "api-ms-win-crt-environment-l1-1-0.dll",
+          "api-ms-win-crt-filesystem-l1-1-0.dll",
+          "api-ms-win-crt-heap-l1-1-0.dll",
+          "api-ms-win-crt-locale-l1-1-0.dll",
+          "api-ms-win-crt-private-l1-1-0.dll",
+          "api-ms-win-crt-runtime-l1-1-0.dll",
+          "api-ms-win-crt-stdio-l1-1-0.dll",
+          "api-ms-win-crt-string-l1-1-0.dll",
+          "api-ms-win-crt-time-l1-1-0.dll",
+          "api-ms-win-crt-utility-l1-1-0.dll"
+        ],
+        "executable_imports": [
+          "KERNEL32.dll",
+          "VCRUNTIME140.dll",
+          "api-ms-win-crt-heap-l1-1-0.dll",
+          "api-ms-win-crt-locale-l1-1-0.dll",
+          "api-ms-win-crt-math-l1-1-0.dll",
+          "api-ms-win-crt-runtime-l1-1-0.dll",
+          "api-ms-win-crt-stdio-l1-1-0.dll",
+          "api-ms-win-crt-string-l1-1-0.dll",
+          "libgmp-10.dll"
+        ],
+        "public_export_count": "170"
+      },
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Explicit acquisition, safe archive inspection, public C compile/link and fixed arithmetic capability probe",
+      "audit_run_id": "c1-20261005-post-setup",
+      "source_state_kind": "active_configuration",
+      "uncertainty": "Engineering candidate evidence only; offline production toolchain closure and stack selection remain open",
+      "sanitization": [
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
+      ],
+      "observed_at": "2026-10-05T12:14:00Z"
+    },
+    {
+      "record_class": "OBSERVED_FACT",
+      "record_id": "dependency.probe-smoke",
+      "category": "toolchain",
+      "fact_name": "probe_smoke",
+      "value": {
+        "stage": "hardware characterization",
+        "observed_at": "2026-10-05T12:14:00Z",
+        "offline": false,
+        "executable_sha3_256": "83642cac3a3c6b92b5b64e6fe5b7a2bb9227de600ea5c6b244b258dc33a5ec83",
+        "result": {
+          "ok": true,
+          "runtime_version": "6.3.0",
+          "header_version": "6.3.0",
+          "pointer_bytes": "8",
+          "long_bytes": "4",
+          "limb_bytes": "8",
+          "limb_bits": "64",
+          "nail_bits": "0",
+          "export_bytes": "25",
+          "product_decimal": "12193263113702179522618503273362292333223746380111126352690",
+          "roundtrip_equal": true,
+          "dll_beside_executable": true
+        },
+        "reference": "Independent Python integer product of two fixed decimal operands; no transition"
+      },
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Explicit acquisition, safe archive inspection, public C compile/link and fixed arithmetic capability probe",
+      "audit_run_id": "c1-20261005-post-setup",
+      "source_state_kind": "active_configuration",
+      "uncertainty": "Engineering candidate evidence only; offline production toolchain closure and stack selection remain open",
+      "sanitization": [
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
+      ],
+      "observed_at": "2026-10-05T12:14:00Z"
+    },
+    {
+      "record_class": "OBSERVED_FACT",
+      "record_id": "dependency.offline-build",
+      "category": "toolchain",
+      "fact_name": "offline_build",
+      "value": {
+        "stage": "hardware characterization",
+        "observed_at": "2026-10-05T12:27:12Z",
+        "offline": true,
+        "package_sha256": "e82a75968a556484a50084578238a84eb60fb93e34986fd6695c537975bd39ea",
+        "header": {
+          "sha256": "178db66910305eed62d2d3fdd1f203a45febaa2aaa64690b608c7d95f2a1a3cc",
+          "sha3_256": "69f6f7fa09466586c737a404a41b07f9b432fdbe61e64a479e03b6b2f19413bc",
+          "bytes": "84402"
+        },
+        "dll": {
+          "sha256": "c2567ccf3f410c3411ba7cd4b7ba14f393a0e70a1d0c0593297df6706b5fba96",
+          "sha3_256": "3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf",
+          "bytes": "681231"
+        },
+        "definition": {
+          "sha256": "a4c424976559f5a12312f3c2c5fc35249f997a74dd649c35e938147d26882b8d",
+          "sha3_256": "802a861d30f6ecd6141d829e004422b386088449b67ccf39c4e01b6a3d323a58",
+          "bytes": "2731"
+        },
+        "import_library": {
+          "sha256": "dcf72ee7800d25f31cbfd1716776453ab479cba12a0e377a547923d42b6e13d6",
+          "sha3_256": "8f57620305b8d88415729151159007b7f2561b6d2d1bcb1b10c5501c67418286",
+          "bytes": "35754"
+        },
+        "source": {
+          "sha256": "71db457cd7d39d80736b1b2d26fa470560f295e5a2a98e1470523fa3738f8f52",
+          "sha3_256": "d09b5456e9952967c0f347f0ae7ecf92a2400c086d39d53c396ddded1a84072e",
+          "bytes": "2722"
+        },
+        "executable": {
+          "sha256": "e13bc9d24cd8ad3bdf80214642f795e03ba6955bacf9bc4ddff69bf1e420dee8",
+          "sha3_256": "83642cac3a3c6b92b5b64e6fe5b7a2bb9227de600ea5c6b244b258dc33a5ec83",
+          "bytes": "12800"
+        },
+        "compiler_flags": [
+          "-nologo",
+          "-std:c17",
+          "-W4",
+          "-WX",
+          "-O2",
+          "-MD",
+          "-D_CRT_SECURE_NO_WARNINGS",
+          "-Brepro",
+          "-external:I.",
+          "-external:W0"
+        ],
+        "linker_flags": [
+          "-Brepro"
+        ],
+        "toolchain": {
+          "msvc_tools_version": "14.44.35207",
+          "windows_sdk_version": "10.0.26100.0",
+          "target": "x86_64-pc-windows-msvc",
+          "abi": "LLP64",
+          "linkage": "dynamic-GMP-and-UCRT",
+          "tool_bytes": {
+            "cl.exe": {
+              "sha256": "88c8344236a27a6e727e0a8edc49aaa2690bdc7a9464b9d18cc7abe70a9f1c0d",
+              "sha3_256": "66a0ad5274cfed76c1c33323612280e4066a09afc59b3af8bb4497b090a795a9",
+              "bytes": "677736"
+            },
+            "link.exe": {
+              "sha256": "ca11e6c45debd34bf652dfe984c5360a531a005ed78bf72852330c9c2590cf0d",
+              "sha3_256": "22c20f3744d0e11af1b1a92e481bb1dea13083c7af6164ca4fb6ddc0a053338e",
+              "bytes": "3252576"
+            },
+            "lib.exe": {
+              "sha256": "3d694c782f93e998fec5db0c2df78153565da23a028ee4618561fa0c33408489",
+              "sha3_256": "d907b67a6f37ff537e1297fefd6a23ebe605b74a3c00a3b855e4838e045b9fdc",
+              "bytes": "23376"
+            },
+            "c1.dll": {
+              "sha256": "48bb561939cfd8fbf194bb73b111b2083912da4fb81af2c181cbe8f4b89e5ad1",
+              "sha3_256": "4e6736cb20af2cadd2734075bf528cdd1132393133a366dd06932b59428b152f",
+              "bytes": "3430200"
+            },
+            "c2.dll": {
+              "sha256": "98050f97d60f7e95fcaf3525a7103e4818fba498a43563922476819ce88ed162",
+              "sha3_256": "a5cdf00c3fae9e7c7d00de3b7f80ab9fb69fa5e65ebc1d648c95f805e3e021f5",
+              "bytes": "10462008"
+            }
+          }
+        },
+        "dll_imports": [
+          "KERNEL32.dll",
+          "api-ms-win-crt-convert-l1-1-0.dll",
+          "api-ms-win-crt-environment-l1-1-0.dll",
+          "api-ms-win-crt-filesystem-l1-1-0.dll",
+          "api-ms-win-crt-heap-l1-1-0.dll",
+          "api-ms-win-crt-locale-l1-1-0.dll",
+          "api-ms-win-crt-private-l1-1-0.dll",
+          "api-ms-win-crt-runtime-l1-1-0.dll",
+          "api-ms-win-crt-stdio-l1-1-0.dll",
+          "api-ms-win-crt-string-l1-1-0.dll",
+          "api-ms-win-crt-time-l1-1-0.dll",
+          "api-ms-win-crt-utility-l1-1-0.dll"
+        ],
+        "executable_imports": [
+          "KERNEL32.dll",
+          "VCRUNTIME140.dll",
+          "api-ms-win-crt-heap-l1-1-0.dll",
+          "api-ms-win-crt-locale-l1-1-0.dll",
+          "api-ms-win-crt-math-l1-1-0.dll",
+          "api-ms-win-crt-runtime-l1-1-0.dll",
+          "api-ms-win-crt-stdio-l1-1-0.dll",
+          "api-ms-win-crt-string-l1-1-0.dll",
+          "libgmp-10.dll"
+        ],
+        "public_export_count": "170"
+      },
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Explicit acquisition, safe archive inspection, public C compile/link and fixed arithmetic capability probe",
+      "audit_run_id": "c1-20261005-post-setup",
+      "source_state_kind": "active_configuration",
+      "uncertainty": "Engineering candidate evidence only; offline production toolchain closure and stack selection remain open",
+      "sanitization": [
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
+      ],
+      "observed_at": "2026-10-05T12:27:12Z"
+    },
+    {
+      "record_class": "OBSERVED_FACT",
+      "record_id": "dependency.offline-smoke",
+      "category": "toolchain",
+      "fact_name": "offline_smoke",
+      "value": {
+        "stage": "hardware characterization",
+        "observed_at": "2026-10-05T12:14:41Z",
+        "offline": true,
+        "executable_sha3_256": "83642cac3a3c6b92b5b64e6fe5b7a2bb9227de600ea5c6b244b258dc33a5ec83",
+        "result": {
+          "ok": true,
+          "runtime_version": "6.3.0",
+          "header_version": "6.3.0",
+          "pointer_bytes": "8",
+          "long_bytes": "4",
+          "limb_bytes": "8",
+          "limb_bits": "64",
+          "nail_bits": "0",
+          "export_bytes": "25",
+          "product_decimal": "12193263113702179522618503273362292333223746380111126352690",
+          "roundtrip_equal": true,
+          "dll_beside_executable": true
+        },
+        "reference": "Independent Python integer product of two fixed decimal operands; no transition"
+      },
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Explicit acquisition, safe archive inspection, public C compile/link and fixed arithmetic capability probe",
+      "audit_run_id": "c1-20261005-post-setup",
+      "source_state_kind": "active_configuration",
+      "uncertainty": "Engineering candidate evidence only; offline production toolchain closure and stack selection remain open",
+      "sanitization": [
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
+      ],
+      "observed_at": "2026-10-05T12:14:41Z"
+    },
+    {
+      "record_class": "OBSERVED_FACT",
+      "record_id": "dependency.calibration-build",
+      "category": "toolchain",
+      "fact_name": "calibration_build",
+      "value": {
+        "stage": "hardware characterization",
+        "observed_at": "2026-10-05T12:27:15Z",
+        "offline": true,
+        "compiler_flags": [
+          "-nologo",
+          "-std:c17",
+          "-W4",
+          "-WX",
+          "-O2",
+          "-MD",
+          "-D_CRT_SECURE_NO_WARNINGS",
+          "-Brepro",
+          "-external:I.",
+          "-external:W0"
+        ],
+        "toolchain": {
+          "msvc_tools_version": "14.44.35207",
+          "windows_sdk_version": "10.0.26100.0",
+          "target": "x86_64-pc-windows-msvc",
+          "abi": "LLP64",
+          "linkage": "dynamic-GMP-and-UCRT",
+          "tool_bytes": {
+            "cl.exe": {
+              "sha256": "88c8344236a27a6e727e0a8edc49aaa2690bdc7a9464b9d18cc7abe70a9f1c0d",
+              "sha3_256": "66a0ad5274cfed76c1c33323612280e4066a09afc59b3af8bb4497b090a795a9",
+              "bytes": "677736"
+            },
+            "link.exe": {
+              "sha256": "ca11e6c45debd34bf652dfe984c5360a531a005ed78bf72852330c9c2590cf0d",
+              "sha3_256": "22c20f3744d0e11af1b1a92e481bb1dea13083c7af6164ca4fb6ddc0a053338e",
+              "bytes": "3252576"
+            },
+            "lib.exe": {
+              "sha256": "3d694c782f93e998fec5db0c2df78153565da23a028ee4618561fa0c33408489",
+              "sha3_256": "d907b67a6f37ff537e1297fefd6a23ebe605b74a3c00a3b855e4838e045b9fdc",
+              "bytes": "23376"
+            },
+            "c1.dll": {
+              "sha256": "48bb561939cfd8fbf194bb73b111b2083912da4fb81af2c181cbe8f4b89e5ad1",
+              "sha3_256": "4e6736cb20af2cadd2734075bf528cdd1132393133a366dd06932b59428b152f",
+              "bytes": "3430200"
+            },
+            "c2.dll": {
+              "sha256": "98050f97d60f7e95fcaf3525a7103e4818fba498a43563922476819ce88ed162",
+              "sha3_256": "a5cdf00c3fae9e7c7d00de3b7f80ab9fb69fa5e65ebc1d648c95f805e3e021f5",
+              "bytes": "10462008"
+            }
+          }
+        },
+        "artifacts": {
+          "cal_candidate": {
+            "source": {
+              "sha256": "801b5e5abbc5f7b1a6e8a4e307274c8f9379addf02e9fac80e91822b5241505c",
+              "sha3_256": "a725a635b8f705d4844aa687475a7d3724a0826d2c2a355c4a2af2f4402936df",
+              "bytes": "4432"
+            },
+            "executable": {
+              "sha256": "7d3fbd434eb6ae60f5fa7ad59d1d8bde9df622e5e6126ca7d7282e3ba33105b9",
+              "sha3_256": "a62d3107052bed595cdf00acf9f3c5faccd26a6a6a9d74f1654ca6881d5bf306",
+              "bytes": "13824"
+            }
+          },
+          "cal_guard": {
+            "source": {
+              "sha256": "8341c36ad772ba9f17ccd247c1d862059c4f110426473a011f417e05cc4f842b",
+              "sha3_256": "766c4aed98d1ef53e206241478aa2f9a016bd2528d5dde7bd943d25da09ed114",
+              "bytes": "8731"
+            },
+            "executable": {
+              "sha256": "8e6883ed04de93e71891bd04d3c9997258eb702233b271fbc544a3b8c284f79e",
+              "sha3_256": "b501a11b0363ef97858b6e108da063f34030078f49a871c8c521139cd7e171fd",
+              "bytes": "16896"
+            }
+          }
+        },
+        "dependency": {
+          "sha256": "c2567ccf3f410c3411ba7cd4b7ba14f393a0e70a1d0c0593297df6706b5fba96",
+          "sha3_256": "3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf",
+          "bytes": "681231"
+        },
+        "pin": {
+          "sha256": "8b3896071f587fd4a3063b579b11eab5adec8dd0950389e5a271eb5851f9cc0b",
+          "sha3_256": "325273e55ae870a017d12636d0eabe4e3a64041872959b4afc682b4cd3e9fb89",
+          "bytes": "2011"
+        }
+      },
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Explicit acquisition, safe archive inspection, public C compile/link and fixed arithmetic capability probe",
+      "audit_run_id": "c1-20261005-post-setup",
+      "source_state_kind": "active_configuration",
+      "uncertainty": "Engineering candidate evidence only; offline production toolchain closure and stack selection remain open",
+      "sanitization": [
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
+      ],
+      "observed_at": "2026-10-05T12:27:15Z"
     },
     {
       "record_class": "OBSERVED_FACT",
@@ -1090,36 +1624,70 @@
         "represented_shortcut_steps": "0",
         "scope": "Fixed generator vector only; no benchmark, trajectory or V1 execution."
       },
-      "source_adapter": "c1-initial-session",
-      "source_method": "Fixed-vector engineering_codec.self_test_vector against frozen CEML-CAL-1",
-      "audit_run_id": "c1-20261004-a",
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Fixed normative CEML-CAL-1 vector self-test before the subset",
+      "audit_run_id": "c1-20261005-post-setup",
       "source_state_kind": "active_configuration",
-      "uncertainty": "No trajectory step, timing case, route comparison or V1 class executed",
+      "uncertainty": "The vector self-test performs no trajectory",
       "sanitization": [
-        "Only explicitly permitted fields retained; paths and identifiers excluded"
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
       ],
-      "observed_at": "2026-10-05T07:05:45Z"
+      "observed_at": null
     },
     {
-      "record_class": "UNAVAILABLE_OR_UNSUPPORTED",
-      "record_id": "c1.monitor-unavailable",
+      "record_class": "OBSERVED_FACT",
+      "record_id": "calibration.first-attempt",
       "category": "resource_safety",
-      "requested_item": "Enforced non-trivial calibration admission and mid-case monitoring",
-      "attempted_method": null,
-      "reason": "Ceilings recorded, but benchmark supervisor not implemented and first pressure sample fails selected threshold",
-      "downstream_effects": [
-        "No non-trivial calibration or filesystem interruption test admitted"
-      ]
+      "fact_name": "guarded_initial_warmup_outcome",
+      "value": {
+        "record_id": "calibration.route.1024.affine-small-public.0.0",
+        "abort_code": "C1_RESOURCE_ABORT",
+        "preflight_samples": "2",
+        "preflight_pages_input_rounded": "0",
+        "final_pages_input_rounded": "1917",
+        "final_pages_output_rounded": "0",
+        "rate_units": "pages_per_second",
+        "available_bytes": "6721101824",
+        "free_storage_bytes": "209080311808",
+        "child_wall_time_ns": "38032000",
+        "candidate_reference_agreement": true,
+        "requested_affine_blocks": "64",
+        "fallback_count": "0",
+        "shortcut_steps": "256",
+        "odd_steps": "120",
+        "standard_steps": "376",
+        "accepted_for_performance": false
+      },
+      "source_adapter": "c1-authorized-dependency-session",
+      "source_method": "Native Job-guarded 1024-bit public engineering warmup; PDH preflight and post-child observation",
+      "audit_run_id": "c1-20261005-post-setup",
+      "source_state_kind": "momentary_state",
+      "uncertainty": "Paging includes mapped-file reads. Short rate interval can amplify bursts. No claim of actual pagefile pressure. Invalid raw CPU/RSS zeros are suppressed placeholders, not measurements. No accepted timing or V1 evidence",
+      "sanitization": [
+        "Selected dependency and engineering fields only; locators and raw diagnostics excluded"
+      ],
+      "observed_at": null
     },
     {
       "record_class": "UNAVAILABLE_OR_UNSUPPORTED",
       "record_id": "c1.checkpoint-unestablished",
       "category": "checkpoint_storage",
-      "requested_item": "CEML-CKPT-1 durability and recovery acceptance",
+      "requested_item": "CEML-CKPT-1 filesystem durability and recovery acceptance",
       "attempted_method": null,
-      "reason": "Stopped at earlier dependency and monitoring prerequisites; no synthetic durability or interruption case executed",
+      "reason": "Ordered calibration stopped at its first resource refusal; no synthetic filesystem interruption matrix executed",
       "downstream_effects": [
-        "Scientific checkpoint storage unsupported pending evidence; no conclusion that the filesystem is inherently incapable"
+        "No checkpoint strategy, production engine, final build or machine profile selected"
+      ]
+    },
+    {
+      "record_class": "UNAVAILABLE_OR_UNSUPPORTED",
+      "record_id": "c1.production-unselected",
+      "category": "implementation",
+      "requested_item": "Production architecture and complete final offline build/profile",
+      "attempted_method": null,
+      "reason": "Dependency capability is established but valid decision-relevant calibration and checkpoint acceptance are absent",
+      "downstream_effects": [
+        "Remain at C1 hardware characterization; V1 and scientific execution remain denied"
       ]
     },
     {
@@ -1128,9 +1696,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 route-crossover",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "First 1024-bit affine warmup invalidated by resource check; no measured repetitions. Two admitted size classes are insufficient for the I1 three-class timing rule.",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.01.route-crossover refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1139,9 +1707,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 small-block-sweep",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.02.small-block-sweep refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1150,9 +1718,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 hierarchical-sweep",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.03.hierarchical-sweep refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1161,9 +1729,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 backend-multiplication",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.04.backend-multiplication refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1172,9 +1740,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 representation",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.05.representation refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1183,9 +1751,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 allocation",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.06.allocation refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1194,9 +1762,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 compiler-build",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.07.compiler-build refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1205,9 +1773,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 parallelism",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.08.parallelism refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1216,9 +1784,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 checkpoint",
       "attempted_method": null,
-      "reason": "Prior calibration prerequisites unmet; exact codec/store, documented durability semantics and interruption/recovery tests have not been established",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.09.checkpoint refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1227,9 +1795,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 terminal-handoff",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.10.terminal-handoff refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1238,9 +1806,9 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 audit-cost",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.11.audit-cost refuses selection"
+        "No justified production selection or winner"
       ]
     },
     {
@@ -1249,12 +1817,12 @@
       "category": "calibration",
       "requested_item": "CEML-CAL-1 memory-scaling",
       "attempted_method": null,
-      "reason": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed",
+      "reason": "Not reached after the first resource refusal; required evidence remains unavailable",
       "downstream_effects": [
-        "No route activation or performance winner; decision.matrix.12.memory-scaling refuses selection"
+        "No justified production selection or winner"
       ]
     }
   ],
   "privacy_scan_passed": true,
-  "artifact_digest": "6a774c3589b73e08f2950dbc312809863cb871c6cb4af8ccb89a82c42106577a"
+  "artifact_digest": "d7001003eefba09adb0db63cd012b9d0a8cca4d5f515540abb4406c233ee27cb"
 }

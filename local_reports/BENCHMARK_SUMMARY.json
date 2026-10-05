@@ -2,8 +2,26 @@
   "experiment": "CEML",
   "schema_version": "CEML-BENCHMARK-SUMMARY-1",
   "suite_version": "CEML-CAL-1",
-  "hardware_report_digest": "6a774c3589b73e08f2950dbc312809863cb871c6cb4af8ccb89a82c42106577a",
-  "benchmark_bundle_index_digest": "5cb938c9f177d6f6922dedd059810bff8ebf849ad86e8c4529c4c570a33486bf",
-  "cases": [],
-  "artifact_digest": "e79ce856118678c80222af6102e24995fa290ed14473759b529612cfa7783418"
+  "hardware_report_digest": "d7001003eefba09adb0db63cd012b9d0a8cca4d5f515540abb4406c233ee27cb",
+  "benchmark_bundle_index_digest": "f27263bffb5d31e038c292772485f52bd490b82bdacfcfcb09b8ec261a62c384",
+  "cases": [
+    {
+      "case_id": "cal1/01/route-crossover/1024/0/affine-small-public",
+      "candidate_id": "affine-small-public",
+      "valid_repeats": "0",
+      "invalid_repeats": "1",
+      "median_wall_time_ns": null,
+      "minimum_wall_time_ns": null,
+      "maximum_wall_time_ns": null,
+      "mad_wall_time_ns": null,
+      "peak_rss_bytes": null,
+      "correctness_all": false,
+      "route_activation_proved": false,
+      "decision_ids": [
+        "decision.resource-refusal",
+        "decision.matrix.01.route-crossover"
+      ]
+    }
+  ],
+  "artifact_digest": "97953770c59dc015c14a9c34f11058a83718623cf7f11fd6084b388c9bdc9035"
 }

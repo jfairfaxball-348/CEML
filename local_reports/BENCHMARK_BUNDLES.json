@@ -1,6 +1,18 @@
 {
   "experiment": "CEML",
   "schema_version": "CEML-BENCHMARK-BUNDLES-1",
-  "bundles": [],
-  "artifact_digest": "5cb938c9f177d6f6922dedd059810bff8ebf849ad86e8c4529c4c570a33486bf"
+  "bundles": [
+    {
+      "bundle_id": "c1-20261005-route-subset",
+      "bundle_digest": "460b1dc104a9a49e8ebcaa7621d45d5e617e9ce3d8499b09b09f8e239eebec05",
+      "logical_locator": "local/c1/benchmark_bundles/c1-20261005-route-subset/",
+      "member_count": "3",
+      "retained_local": true,
+      "decision_ids": [
+        "decision.resource-refusal",
+        "decision.matrix.01.route-crossover"
+      ]
+    }
+  ],
+  "artifact_digest": "f27263bffb5d31e038c292772485f52bd490b82bdacfcfcb09b8ec261a62c384"
 }

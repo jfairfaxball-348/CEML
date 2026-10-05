@@ -4,21 +4,23 @@
   "decisions": [
     {
       "record_class": "ENGINEERING_DECISION",
-      "decision_id": "decision.initial-safety",
-      "question": "Initial admission limits before non-trivial calibration",
+      "decision_id": "decision.dependency-candidate",
+      "question": "Locally usable GMP public-C candidate for bounded calibration",
       "candidates_considered": [
-        "Conservative restricted subset",
-        "No non-trivial work"
+        "Pinned UCRT64 GMP DLL with installed MSVC",
+        "Larger alternative toolchain acquisition"
       ],
       "evidence_record_ids": [
-        "initial.resource-observation",
-        "c1.monitor-unavailable",
-        "unavailable.thermal.temperature"
+        "dependency.authorization",
+        "dependency.acquisition",
+        "dependency.probe-build",
+        "dependency.offline-build",
+        "dependency.offline-smoke"
       ],
       "eliminated": [],
-      "selection": "Record initial ceilings; refuse non-trivial work until all admission and monitoring conditions hold",
+      "selection": "Retain the pinned public-C candidate for bounded calibration; no production stack selection",
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Reserve 4 GiB memory and 16 GiB storage, cap child memory at 256 MiB and scratch at 64 MiB; one arithmetic process/thread; 5-second cases and 60-second aggregate; full detail in docs/C1_RESOURCE_CEILINGS.md. Initial paging sample fails the policy, and monitors are absent.",
+      "rationale": "Observed public-C compatibility and exact smoke agreement, pinned inputs and byte-identical offline smoke rebuild establish candidate availability only.",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -27,28 +29,20 @@
     },
     {
       "record_class": "ENGINEERING_DECISION",
-      "decision_id": "decision.production-stack",
-      "question": "Eligible locally supported offline production stack",
+      "decision_id": "decision.resource-refusal",
+      "question": "Accept or refuse the first guarded route warmup",
       "candidates_considered": [
-        "C17 and public GMP",
-        "C++20 and public GMP",
-        "Rust stable and rug/GMP"
+        "Accept as timing evidence",
+        "Retain invalid and stop ordered subset"
       ],
       "evidence_record_ids": [
-        "tools.path",
-        "tools.rug-cache",
-        "tools.gmp-locators",
-        "tools.gmp-unavailable"
+        "calibration.first-attempt",
+        "calibration.route.1024.affine-small-public.0.0"
       ],
-      "eliminated": [
-        {
-          "candidate": "Python bigint production core",
-          "reason": "I1 section 4.3 restricts Python to reference/orchestration"
-        }
-      ],
-      "selection": null,
+      "eliminated": [],
+      "selection": "Retain C1_RESOURCE_ABORT; accept no timing; stop the ordered subset",
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "No usable GMP package established in checked scope; candidate compiler presence alone cannot select a production stack. No components acquired.",
+      "rationale": "The observed page-input rate exceeded the existing 100 pages per second ceiling. Correct arithmetic and positive activation cannot override the resource refusal.",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -60,19 +54,16 @@
       "decision_id": "decision.matrix.01.route-crossover",
       "question": "CEML-CAL-1 route-crossover selection",
       "candidates_considered": [
-        "direct T",
-        "small affine",
-        "hierarchical affine"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.01.route-crossover",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "First 1024-bit affine warmup invalidated by resource check; no measured repetitions. Two admitted size classes are insufficient for the I1 three-class timing rule.; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -84,20 +75,16 @@
       "decision_id": "decision.matrix.02.small-block-sweep",
       "question": "CEML-CAL-1 small-block-sweep selection",
       "candidates_considered": [
-        "width 4",
-        "width 8",
-        "width 12",
-        "width 16"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.02.small-block-sweep",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -109,17 +96,16 @@
       "decision_id": "decision.matrix.03.hierarchical-sweep",
       "question": "CEML-CAL-1 hierarchical-sweep selection",
       "candidates_considered": [
-        "I1 divisor and k-cap grid"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.03.hierarchical-sweep",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -131,18 +117,16 @@
       "decision_id": "decision.matrix.04.backend-multiplication",
       "question": "CEML-CAL-1 backend-multiplication selection",
       "candidates_considered": [
-        "public GMP",
-        "optional public FLINT"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.04.backend-multiplication",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -154,18 +138,16 @@
       "decision_id": "decision.matrix.05.representation",
       "question": "CEML-CAL-1 representation selection",
       "candidates_considered": [
-        "public-library dense",
-        "optional sparse"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.05.representation",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -177,18 +159,16 @@
       "decision_id": "decision.matrix.06.allocation",
       "question": "CEML-CAL-1 allocation selection",
       "candidates_considered": [
-        "copy",
-        "public-API reuse"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.06.allocation",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -200,19 +180,16 @@
       "decision_id": "decision.matrix.07.compiler-build",
       "question": "CEML-CAL-1 compiler-build selection",
       "candidates_considered": [
-        "checked",
-        "portable-release",
-        "native-release"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.07.compiler-build",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -224,18 +201,16 @@
       "decision_id": "decision.matrix.08.parallelism",
       "question": "CEML-CAL-1 parallelism selection",
       "candidates_considered": [
-        "single thread",
-        "optional auxiliary threads"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.08.parallelism",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -247,19 +222,16 @@
       "decision_id": "decision.matrix.09.checkpoint",
       "question": "CEML-CAL-1 checkpoint selection",
       "candidates_considered": [
-        "buffered",
-        "streaming"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.09.checkpoint",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable",
-        "c1.checkpoint-unestablished"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Prior calibration prerequisites unmet; exact codec/store, documented durability semantics and interruption/recovery tests have not been established; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -271,18 +243,16 @@
       "decision_id": "decision.matrix.10.terminal-handoff",
       "question": "CEML-CAL-1 terminal-handoff selection",
       "candidates_considered": [
-        "direct T",
-        "odd-only"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.10.terminal-handoff",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -294,19 +264,16 @@
       "decision_id": "decision.matrix.11.audit-cost",
       "question": "CEML-CAL-1 audit-cost selection",
       "candidates_considered": [
-        "structural",
-        "divisibility",
-        "divisibility plus modular"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.11.audit-cost",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -318,17 +285,16 @@
       "decision_id": "decision.matrix.12.memory-scaling",
       "question": "CEML-CAL-1 memory-scaling selection",
       "candidates_considered": [
-        "I1 six bounded size classes"
+        "Eligible public-API I1 candidates within locally safe bounds"
       ],
       "evidence_record_ids": [
         "c1.matrix.12.memory-scaling",
-        "tools.gmp-unavailable",
-        "c1.monitor-unavailable"
+        "calibration.first-attempt"
       ],
       "eliminated": [],
       "selection": null,
       "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
-      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "rationale": "Not reached after the first resource refusal; required evidence remains unavailable; missing measurements are not a tie",
       "limitations": [
         "Initial hardware characterization only; no production profile binding",
         "C1 remains open; no V1 or scientific execution"
@@ -336,5 +302,5 @@
       "binds_profile": false
     }
   ],
-  "artifact_digest": "bc1488e07cf97a369622af436547b7a518e1d83949b751d2657cb2e259364467"
+  "artifact_digest": "198a0dd684abcecd7208123a5b03051e28ee697c6518af658476afcfaaf681e3"
 }

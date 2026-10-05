@@ -60,3 +60,62 @@ GMP source, license texts and distribution patches must be retained locally.
 Offline rebuilding a CEML candidate against a pinned GMP binary is distinct
 from rebuilding GMP itself; a complete GMP source-build tool closure has not
 yet been acquired. Neither is a production build/profile freeze.
+
+## Observed setup result
+
+The package was acquired, its published binary checksum matched, and its
+matching source archive, upstream source tarball, distribution patches and
+license material are retained in the ignored content-addressed local cache.
+The upstream tarball also matches the source-package recipe's SHA-256. The
+source package includes separate static/shared build recipes and the x86-64
+fat-build option; this is provenance, not locally measured instruction-route
+activation. No full GMP source compilation was performed.
+
+The unchanged installed header and GMP DLL compiled/linked with the existing
+MSVC tools 14.44.35207 and Windows SDK 10.0.26100.0. The public API smoke observed
+GMP 6.3.0 in both header and runtime, LLP64 widths, 64-bit limbs and zero nail
+bits. Exact multiplication agreed with an independent Python integer result;
+minimal big-endian byte export/import agreed. The loaded GMP DLL was observed
+beside the executable. The application owns buffers crossing the API boundary.
+
+The pinned offline command rebuilt a byte-identical smoke executable and its
+smoke test passed. Only explicit `acquire` can fetch. `build` verifies local
+package/header/DLL/source/tool pins and fails on missing or changed inputs.
+The package's GNU C++ wrapper is unused. Compiler flags suppress warnings from
+the unmodified external GMP header while treating warnings in our C source as
+errors. No host-specific compiler tuning was selected. This capability pin is
+not the complete final production build manifest or SDK closure.
+
+Rebuild the capability probe offline:
+
+```powershell
+python tools/c1/gmp_setup.py build
+python tools/c1/gmp_setup.py offline-smoke
+```
+
+The candidate header, import library and DLL are available under
+`local/c1/gmp-setup/offline/`. Native route harness binaries are separately under
+`local/c1/gmp-setup/calibration/`. No global environment or package manager was
+changed. The committed `config/c1_gmp_pin.toml` is the exact package/tool pin;
+the dependency records in `local_reports/HARDWARE_REPORT.json` provide the
+sanitized CEML provenance layer for this candidate event.
+
+## Bounded calibration outcome
+
+The first 1024-bit, width-4 affine warm-up represented exactly 256 T steps,
+120 odd steps and 376 standard steps. It agreed with the separate definition
+C path, activated 64 requested blocks and had zero fallback. The post-child
+paging-input proxy was about 1917 pages per second, exceeding the unchanged
+100-page threshold, so the record is `C1_RESOURCE_ABORT` and invalid.
+Two preceding one-second admission samples passed. Paging includes mapped-file
+reads; the short post-child interval can amplify bursts. Actual pagefile
+pressure has not been established. No valid performance datum, winner or
+production architecture follows from this attempt.
+
+The ordered subset stopped immediately; later cases and checkpoint testing did
+not run. The original invalid record, details and exact harness build context
+are retained in the indexed local bundle. Its CPU/RSS zeros are guard
+placeholders on an abort, not observations. The driver now emits null for those
+unavailable values in any future aborted record; existing raw evidence is
+unchanged. Summary timing and RSS statistics are null. Its invalid-repeat count
+includes this rejected warm-up; no measured repeat occurred.

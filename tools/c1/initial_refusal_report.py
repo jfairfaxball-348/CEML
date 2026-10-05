@@ -75,9 +75,12 @@ def main():
         raise ValueError('C1 authorization missing')
     if (ROOT / 'local_reports/BUILD_MANIFEST.json').exists() or (ROOT / 'config/local_machine_profile.json').exists():
         raise ValueError('Initial refusal assembler cannot replace a later build/profile event')
+    current = ROOT / 'local_reports/HARDWARE_REPORT.json'
+    if current.exists() and json.loads(current.read_text(encoding='utf-8'))['audit_run_id'] != AUDIT:
+        raise ValueError('Initial refusal assembler cannot overwrite a later audit')
     records = []
     for name in ('audit_observations.json', 'tool_observations.json'):
-        records += json.loads((ROOT / 'local/c1' / name).read_text(encoding='utf-8'))
+        records += json.loads((ROOT / 'local/c1' / AUDIT / name).read_text(encoding='utf-8'))
     if not any(r['record_id'] == 'tools.gmp-unavailable' for r in records):
         raise ValueError('This initial refusal is no longer supported; reassess C1')
     now = datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')

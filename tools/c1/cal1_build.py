@@ -61,7 +61,9 @@ def main():
         (folder / filename).write_bytes((LOCAL / 'offline' / filename).read_bytes())
     library = public_import_library(folder, env, bindir)
     artifacts = compile_programs(folder, PROGRAMS, env, bindir)
-    committed = {path: hashes((ROOT / path).read_bytes()) for path in
+    # Repository blobs use LF; a checkout may present CRLF. Record the LF form
+    # so the driver can compare against the committed blob exactly.
+    committed = {path: hashes((ROOT / path).read_bytes().replace(bytes([13, 10]), bytes([10]))) for path in
                  sorted({p[1] for p in PROGRAMS} | set(EXTRA_SOURCES))}
     result = dict(stage='hardware characterization', observed_at=now(), offline=True, toolchain=toolchain,
                   artifacts=artifacts, dependency=evidence['dll'], import_library=library,

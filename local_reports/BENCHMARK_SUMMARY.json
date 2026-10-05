@@ -1,0 +1,9 @@
+{
+  "experiment": "CEML",
+  "schema_version": "CEML-BENCHMARK-SUMMARY-1",
+  "suite_version": "CEML-CAL-1",
+  "hardware_report_digest": "6a774c3589b73e08f2950dbc312809863cb871c6cb4af8ccb89a82c42106577a",
+  "benchmark_bundle_index_digest": "5cb938c9f177d6f6922dedd059810bff8ebf849ad86e8c4529c4c570a33486bf",
+  "cases": [],
+  "artifact_digest": "e79ce856118678c80222af6102e24995fa290ed14473759b529612cfa7783418"
+}

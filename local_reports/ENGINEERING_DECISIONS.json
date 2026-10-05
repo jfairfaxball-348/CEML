@@ -1,0 +1,340 @@
+{
+  "experiment": "CEML",
+  "schema_version": "CEML-ENGINEERING-DECISIONS-1",
+  "decisions": [
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.initial-safety",
+      "question": "Initial admission limits before non-trivial calibration",
+      "candidates_considered": [
+        "Conservative restricted subset",
+        "No non-trivial work"
+      ],
+      "evidence_record_ids": [
+        "initial.resource-observation",
+        "c1.monitor-unavailable",
+        "unavailable.thermal.temperature"
+      ],
+      "eliminated": [],
+      "selection": "Record initial ceilings; refuse non-trivial work until all admission and monitoring conditions hold",
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Reserve 4 GiB memory and 16 GiB storage, cap child memory at 256 MiB and scratch at 64 MiB; one arithmetic process/thread; 5-second cases and 60-second aggregate; full detail in docs/C1_RESOURCE_CEILINGS.md. Initial paging sample fails the policy, and monitors are absent.",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.production-stack",
+      "question": "Eligible locally supported offline production stack",
+      "candidates_considered": [
+        "C17 and public GMP",
+        "C++20 and public GMP",
+        "Rust stable and rug/GMP"
+      ],
+      "evidence_record_ids": [
+        "tools.path",
+        "tools.rug-cache",
+        "tools.gmp-locators",
+        "tools.gmp-unavailable"
+      ],
+      "eliminated": [
+        {
+          "candidate": "Python bigint production core",
+          "reason": "I1 section 4.3 restricts Python to reference/orchestration"
+        }
+      ],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "No usable GMP package established in checked scope; candidate compiler presence alone cannot select a production stack. No components acquired.",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.01.route-crossover",
+      "question": "CEML-CAL-1 route-crossover selection",
+      "candidates_considered": [
+        "direct T",
+        "small affine",
+        "hierarchical affine"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.01.route-crossover",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.02.small-block-sweep",
+      "question": "CEML-CAL-1 small-block-sweep selection",
+      "candidates_considered": [
+        "width 4",
+        "width 8",
+        "width 12",
+        "width 16"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.02.small-block-sweep",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.03.hierarchical-sweep",
+      "question": "CEML-CAL-1 hierarchical-sweep selection",
+      "candidates_considered": [
+        "I1 divisor and k-cap grid"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.03.hierarchical-sweep",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.04.backend-multiplication",
+      "question": "CEML-CAL-1 backend-multiplication selection",
+      "candidates_considered": [
+        "public GMP",
+        "optional public FLINT"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.04.backend-multiplication",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.05.representation",
+      "question": "CEML-CAL-1 representation selection",
+      "candidates_considered": [
+        "public-library dense",
+        "optional sparse"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.05.representation",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.06.allocation",
+      "question": "CEML-CAL-1 allocation selection",
+      "candidates_considered": [
+        "copy",
+        "public-API reuse"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.06.allocation",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.07.compiler-build",
+      "question": "CEML-CAL-1 compiler-build selection",
+      "candidates_considered": [
+        "checked",
+        "portable-release",
+        "native-release"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.07.compiler-build",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.08.parallelism",
+      "question": "CEML-CAL-1 parallelism selection",
+      "candidates_considered": [
+        "single thread",
+        "optional auxiliary threads"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.08.parallelism",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.09.checkpoint",
+      "question": "CEML-CAL-1 checkpoint selection",
+      "candidates_considered": [
+        "buffered",
+        "streaming"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.09.checkpoint",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable",
+        "c1.checkpoint-unestablished"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Prior calibration prerequisites unmet; exact codec/store, documented durability semantics and interruption/recovery tests have not been established; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.10.terminal-handoff",
+      "question": "CEML-CAL-1 terminal-handoff selection",
+      "candidates_considered": [
+        "direct T",
+        "odd-only"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.10.terminal-handoff",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.11.audit-cost",
+      "question": "CEML-CAL-1 audit-cost selection",
+      "candidates_considered": [
+        "structural",
+        "divisibility",
+        "divisibility plus modular"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.11.audit-cost",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    },
+    {
+      "record_class": "ENGINEERING_DECISION",
+      "decision_id": "decision.matrix.12.memory-scaling",
+      "question": "CEML-CAL-1 memory-scaling selection",
+      "candidates_considered": [
+        "I1 six bounded size classes"
+      ],
+      "evidence_record_ids": [
+        "c1.matrix.12.memory-scaling",
+        "tools.gmp-unavailable",
+        "c1.monitor-unavailable"
+      ],
+      "eliminated": [],
+      "selection": null,
+      "decision_rule": "I1 sections 1, 4, 11.13, 14 and 18; no unsupported selection",
+      "rationale": "Required candidate harness, eligible dependency/build provenance and enforced safety monitors are not established; zero cases executed; no timing tie-break can substitute for absent evidence",
+      "limitations": [
+        "Initial hardware characterization only; no production profile binding",
+        "C1 remains open; no V1 or scientific execution"
+      ],
+      "binds_profile": false
+    }
+  ],
+  "artifact_digest": "bc1488e07cf97a369622af436547b7a518e1d83949b751d2657cb2e259364467"
+}

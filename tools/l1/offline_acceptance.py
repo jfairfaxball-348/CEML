@@ -17,10 +17,14 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 LOCAL = ROOT / "local/frontier/os-offline"
+SUITES = {"frontier": "tests/frontier", "l1": "tests/l1"}
 
 
 def source_identity(root=ROOT):
-    """Bind portable source bytes, including this harness, without machine IDs."""
+    """Bind portable source bytes, including this harness, without machine IDs.
+
+    Text is LF-normalised first, so a CRLF checkout has the same identity.
+    """
     names = set()
     for folder, patterns in (
         ("src", ("frontier_*.c", "frontier_*.h", "ceml_oracle.*")),
@@ -40,7 +44,7 @@ def source_identity(root=ROOT):
         path = root/name
         if path.is_symlink() or not path.is_file() or path.stat().st_size > 2*1024*1024:
             raise ValueError("Invalid acceptance source")
-        values[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+        values[name] = hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
     raw = json.dumps(values, sort_keys=True, separators=(",", ":")).encode("ascii")
     return hashlib.sha256(raw).hexdigest()
 
@@ -75,18 +79,29 @@ def run_suite(folder=ROOT/"tests/frontier"):
 
 
 def commands():
-    snapshot = "config/frontier_snapshot_v2.json" if (ROOT/"config/frontier_snapshot_v2.json").is_file() else "config/frontier_snapshot_v1.json"
+    """The final version-2 plan. Both suites must report zero skips and expected failures."""
     return (
         ("build-command", ["tools/frontier/f1_build.py", "--show-command"]),
         ("build", ["tools/frontier/f1_build.py"]),
         ("clean-reproduction", ["tools/frontier/f1_build.py", "--verify"]),
         ("rules", ["tools/frontier/ceml_frontier.py", "rules"]),
-        ("snapshot", ["tools/frontier/ceml_frontier.py", "snapshot", "--file", snapshot]),
-        ("launcher-tests", ["-m", "unittest", "discover", "-s", "tests/l1", "-v"]),
-        ("full-suite", ["tools/l1/offline_acceptance.py", "--suite"]),
+        ("snapshot", ["tools/frontier/ceml_frontier.py", "snapshot", "--file", "config/frontier_snapshot_v2.json"]),
+        ("snapshot-v1-frozen", ["tools/frontier/ceml_frontier.py", "snapshot", "--file",
+                                "config/frontier_snapshot_v1.json"]),
+        ("launcher-suite", ["tools/l1/offline_acceptance.py", "--suite", "l1"]),
+        ("frontier-suite", ["tools/l1/offline_acceptance.py", "--suite", "frontier"]),
         ("selftest-calibration", ["tools/frontier/ceml_frontier.py", "selftest"]),
         ("final-clean-reproduction", ["tools/frontier/f1_build.py", "--verify"]),
     )
+
+
+def last_json_line(path):
+    """Path-free machine summary printed as the final line of one command log."""
+    lines = [line for line in path.read_bytes().splitlines() if line.strip()]
+    value = json.loads(lines[-1].decode("ascii"))
+    if not isinstance(value, dict):
+        raise ValueError("Command summary missing")
+    return value
 
 
 def run_checks(directory, expected_source):
@@ -94,9 +109,9 @@ def run_checks(directory, expected_source):
     before = source_identity()
     if before != expected_source:
         raise ValueError("Reviewed source identity changed")
-    report = dict(schema="CEML-L1-OFFLINE-CHECKS-PREP-1", scope="L1-NONSCIENTIFIC",
+    report = dict(schema="CEML-L1-OFFLINE-CHECKS-2", scope="L1-NONSCIENTIFIC", protocol="CEML-FRONTIER-2",
                   source_sha256=before, status="FAIL", os_isolation="EXTERNAL-LAUNCHER-REQUIRED",
-                  commands=[], scientific_execution="NOT_RUN")
+                  commands=[], suites={}, scientific_execution="NOT_RUN")
     try:
         for label, args in commands():
             started = time.monotonic()
@@ -108,10 +123,29 @@ def run_checks(directory, expected_source):
                                             seconds=format(time.monotonic()-started, ".6f")))
             if process.returncode != 0:
                 raise RuntimeError("Engineering check failed")
+            if label.endswith("-suite"):
+                totals = last_json_line(directory/(label+".log"))
+                report["suites"][label] = totals
+                if totals.get("status") != "PASS" or totals.get("skips") != 0 or not totals.get("tests"):
+                    raise RuntimeError("Suite incomplete or skipped")
+            elif label == "snapshot":
+                report["snapshot_digest"] = last_json_line(directory/(label+".log"))["digest"]
+            elif label == "selftest-calibration":
+                calibration = last_json_line(directory/(label+".log"))
+                if calibration.get("status") != "fixtures_pass":
+                    raise RuntimeError("Calibration fixtures failed")
+                report["calibration"] = calibration
+            elif label in ("build", "clean-reproduction", "final-clean-reproduction"):
+                report.setdefault("build_digests", []).append(last_json_line(directory/(label+".log"))["digest"])
         if source_identity() != before:
             raise ValueError("Sources changed during acceptance")
         manifest = json.loads((ROOT/"local/frontier/build/build_manifest.json").read_bytes())
+        if set(report["build_digests"]) != {manifest["digest"]}:
+            raise ValueError("Build identity changed during acceptance")
         report["native_build_digest"] = manifest["digest"]
+        report["table_digest"] = manifest["table_digest"]
+        report["test_suite_revision"] = manifest["test_suite_revision"]
+        report["artifact_sha3_256"] = {name: value["sha3_256"] for name, value in manifest["artifacts"].items()}
         report["status"] = "ENGINEERING-CHECKS-PASS"
     except Exception as error:
         report["failure_kind"] = type(error).__name__
@@ -127,7 +161,7 @@ def main():
     modes = parser.add_mutually_exclusive_group(required=True)
     modes.add_argument("--plan", action="store_true")
     modes.add_argument("--probe", action="store_true")
-    modes.add_argument("--suite", action="store_true")
+    modes.add_argument("--suite", choices=sorted(SUITES))
     modes.add_argument("--run", action="store_true")
     parser.add_argument("--output-dir")
     parser.add_argument("--expected-source")
@@ -142,8 +176,9 @@ def main():
         print(json.dumps(dict(connected=connected)))
         return 0 if connected else 2
     if args.suite:
-        result = run_suite()
-        print(json.dumps(result, sort_keys=True))
+        result = run_suite(ROOT/SUITES[args.suite])
+        sys.stderr.flush()  # keep the machine summary as the final log line
+        print(json.dumps(result, sort_keys=True), flush=True)
         return 0 if result["status"] == "PASS" else 2
     if not args.output_dir or not args.expected_source:
         parser.error("--run requires --output-dir and --expected-source")

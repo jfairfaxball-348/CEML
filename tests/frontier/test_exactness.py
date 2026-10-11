@@ -75,7 +75,7 @@ class ExactnessTests(unittest.TestCase):
             self.assertEqual(replay["next_n"], end)
             self.assertEqual(replay["counts"], ref.expected_counts(start, end))
             self.assertEqual(replay["transcript_digest"],
-                             hashlib.sha3_256(b"CEML-FRONTIER-1/EVENTS\0" + b"".join(frames)).hexdigest())
+                             hashlib.sha3_256(b"CEML-FRONTIER-2/EVENTS\0" + b"".join(frames)).hexdigest())
             t_steps = odd = 0
             explicit = 0
             for n, frame in zip(range(start, end), frames):
@@ -127,7 +127,7 @@ class ExactnessTests(unittest.TestCase):
         self.assertTrue(result["complete"])
         self.assertEqual(result["explicit_attempts"], 0)
         self.assertEqual(result["transcript_digest"],
-                         hashlib.sha3_256(b"CEML-FRONTIER-1/EVENTS\0").hexdigest())
+                         hashlib.sha3_256(b"CEML-FRONTIER-2/EVENTS\0").hexdigest())
 
     def test_large_decimal_format_is_exact_without_global_policy_change(self):
         value = 10 ** 8191 + (1 << 160) + 7

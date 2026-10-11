@@ -1,6 +1,7 @@
 """Adversarial record, stream, recovery and immutable-commit acceptance."""
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -16,7 +17,8 @@ import f1_build
 import reference
 
 
-SNAPSHOT_FILE = ROOT / "config/frontier_snapshot_v1.json"
+SNAPSHOT_FILE = ROOT / "config/frontier_snapshot_v2.json"
+V1_SNAPSHOT_FILE = ROOT / "config/frontier_snapshot_v1.json"
 
 
 class CanonicalRecordFaultTests(unittest.TestCase):
@@ -36,8 +38,50 @@ class CanonicalRecordFaultTests(unittest.TestCase):
         raw = SNAPSHOT_FILE.read_bytes()
         self.assertEqual(raw, driver.canonical(self.snapshot))
         self.assertEqual(self.snapshot, self.load(raw))
-        self.assertEqual("a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66",
+        self.assertEqual("538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729",
                          driver.H("SNAPSHOT", raw))
+        self.assertEqual(driver.H("SNAPSHOT", raw), driver.validate_snapshot(self.snapshot))
+
+    def test_frozen_version_1_snapshot_bytes_and_digest_are_preserved(self):
+        raw = V1_SNAPSHOT_FILE.read_bytes()
+        self.assertEqual(632, len(raw))
+        frozen = "a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66"
+        self.assertEqual(frozen, hashlib.sha3_256(b"CEML-FRONTIER-1/SNAPSHOT\0" + raw).hexdigest())
+        obj, digest, plain = driver.v1_snapshot()
+        self.assertEqual((frozen, hashlib.sha3_256(raw).hexdigest()), (digest, plain))
+        self.assertEqual(self.snapshot["provenance"],
+                         {"kind": "carried_forward_without_new_observation",
+                          "source_schema": "CEML-FRONTIER-1-SNAPSHOT",
+                          "source_file": "config/frontier_snapshot_v1.json",
+                          "source_digest": digest, "source_sha3_256": plain})
+        for key in ("observed_at_utc", "published", "operational"):
+            self.assertEqual(obj[key], self.snapshot[key])
+        # The version-2 domain gives the same bytes a different identity.
+        self.assertNotEqual(frozen, driver.H("SNAPSHOT", raw))
+
+    def test_version_1_snapshot_is_never_a_version_2_record(self):
+        with self.assertRaises(driver.Refusal):
+            self.load(V1_SNAPSHOT_FILE.read_bytes())
+        with self.assertRaises(driver.Refusal):
+            driver.validate_snapshot(json.loads(V1_SNAPSHOT_FILE.read_bytes()))
+
+    def test_provenance_must_match_the_frozen_version_1_file(self):
+        for key, value in (("source_digest", "1" * 64), ("source_sha3_256", "1" * 64),
+                           ("kind", "new_observation"), ("source_file", "config/other.json")):
+            altered = copy.deepcopy(self.snapshot)
+            altered["provenance"][key] = value
+            with self.subTest(field=key), self.assertRaises(driver.Refusal):
+                driver.validate_snapshot(altered)
+        altered = copy.deepcopy(self.snapshot)
+        del altered["provenance"]
+        with self.assertRaises(driver.Refusal):
+            driver.validate_snapshot(altered)
+        changed = json.loads(V1_SNAPSHOT_FILE.read_bytes())
+        changed["observed_at_utc"] = "2026-10-11T12:38:07Z"
+        (Path(self.scratch.name) / "v1.json").write_bytes(driver.canonical(changed))
+        with mock.patch.object(driver, "V1_SNAPSHOT_FILE", str(Path(self.scratch.name) / "v1.json")):
+            with self.assertRaises(driver.Refusal):
+                driver.validate_snapshot(self.snapshot)
 
     def test_noncanonical_encodings_and_duplicate_members_refuse(self):
         canonical = driver.canonical(self.snapshot)
@@ -226,124 +270,6 @@ class EventFaultTests(unittest.TestCase):
                 driver.validate_summary(altered, 2, 146, 1, 2000000)
 
 
-class CheckpointFaultTests(unittest.TestCase):
-    """Self-contained prefix fixtures, never a frontier scientific prefix."""
-
-    def setUp(self):
-        self.scratch = tempfile.TemporaryDirectory(prefix="ceml-frontier-checkpoint-")
-        self.directory = Path(self.scratch.name)
-        self.run = driver.fixture_run("L1-fixture-a", build_digest="0" * 64)
-        self.store = driver.CheckpointStore(self.directory, self.run)
-
-    def tearDown(self):
-        self.scratch.cleanup()
-
-    def prefix(self, cursor):
-        return driver.summary_reference(2, cursor, 100000, 2000000)
-
-    def replace_record(self, slot, obj):
-        obj = driver.seal(obj, "CHECKPOINT")
-        (self.directory / f"ckpt.{slot}.json").write_bytes(driver.canonical(obj))
-
-    def test_write_interruptions_preserve_sole_valid_generation(self):
-        old = self.store.write(self.prefix(7))
-        before = (self.directory / "ckpt.0.json").read_bytes()
-        for fault in ("before_write", "during_write", "before_flush", "during_flush", "before_rename"):
-            with self.subTest(fault=fault):
-                with self.assertRaises(driver.Refusal):
-                    self.store.write(self.prefix(15), fault)
-                recovered, warnings = self.store.recover()
-                self.assertEqual(old, recovered)
-                self.assertEqual([], warnings)
-                self.assertEqual(before, (self.directory / "ckpt.0.json").read_bytes())
-                self.assertFalse((self.directory / "certificate.json").exists())
-        self.assertTrue(list(self.directory.glob("*.tmp")))
-
-    def test_after_rename_exception_requires_fresh_validation(self):
-        self.store.write(self.prefix(7))
-        with self.assertRaises(driver.Refusal):
-            self.store.write(self.prefix(15), "after_rename")
-        recovered, warnings = self.store.recover()
-        self.assertEqual("1", recovered["generation"])
-        self.assertEqual("15", recovered["next_n"])
-        self.assertEqual([], warnings)
-        self.assertFalse((self.directory / "certificate.json").exists())
-
-    def test_corrupt_latest_falls_back_to_replayed_prior_with_warning(self):
-        old = self.store.write(self.prefix(7))
-        self.store.write(self.prefix(15))
-        (self.directory / "ckpt.1.json").write_bytes(b"torn")
-        recovered, warnings = self.store.recover()
-        self.assertEqual(old, recovered)
-        self.assertTrue(warnings)
-        replacement = self.store.write(self.prefix(15))
-        self.assertEqual(old["digest"], replacement["previous_checkpoint_digest"])
-
-    def test_damaged_earlier_generation_blocks_valid_looking_successor(self):
-        self.store.write(self.prefix(7))
-        self.store.write(self.prefix(15))
-        (self.directory / "ckpt.0.json").write_bytes(b"torn")
-        with self.assertRaises(driver.Refusal):
-            self.store.recover()
-
-    def test_missing_prior_and_both_corrupt_slots_fail_closed(self):
-        self.store.write(self.prefix(7))
-        self.store.write(self.prefix(15))
-        (self.directory / "ckpt.0.json").unlink()
-        with self.assertRaises(driver.Refusal):
-            self.store.recover()
-        (self.directory / "ckpt.0.json").write_bytes(b"torn")
-        (self.directory / "ckpt.1.json").write_bytes(b"torn")
-        with self.assertRaises(driver.Refusal):
-            self.store.recover()
-
-    def test_duplicate_fork_and_orphan_generations_refuse(self):
-        old = self.store.write(self.prefix(7))
-        new = self.store.write(self.prefix(15))
-        cases = []
-        duplicate = copy.deepcopy(old)
-        cases.append(duplicate)
-        fork = copy.deepcopy(new)
-        fork["previous_checkpoint_digest"] = "1" * 64
-        cases.append(fork)
-        orphan = copy.deepcopy(new)
-        orphan["generation"] = "3"
-        cases.append(orphan)
-        omitted = copy.deepcopy(new)
-        omitted["previous_checkpoint_digest"] = None
-        cases.append(omitted)
-        for index, record in enumerate(cases):
-            self.replace_record(1, record)
-            with self.subTest(case=index), self.assertRaises(driver.Refusal):
-                self.store.recover()
-
-    def test_canonical_self_hashed_lies_do_not_fall_back_as_torn_writes(self):
-        self.store.write(self.prefix(7))
-        new = self.store.write(self.prefix(15))
-        changes = (("next_n", "16"), ("native_build_digest", "1" * 64),
-                   ("snapshot_digest", "1" * 64), ("run_id", "changed"),
-                   ("predecessor_digest", "1" * 64), ("generation", str(2**64)))
-        for key, value in changes:
-            record = copy.deepcopy(new)
-            record[key] = value
-            self.replace_record(1, record)
-            with self.subTest(field=key), self.assertRaises(driver.Refusal):
-                self.store.recover()
-
-    def test_cursor_rollback_refuses_before_overwriting_any_slot(self):
-        self.store.write(self.prefix(7))
-        self.store.write(self.prefix(15))
-        before = [(self.directory / f"ckpt.{slot}.json").read_bytes() for slot in (0, 1)]
-        with self.assertRaises(driver.Refusal):
-            self.store.write(self.prefix(9))
-        self.assertEqual(before, [(self.directory / f"ckpt.{slot}.json").read_bytes() for slot in (0, 1)])
-
-    def test_orphan_temporary_file_is_never_checkpoint_evidence(self):
-        (self.directory / "ckpt.0.json.orphan.tmp").write_bytes(driver.canonical(self.run))
-        with self.assertRaises(driver.Refusal):
-            self.store.recover()
-
-
 class CertificateFaultTests(unittest.TestCase):
     """Transaction simulations with a mocked build, labelled acceptance-only."""
 
@@ -372,19 +298,27 @@ class CertificateFaultTests(unittest.TestCase):
             self.assertFalse((self.directory / "certificate.json").exists())
 
     def test_interrupted_certificate_write_never_promotes_temporary(self):
-        for fault in ("before_write", "during_write", "before_flush", "during_flush", "before_rename"):
+        for fault in driver.FAULT_POINTS[:6]:
             with self.subTest(fault=fault), self.assertRaises(driver.Refusal):
                 self.commit(fault=fault)
             self.assertFalse((self.directory / "certificate.json").exists())
-        self.assertTrue(list(self.directory.glob("certificate.json.*.tmp")))
+        # before_create leaves no temporary; the other five leave one orphan each.
+        self.assertEqual(5, len(list(self.directory.glob("certificate.json.*.tmp"))))
+        # Orphans are never evidence and never block the real commit.
+        self.assertEqual(self.commit(), driver.verify_batch(self.directory / "certificate.json", True))
 
-    def test_after_rename_exception_is_not_a_returned_commit(self):
-        with self.assertRaises(driver.Refusal):
-            self.commit(fault="after_rename")
-        # Revalidation may recover this immutable file; the failed call did not
-        # return COMMITTED or create any descendant.
-        cert = driver.verify_batch(self.directory / "certificate.json", True)
-        self.assertEqual(self.complete["transcript_digest"], cert["independent_replay_digest"])
+    def test_exception_after_rename_is_not_a_returned_commit(self):
+        for fault in driver.FAULT_POINTS[6:]:
+            directory = Path(self.scratch.name) / fault
+            driver.prepare_fixture(directory, self.run)
+            with self.subTest(fault=fault), self.assertRaises(driver.Refusal):
+                driver.commit_batch(directory, self.run, self.complete, True, fault)
+            # Revalidation may recover this immutable file; the failed call did not
+            # return COMMITTED or create any descendant.
+            cert = driver.verify_batch(directory / "certificate.json", True)
+            self.assertEqual(self.complete["transcript_digest"], cert["independent_replay_digest"])
+            with self.assertRaises((driver.Refusal, OSError)):
+                driver.commit_batch(directory, self.run, self.complete, True)
 
     def test_immutable_certificate_cannot_be_replaced_even_by_same_result(self):
         cert = self.commit()
@@ -416,7 +350,11 @@ class CertificateFaultTests(unittest.TestCase):
         (self.directory / "snapshot.json").write_bytes(driver.canonical(snapshot))
         with self.assertRaises(driver.Refusal):
             driver.verify_batch(self.directory / "certificate.json", True)
+        (self.directory / "snapshot.json").write_bytes(V1_SNAPSHOT_FILE.read_bytes())
+        with self.assertRaises(driver.Refusal):
+            driver.verify_batch(self.directory / "certificate.json", True)
         (self.directory / "snapshot.json").write_bytes(SNAPSHOT_FILE.read_bytes())
+        driver.verify_batch(self.directory / "certificate.json", True)
         (self.directory / "acceptance.json").unlink()
         with self.assertRaises((driver.Refusal, OSError)):
             driver.verify_batch(self.directory / "certificate.json", True)
@@ -427,49 +365,6 @@ class CertificateFaultTests(unittest.TestCase):
         with self.assertRaises((driver.Refusal, OSError)):
             self.commit()
         self.assertEqual(b"torn", path.read_bytes())
-
-
-class ProcessExitCheckpointTests(unittest.TestCase):
-    # os._exit terminates while the injected write/flush/rename phase is still
-    # on the stack. This tests OS process death, not actual storage power loss.
-    WRAPPER = r'''
-import os
-from pathlib import Path
-import sys
-root, directory, fault = sys.argv[1:]
-sys.path.insert(0, str(Path(root) / "tools/frontier"))
-import ceml_frontier as driver
-original = driver.Refusal
-class ProcessDeath(original):
-    def __init__(self, reason):
-        if reason == "injected " + fault:
-            os._exit(99)
-        super().__init__(reason)
-driver.Refusal = ProcessDeath
-run = driver.fixture_run("L1-fixture-a", build_digest="0" * 64)
-driver.CheckpointStore(directory, run).write(driver.summary_reference(2, 15, 100000, 2000000), fault)
-os._exit(98)
-'''
-
-    def test_process_death_at_each_atomic_write_phase(self):
-        for fault in ("before_write", "during_write", "before_flush", "during_flush", "before_rename", "after_rename"):
-            with self.subTest(fault=fault), tempfile.TemporaryDirectory(prefix="ceml-frontier-process-death-") as scratch:
-                directory = Path(scratch)
-                run = driver.fixture_run("L1-fixture-a", build_digest="0" * 64)
-                store = driver.CheckpointStore(directory, run)
-                old = store.write(driver.summary_reference(2, 7, 100000, 2000000))
-                result = subprocess.run([sys.executable, "-c", self.WRAPPER, str(ROOT), str(directory), fault],
-                                        capture_output=True, timeout=15)
-                self.assertEqual(99, result.returncode, result.stderr.decode("ascii", "replace"))
-                recovered, warnings = store.recover()
-                if fault == "after_rename":
-                    self.assertEqual("1", recovered["generation"])
-                    self.assertEqual("15", recovered["next_n"])
-                    self.assertEqual(old["digest"], recovered["previous_checkpoint_digest"])
-                else:
-                    self.assertEqual(old, recovered)
-                self.assertEqual([], warnings)
-                self.assertFalse((directory / "certificate.json").exists())
 
 
 class Run1AuthorityGateTests(unittest.TestCase):

@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CEML-FRONTIER-2 immutable batch certificate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "digest",
+    "status",
+    "run_digest",
+    "run_id",
+    "snapshot_digest",
+    "base_kind",
+    "base_B",
+    "batch_start",
+    "batch_end",
+    "predecessor_digest",
+    "ruleset_id",
+    "table_digest",
+    "native_build_digest",
+    "checker_source_digest",
+    "transcript_digest",
+    "independent_replay_digest",
+    "counts",
+    "explicit_t_steps",
+    "explicit_odd_steps",
+    "explicit_standard_steps",
+    "explicit_attempts",
+    "unresolved_count",
+    "pending"
+  ],
+  "properties": {
+    "schema": {
+      "const": "CEML-FRONTIER-2-CERTIFICATE"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "const": "conditional_complete"
+    },
+    "run_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_.:-]{1,128}$"
+    },
+    "snapshot_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "base_kind": {
+      "enum": [
+        "published",
+        "operational"
+      ]
+    },
+    "base_B": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "maxLength": 8192
+    },
+    "batch_start": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "maxLength": 8192
+    },
+    "batch_end": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "maxLength": 8192
+    },
+    "predecessor_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ruleset_id": {
+      "const": "E2-Q4-P3-M9-S2K4-03-v1"
+    },
+    "table_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "native_build_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "checker_source_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "transcript_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "independent_replay_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_count",
+        "e2_count",
+        "q4_count",
+        "p3_count",
+        "m9_count",
+        "s2_count",
+        "explicit_count",
+        "unresolved_count"
+      ],
+      "properties": {
+        "base_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "e2_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "q4_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "p3_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "m9_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "s2_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "explicit_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "unresolved_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        }
+      }
+    },
+    "explicit_t_steps": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "maxLength": 8192
+    },
+    "explicit_odd_steps": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "maxLength": 8192
+    },
+    "explicit_standard_steps": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "maxLength": 8192
+    },
+    "explicit_attempts": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "maxLength": 8192
+    },
+    "unresolved_count": {
+      "const": "0"
+    },
+    "pending": {
+      "type": "null"
+    }
+  }
+}

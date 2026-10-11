@@ -42,6 +42,67 @@ class BuildIntegrity(unittest.TestCase):
         self.assertEqual(value["table_text"].encode("ascii"), build.table_bytes())
         self.assertIn("tools/c1/gmp_smoke.c", value["inputs"])
         self.assertIn("tests/frontier/test_build.py", value["inputs"])
+        self.assertEqual("CEML-FRONTIER-2-BUILD", value["schema"])
+        for name in ("config/frontier_snapshot_v1.json", "config/frontier_snapshot_v2.json",
+                     "docs/FRONTIER_PROTOCOL_V1.md", "docs/FRONTIER_PROTOCOL_V2.md",
+                     "tests/frontier/test_recovery.py", "tests/frontier/test_operator.py"):
+            self.assertIn(name, value["inputs"])
+        schemas = sorted(name for name in value["inputs"] if name.startswith("schemas/"))
+        self.assertEqual(sorted(f"schemas/frontier_{kind}_v{version}.schema.json" for version in (1, 2)
+                                for kind in ("snapshot", "run", "checkpoint", "certificate")), schemas)
+
+    def test_identity_is_line_ending_independent_but_content_sensitive(self):
+        CR, LF = bytes([13]), bytes([10])
+        with tempfile.TemporaryDirectory(dir=ROOT/"local/frontier") as directory:
+            root = Path(directory)
+            names = build.input_paths()
+            def identity(transform):
+                for name in names:
+                    target = root/name
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(transform(name, (ROOT/name).read_bytes().replace(CR + LF, LF)))
+                with mock.patch.object(build, "ROOT", root), mock.patch.object(build, "input_paths", return_value=names):
+                    return build.inputs()
+            plain = identity(lambda name, raw: raw)
+            windows = identity(lambda name, raw: raw.replace(LF, CR + LF))
+            self.assertEqual(plain, windows)
+            self.assertEqual(plain, build.inputs())
+            self.assertEqual({"lf"}, set(plain["src/frontier_worker.c"]))
+            edited = identity(lambda name, raw: raw + b" " if name == "docs/FRONTIER_PROTOCOL_V2.md" else raw)
+            self.assertNotEqual(plain, edited)
+
+    def test_unexpected_or_missing_frontier_schema_refuses(self):
+        real = build.ROOT
+        with tempfile.TemporaryDirectory(dir=ROOT/"local/frontier") as directory:
+            root = Path(directory)
+            (root/"schemas").mkdir()
+            for path in (real/"schemas").glob("frontier_*.schema.json"):
+                (root/"schemas"/path.name).write_bytes(path.read_bytes())
+            for folder in ("tools/frontier", "tests/frontier", "src"):
+                (root/folder).mkdir(parents=True)
+            with mock.patch.object(build, "ROOT", root):
+                self.assertEqual(8, len([p for p in build.input_paths() if p.startswith("schemas/")]))
+                (root/"schemas/frontier_run_v3.schema.json").write_bytes(b"{}")
+                with self.assertRaises(build.Refusal):
+                    build.input_paths()
+                (root/"schemas/frontier_run_v3.schema.json").unlink()
+                (root/"schemas/frontier_checkpoint_v2.schema.json").unlink()
+                with self.assertRaises(build.Refusal):
+                    build.input_paths()
+
+    def test_tool_binaries_are_rehashed_on_every_call_despite_cached_location(self):
+        env, bindir, metadata = build.toolchain()
+        with tempfile.TemporaryDirectory(dir=ROOT/"local/frontier") as directory:
+            fake = Path(directory)
+            for name in ("cl.exe", "link.exe", "lib.exe", "c1.dll", "c2.dll"):
+                (fake/name).write_bytes((bindir/name).read_bytes())
+            located = (env, fake, metadata["msvc_tools_version"], metadata["windows_sdk_version"])
+            with mock.patch.object(build, "_LOCATED", located):
+                self.assertEqual(metadata, build.toolchain()[2])
+                (fake/"c2.dll").write_bytes(b"changed compiler back end")
+                self.assertNotEqual(metadata, build.toolchain()[2])
+                with self.assertRaisesRegex(build.Refusal, "compiler content"):
+                    build.dependency_check()
 
     def test_altered_table_with_rehashed_manifest_refuses(self):
         self.altered_manifest(lambda value: value.__setitem__("table_text", value["table_text"].replace("3|1100|9|5|2", "3|1100|9|6|2")))

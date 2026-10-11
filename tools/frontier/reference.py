@@ -1,4 +1,4 @@
-"""Independent exact mathematical reference for CEML-FRONTIER-1.
+"""Independent exact mathematical reference for CEML-FRONTIER-2.
 
 This module imports no driver/native classifications or precomputed native rows.
 An event proves only the protocol's conditional inference; replay does not accept
@@ -17,6 +17,8 @@ MAX_BATCH = 14400
 MAX_DIGITS = 8192
 MAX_VALUE = 10 ** MAX_DIGITS - 1
 MAX_FRAME = 32768
+# Version-2 digest domain, stated here independently of the driver.
+DOMAIN = b"CEML-FRONTIER-2/"
 
 # The complete frozen period-144 ledger, represented independently of the
 # predicate code below. Residue 1 is represented by n=145, not boundary n=1.
@@ -274,7 +276,7 @@ def domain_digest(tag, payload):
         raise Refusal("invalid digest domain")
     if type(payload) is not bytes:
         raise Refusal("digest payload must be bytes")
-    return hashlib.sha3_256(b"CEML-FRONTIER-1/" + tag.encode("ascii") + b"\0" + payload).hexdigest()
+    return hashlib.sha3_256(DOMAIN + tag.encode("ascii") + b"\0" + payload).hexdigest()
 
 
 def table_digest():
@@ -320,7 +322,7 @@ def replay(start, end, max_t=MAX_T, max_total=MAX_TOTAL_T):
     _integer(max_t, 1, MAX_T, "per-explicit budget")
     _integer(max_total, 1, MAX_TOTAL_T, "total budget")
     counts = dict.fromkeys(COUNT_KEYS, 0)
-    digest = hashlib.sha3_256(b"CEML-FRONTIER-1/EVENTS\0")
+    digest = hashlib.sha3_256(DOMAIN + b"EVENTS\0")
     t_steps = odd_steps = attempts = 0
     next_n = start
     pending = None

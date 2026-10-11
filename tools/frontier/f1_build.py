@@ -1,4 +1,4 @@
-"""Local-only pinned build of the distinct CEML-FRONTIER-1 worker.
+"""Local-only pinned build of the distinct CEML-FRONTIER-2 worker.
 
 Reads retained cache and previously extracted pinned bytes. It has no archive
 download/extraction path, legacy engine invocation, telemetry or Git write.
@@ -28,9 +28,12 @@ CHECKED_FLAGS = ["-nologo", "-std:c17", "-W4", "-WX", "-Od", "-RTC1", "-MD",
 NATIVE = ("src/frontier_main.c", "src/frontier_worker.c", "src/frontier_worker.h",
           "src/ceml_oracle.c", "src/ceml_oracle.h")
 FIXED = ("config/c1_gmp_pin.toml", "config/c1_dependency_manifest.toml",
-         "config/frontier_snapshot_v1.json", "docs/FRONTIER_PROTOCOL_V1.md",
+         "config/frontier_snapshot_v1.json", "config/frontier_snapshot_v2.json",
+         "docs/FRONTIER_PROTOCOL_V1.md", "docs/FRONTIER_PROTOCOL_V2.md",
          "docs/P1_EXCLUSION_PROOFS.md", "docs/P2_PROTOCOL_AUDIT.md", "tools/c1/gmp_smoke.c")
 MANIFEST_NAME = "build_manifest.json"
+MANIFEST_SCHEMA = "CEML-FRONTIER-2-BUILD"
+DOMAIN = b"CEML-FRONTIER-2/"
 
 
 class Refusal(Exception):
@@ -43,7 +46,7 @@ def canonical(value):
 
 
 def domain_hash(tag, data):
-    return hashlib.sha3_256(b"CEML-FRONTIER-1/" + tag.encode("ascii") + b"\0" + data).hexdigest()
+    return hashlib.sha3_256(DOMAIN + tag.encode("ascii") + b"\0" + data).hexdigest()
 
 
 def hashes(data):
@@ -88,9 +91,11 @@ def input_paths():
     paths.update(p.relative_to(ROOT).as_posix() for p in (ROOT/"tests/frontier").rglob("*.py"))
     paths.update(p.relative_to(ROOT).as_posix() for p in (ROOT/"src").glob("frontier_*.c"))
     paths.update(p.relative_to(ROOT).as_posix() for p in (ROOT/"src").glob("frontier_*.h"))
-    paths.update(p.relative_to(ROOT).as_posix() for p in (ROOT/"schemas").glob("frontier_*_v1.schema.json"))
-    if len([p for p in paths if p.startswith("schemas/")]) != 4:
-        raise Refusal("Frozen schema set incomplete")
+    paths.update(p.relative_to(ROOT).as_posix() for p in (ROOT/"schemas").glob("frontier_*.schema.json"))
+    expected = {f"schemas/frontier_{kind}_v{version}.schema.json" for version in (1, 2)
+                for kind in ("snapshot", "run", "checkpoint", "certificate")}
+    if {p for p in paths if p.startswith("schemas/")} != expected:
+        raise Refusal("Frozen schema set incomplete or unexpected")
     return sorted(paths)
 
 
@@ -100,7 +105,8 @@ def inputs():
         path = ROOT/name
         if path.is_symlink() or not path.is_file() or path.stat().st_size > 2*1024*1024:
             raise Refusal("Build input missing or oversized")
-        result[name] = {"raw": hashes(path.read_bytes()), "lf": hashes(lf(path))}
+        # LF-normalised only: a CRLF checkout must not change the build identity.
+        result[name] = {"lf": hashes(lf(path))}
     return result
 
 
@@ -192,7 +198,29 @@ def pe_info(data):
     return {"imports": sorted(imports), "exports": exports}
 
 
+_LOCATED = None
+
+
 def toolchain():
+    """Locate the pinned compiler and hash its binaries.
+
+    The installation path and its vcvars environment are discovered once per
+    process. The five tool binaries are re-read and re-hashed on every call, so
+    a changed compiler still refuses.
+    """
+    global _LOCATED
+    if _LOCATED is None:
+        _LOCATED = locate_toolchain()
+    env, bindir, version, sdk = _LOCATED
+    metadata = {"msvc_tools_version": version, "windows_sdk_version": sdk,
+                "target": "x86_64-pc-windows-msvc", "abi": "LLP64",
+                "sdk_closure_content_hashed": "no",
+                "tool_sha3_256": {n: hashes((bindir/n).read_bytes())["sha3_256"]
+                                  for n in ("cl.exe", "link.exe", "lib.exe", "c1.dll", "c2.dll")}}
+    return dict(env), bindir, metadata
+
+
+def locate_toolchain():
     if os.name != "nt":
         raise Refusal("Pinned Windows toolchain required")
     locator = Path(os.environ.get("ProgramFiles(x86)", ""))/"Microsoft Visual Studio/Installer/vswhere.exe"
@@ -218,13 +246,7 @@ def toolchain():
     sdk = env.get("WINDOWSSDKVERSION", "").strip("\\/")
     if not re.fullmatch(r"\d+(?:\.\d+){2,3}", version) or not re.fullmatch(r"\d+(?:\.\d+){2,3}", sdk):
         raise Refusal("Toolchain version unavailable")
-    bindir = root/"VC/Tools/MSVC"/version/"bin/Hostx64/x64"
-    metadata = {"msvc_tools_version": version, "windows_sdk_version": sdk,
-                "target": "x86_64-pc-windows-msvc", "abi": "LLP64",
-                "sdk_closure_content_hashed": "no",
-                "tool_sha3_256": {n: hashes((bindir/n).read_bytes())["sha3_256"]
-                                  for n in ("cl.exe", "link.exe", "lib.exe", "c1.dll", "c2.dll")}}
-    return env, bindir, metadata
+    return env, root/"VC/Tools/MSVC"/version/"bin/Hostx64/x64", version, sdk
 
 
 def dependency_check():
@@ -320,7 +342,7 @@ def build():
     if before != after:
         raise Refusal("Build source inputs changed during compilation")
     table = table_bytes()
-    result = {"schema": "CEML-FRONTIER-1-BUILD", "offline": "yes",
+    result = {"schema": MANIFEST_SCHEMA, "offline": "yes",
               "python_version": pin["python_version"], "toolchain": metadata,
               "compiler_flags": FLAGS, "checked_compiler_flags": CHECKED_FLAGS,
               "linker_flags": ["-Brepro"], "inputs": after, "artifacts": artifact_hashes(BUILD),
@@ -358,7 +380,7 @@ def verify_build(clean=False):
                 "capability_probe", "provisioning", "sdk_limitation", "digest"}
     if not isinstance(manifest, dict) or set(manifest) != expected:
         raise Refusal("Native build manifest shape mismatch")
-    if canonical(manifest) != raw or manifest.get("schema") != "CEML-FRONTIER-1-BUILD":
+    if canonical(manifest) != raw or manifest.get("schema") != MANIFEST_SCHEMA:
         raise Refusal("Noncanonical native build manifest")
     unsigned = dict(manifest)
     digest = unsigned.pop("digest", None)

@@ -1,4 +1,4 @@
-"""CEML-FRONTIER-1 offline driver. L1 fixtures are engineering evidence only."""
+"""CEML-FRONTIER-2 offline driver. L1 fixtures are engineering evidence only."""
 from __future__ import annotations
 
 import argparse
@@ -19,6 +19,18 @@ from f1_build import Refusal as BuildRefusal
 
 ROOT = Path(__file__).resolve().parents[2]
 LOCAL = ROOT / 'local/frontier'
+PROTOCOL = 'CEML-FRONTIER-2'
+DOMAIN = b'CEML-FRONTIER-2/'
+SCHEMA_IDS = {'snapshot': 'CEML-FRONTIER-2-SNAPSHOT', 'run': 'CEML-FRONTIER-2-RUN',
+              'checkpoint': 'CEML-FRONTIER-CKPT-2', 'certificate': 'CEML-FRONTIER-2-CERTIFICATE'}
+# The frozen version-1 snapshot is provenance only; no version-1 record is runnable here.
+V1_SNAPSHOT_FILE = 'config/frontier_snapshot_v1.json'
+V1_SNAPSHOT_SCHEMA = 'CEML-FRONTIER-1-SNAPSHOT'
+V1_SNAPSHOT_DIGEST = 'a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66'
+SLOTS = 3
+DAMAGED = object()
+FAULT_POINTS = ('before_create', 'before_write', 'during_write', 'before_flush', 'after_flush',
+                'before_rename', 'after_rename', 'after_directory_flush')
 RULESET = 'E2-Q4-P3-M9-S2K4-03-v1'
 MAX_RECORD = 128 * 1024
 IDENTITY = ('run_id', 'snapshot_digest', 'base_kind', 'base_B', 'ruleset_id',
@@ -26,8 +38,11 @@ IDENTITY = ('run_id', 'snapshot_digest', 'base_kind', 'base_B', 'ruleset_id',
 BINDING = IDENTITY + ('batch_start', 'batch_end', 'predecessor_digest')
 TOTALS = ('counts', 'transcript_digest', 'explicit_t_steps', 'explicit_odd_steps',
           'explicit_standard_steps', 'explicit_attempts')
+AUTHORITY_KEYS = ('authority_id', 'snapshot_digest', 'base_kind', 'base_B', 'accepted_assumption_ack',
+                  'batch_start', 'batch_end', 'owner_instruction')
 FIXTURES = {'L1-fixture-a': (2, 146), 'L1-fixture-b': (143, 287),
-            'L1-fixture-c': (17, 113), 'L1-fixture-successor': (146, 290)}
+            'L1-fixture-c': (17, 113), 'L1-fixture-successor': (146, 290),
+            'L1-fixture-wide': (2, 9602)}
 sys.set_int_max_str_digits(10000)
 
 
@@ -38,7 +53,7 @@ class Refusal(Exception):
 class NativeFailure(Refusal):
     def __init__(self, reason, exit_code, stderr, summary):
         super().__init__(reason)
-        self.record = dict(schema='CEML-FRONTIER-1-NATIVE-ANOMALY', reason=reason,
+        self.record = dict(schema='CEML-FRONTIER-2-NATIVE-ANOMALY', reason=reason,
                            exit_code=str(exit_code), stderr_hex=bytes(stderr).hex(),
                            next_n=summary['next_n'], transcript_digest=summary['transcript_digest'])
 
@@ -49,7 +64,7 @@ def require(condition, reason):
 
 
 def H(tag, payload):
-    return hashlib.sha3_256(b'CEML-FRONTIER-1/' + tag.encode('ascii') + b'\0' + payload).hexdigest()
+    return hashlib.sha3_256(DOMAIN + tag.encode('ascii') + b'\0' + payload).hexdigest()
 
 
 def canonical(value):
@@ -119,8 +134,8 @@ def parse_bytes(data):
     return obj
 
 
-def validate_shape(obj, kind):
-    spec = json.loads((ROOT / f'schemas/frontier_{kind}_v1.schema.json').read_text('ascii'))
+def validate_shape(obj, kind, version=2):
+    spec = json.loads((ROOT / f'schemas/frontier_{kind}_v{version}.schema.json').read_text('ascii'))
     def check(value, shape):
         if 'anyOf' in shape:
             for option in shape['anyOf']:
@@ -161,19 +176,37 @@ def seal(obj, tag):
     return result
 
 
-def load_record(path, kind):
+def read_bounded(path):
     with local_path(path).open('rb') as stream:
-        data = stream.read(MAX_RECORD + 1)
-    obj = parse_bytes(data)
+        return stream.read(MAX_RECORD + 1)
+
+
+def load_record(path, kind):
+    obj = parse_bytes(read_bounded(path))
     validate_shape(obj, kind)
     if kind in ('checkpoint', 'certificate'):
         require(obj == seal(obj, kind.upper()), 'record digest mismatch')
     return obj
 
 
+def v1_snapshot(path=None):
+    """Frozen version-1 research snapshot: exact bytes, shape and version-1 digest."""
+    raw = read_bounded(ROOT / V1_SNAPSHOT_FILE if path is None else path)
+    obj = parse_bytes(raw)
+    validate_shape(obj, 'snapshot', 1)
+    digest = hashlib.sha3_256(b'CEML-FRONTIER-1/SNAPSHOT\0' + raw).hexdigest()
+    require(digest == V1_SNAPSHOT_DIGEST, 'frozen version-1 snapshot bytes changed')
+    return obj, digest, hashlib.sha3_256(raw).hexdigest()
+
+
 def validate_snapshot(obj):
     validate_shape(obj, 'snapshot')
     p, o = obj['published'], obj['operational']
+    frozen, frozen_digest, frozen_plain = v1_snapshot()
+    require(obj['provenance']['source_digest'] == frozen_digest and
+            obj['provenance']['source_sha3_256'] == frozen_plain and
+            all(obj[key] == frozen[key] for key in ('observed_at_utc', 'published', 'operational')),
+            'snapshot provenance does not match the frozen version-1 snapshot')
     try:
         observed = datetime.strptime(obj['observed_at_utc'], '%Y-%m-%dT%H:%M:%SZ')
         generated = datetime.strptime(o['site_generated_utc'], '%Y-%m-%dT%H:%M:%SZ')
@@ -196,7 +229,7 @@ def validate_snapshot(obj):
 
 
 def snapshot():
-    obj = load_record(ROOT / 'config/frontier_snapshot_v1.json', 'snapshot')
+    obj = load_record(ROOT / 'config/frontier_snapshot_v2.json', 'snapshot')
     validate_snapshot(obj)
     return obj
 
@@ -229,24 +262,33 @@ def validate_manifest(run, snap, test=False):
     return run
 
 
-def run1_gate(run):
-    status = (ROOT / 'PROGRAM_STATUS.md').read_text('utf-8')
+def status_text():
+    return (ROOT / 'PROGRAM_STATUS.md').read_text('utf-8')
+
+
+def run1_status():
+    status = status_text()
     require(phase_is(status, 'RUN1') and
             status_field(status, 'Scientific execution authorization') == 'AUTHORISED', 'RUN1 not owner-authorised')
-    evidence = parse_bytes((LOCAL / 'run1_authorization.json').read_bytes())
-    keys = ('authority_id', 'snapshot_digest', 'base_kind', 'base_B', 'accepted_assumption_ack',
-            'batch_start', 'batch_end', 'owner_instruction')
-    require(set(evidence) == set(keys), 'RUN1 authority evidence shape')
+
+
+def run1_gate(run):
+    """Return the exact authority-evidence bytes that cover this one batch."""
+    run1_status()
+    raw = read_bounded(LOCAL / 'run1_authorization.json')
+    evidence = parse_bytes(raw)
+    require(isinstance(evidence, dict) and set(evidence) == set(AUTHORITY_KEYS), 'RUN1 authority evidence shape')
     require(evidence['owner_instruction'] and evidence['authority_id'] == run['run1_authority_id'],
             'fresh RUN1 owner authority missing')
-    for key in keys[1:-1]:
+    for key in AUTHORITY_KEYS[1:-1]:
         require(evidence[key] == run[key], 'RUN1 authority does not cover this batch')
     if run['batch_start'] == run['base_B']:
         require(int(run['batch_end'])-int(run['batch_start']) == 144, 'first RUN1 pilot is exactly 144 starts')
+    return raw
 
 
 def l1_gate():
-    status = (ROOT / 'PROGRAM_STATUS.md').read_text('utf-8')
+    status = status_text()
     require(phase_is(status, 'L1') and
             status_field(status, 'Scientific execution authorization').split()[0] == 'DENIED', 'L1 fixture phase not established')
     evidence = parse_bytes((LOCAL/'l1_authorization.json').read_bytes())
@@ -275,7 +317,7 @@ def fixture_run(name, max_t=100000, max_total=2000000, build_digest=None):
     start, end = FIXTURES[name]
     snap_digest = validate_snapshot(snapshot())
     base = 2 if name == 'L1-fixture-successor' else start
-    run = dict(schema='CEML-FRONTIER-1-RUN', run_id='L1-fixture-a' if name == 'L1-fixture-successor' else name,
+    run = dict(schema=SCHEMA_IDS['run'], run_id='L1-fixture-a' if name == 'L1-fixture-successor' else name,
                run1_authority_id='L1-NONSCIENTIFIC',
                snapshot_digest=snap_digest, base_kind='published', base_B=str(base),
                accepted_assumption_ack=f'{snap_digest}:published:{base}', batch_start=str(start),
@@ -322,7 +364,7 @@ def validate_summary(summary, start, end, max_t, max_total):
 
 
 def checked_events(frames, start, end, max_t, max_total, complete=True):
-    digest = hashlib.sha3_256(b'CEML-FRONTIER-1/EVENTS\0')
+    digest = hashlib.sha3_256(DOMAIN + b'EVENTS\0')
     counts = {k: '0' for k in reference.expected_counts(start, start)}
     # expected_counts includes all coverage categories in the reference contract.
     t_steps, odd_steps, cursor = 0, 0, start
@@ -363,8 +405,7 @@ def consume_native(start, end, max_t, max_total, exe=None):
     env.pop('CEML_FRONTIER_DRIVER_MODE', None)
     env.pop('CEML_FRONTIER_STATUS_PATH', None)
     if start >= 10000:
-        require(phase_is((ROOT/'PROGRAM_STATUS.md').read_text('utf-8'), 'RUN1'),
-                'large native scan requires RUN1')
+        require(phase_is(status_text(), 'RUN1'), 'large native scan requires RUN1')
         env['CEML_FRONTIER_DRIVER_MODE'] = 'RUN1-AUTHORIZED'
         env['CEML_FRONTIER_STATUS_PATH'] = str(ROOT/'PROGRAM_STATUS.md')
     process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
@@ -441,11 +482,17 @@ def consume_native(start, end, max_t, max_total, exe=None):
 
 
 def write_atomic(path, data, replace=False, fault=None):
+    """Exclusive temporary, flush, atomic rename, directory flush, byte re-read.
+
+    fault names one FAULT_POINTS member for acceptance tests; the CLI never sets it.
+    """
     path = local_path(path)
     require(len(data) <= MAX_RECORD, 'atomic record size')
+    require(fault is None or fault in FAULT_POINTS, 'unknown fault point')
     temp = path.parent / (path.name + '.' + uuid.uuid4().hex + '.tmp')
     def inject(phase):
         require(fault != phase, 'injected ' + phase)
+    inject('before_create')
     with temp.open('xb', buffering=0) as stream:
         inject('before_write')
         if fault == 'during_write':
@@ -454,7 +501,7 @@ def write_atomic(path, data, replace=False, fault=None):
         require(stream.write(data) == len(data), 'short record write')
         inject('before_flush')
         os.fsync(stream.fileno())
-        inject('during_flush')
+        inject('after_flush')
     inject('before_rename')
     if os.name == 'nt':
         move = ctypes.WinDLL('kernel32', use_last_error=True).MoveFileExW
@@ -467,6 +514,7 @@ def write_atomic(path, data, replace=False, fault=None):
         temp.unlink()
     inject('after_rename')
     directory_flush(path.parent)
+    inject('after_directory_flush')
     require(path.read_bytes() == data, 'atomic re-read mismatch')
 
 
@@ -501,64 +549,108 @@ def checkpoint_valid(obj, run):
     generation = int(obj['generation'])
     require(generation <= 2**64-1, 'generation overflow')
     require((generation == 0) == (obj['previous_checkpoint_digest'] is None), 'checkpoint parent mismatch')
+    # The root asserts no progress, so accepting it alone can never promote anything.
+    require(generation > 0 or (obj['next_n'] == run['batch_start'] and obj['pending'] is None),
+            'root checkpoint is not the empty prefix')
     validate_summary(obj, int(run['batch_start']), int(run['batch_end']),
                      int(run['max_t_per_explicit']), int(run['max_total_t']))
 
 
 class CheckpointStore:
+    """Three rotating slots; generation g lives only in slot g mod 3 (protocol 4.3-4.5)."""
+
     def __init__(self, directory, run):
         self.directory, self.run = local_path(directory), run
         self.directory.mkdir(parents=True, exist_ok=True)
 
+    def slot(self, index):
+        return self.directory / f'ckpt.{index}.json'
+
+    def read_slot(self, index):
+        """None if ABSENT, DAMAGED for a torn file, else a shape-valid self-hashed record.
+
+        A canonical record of any other kind or protocol version is FOREIGN and refuses.
+        """
+        path = local_path(self.slot(index))
+        if not path.exists():
+            return None
+        try:
+            with path.open('rb') as stream:
+                obj = parse_bytes(stream.read(MAX_RECORD + 1))
+        except (Refusal, OSError):
+            return DAMAGED
+        require(isinstance(obj, dict) and obj.get('schema') == SCHEMA_IDS['checkpoint'],
+                'foreign or cross-version checkpoint record')
+        try:
+            validate_shape(obj, 'checkpoint')
+            require(obj == seal(obj, 'CHECKPOINT'), 'checkpoint hash mismatch')
+        except Refusal:
+            return DAMAGED
+        return obj
+
     def recover(self):
-        valid, broken = [], []
-        for slot in (0, 1):
-            path = self.directory / f'ckpt.{slot}.json'
-            if not path.exists():
-                continue
-            try:
-                obj = load_record(path, 'checkpoint')
-            except (Refusal, OSError):
-                broken.append(slot)
-                continue
-            # Canonical, self-hashed contradictory identities/logical claims are not torn writes.
-            checkpoint_valid(obj, self.run)
-            require(int(obj['generation']) % 2 == slot, 'checkpoint slot/generation mismatch')
-            valid.append(obj)
-        require(valid, 'no independently valid checkpoint')
-        valid.sort(key=lambda v: int(v['generation']))
-        if len(valid) == 2:
-            old, new = valid
+        records, damaged, absent = [], [], []
+        for index in range(SLOTS):
+            found = self.read_slot(index)
+            if found is None:
+                absent.append(index)
+            elif found is DAMAGED:
+                damaged.append(index)
+            else:
+                # Canonical, self-hashed contradictory identities/logical claims are not torn writes.
+                checkpoint_valid(found, self.run)
+                require(int(found['generation']) % SLOTS == index, 'checkpoint slot/generation mismatch')
+                records.append(found)
+        require(records, 'no independently valid checkpoint')
+        records.sort(key=lambda record: int(record['generation']))
+        for old, new in zip(records, records[1:]):
             require(int(new['generation']) == int(old['generation'])+1 and
-                    new['previous_checkpoint_digest'] == old['digest'], 'checkpoint fork/orphan generation')
+                    new['previous_checkpoint_digest'] == old['digest'], 'checkpoint fork/orphan/gap generation')
             require(int(new['next_n']) >= int(old['next_n']), 'checkpoint cursor rollback')
-        else:
-            # With only a later generation, corruption could be its parent or its
-            # successor. Two slots alone cannot distinguish these cases safely.
-            require(int(valid[0]['generation']) == 0, 'ambiguous/missing checkpoint predecessor generation')
-        warnings = ['invalid latest slot; independently replayed surviving prefix; rollback detection requires external root'] if broken else []
-        return valid[-1], warnings
+        newest = records[-1]
+        # Only the root may stand alone: a later generation needs its verified, hash-linked parent.
+        require(len(records) >= 2 or newest['generation'] == '0',
+                'missing/damaged checkpoint predecessor generation')
+        warnings = []
+        if damaged:
+            warnings.append('damaged checkpoint slot ' + ','.join(map(str, damaged)) +
+                            '; recovered the newest hash-linked generation and its prefix is re-executed; '
+                            'rollback detection requires an external root')
+        if absent and int(newest['generation']) >= 2:
+            warnings.append('absent checkpoint slot ' + ','.join(map(str, absent)) +
+                            '; a retained generation is missing; rollback detection requires an external root')
+        return newest, warnings
+
+    def initialize(self, fault=None):
+        """Write the empty-prefix root, generation 0, into a directory with no slot at all."""
+        require(not any(self.slot(index).exists() for index in range(SLOTS)) and
+                not (self.directory / 'certificate.json').exists(), 'checkpoint root already exists')
+        start = int(self.run['batch_start'])
+        empty = summary_reference(start, start, int(self.run['max_t_per_explicit']), int(self.run['max_total_t']))
+        return self._store(empty, 0, None, fault)
 
     def write(self, summary, fault=None):
-        present = any((self.directory / f'ckpt.{slot}.json').exists() for slot in (0,1))
-        old = self.recover()[0] if present else None
-        generation = int(old['generation'])+1 if old else 0
+        old = self.recover()[0]
+        generation = int(old['generation'])+1
         require(generation <= 2**64-1, 'generation overflow')
-        if old:
-            require(int(summary['next_n']) >= int(old['next_n']), 'checkpoint cursor rollback')
-        obj = dict(schema='CEML-FRONTIER-CKPT-1', run_digest=H('RUN', canonical(self.run)),
-                   generation=str(generation), previous_checkpoint_digest=old['digest'] if old else None,
+        require(int(summary['next_n']) >= int(old['next_n']), 'checkpoint cursor rollback')
+        return self._store(summary, generation, old['digest'], fault)
+
+    def _store(self, summary, generation, parent, fault):
+        obj = dict(schema=SCHEMA_IDS['checkpoint'], run_digest=H('RUN', canonical(self.run)),
+                   generation=str(generation), previous_checkpoint_digest=parent,
                    **{key: self.run[key] for key in BINDING}, **summary)
         obj = seal(obj, 'CHECKPOINT')
         checkpoint_valid(obj, self.run)
-        write_atomic(self.directory / f'ckpt.{generation%2}.json', canonical(obj), True, fault)
+        # Slot g mod 3 never holds generation g-1 or g-2; the root is created without replacement.
+        write_atomic(self.slot(generation % SLOTS), canonical(obj), generation > 0, fault)
         recovered = self.recover()[0]
         require(recovered == obj, 'checkpoint independent re-read mismatch')
         return obj
 
 
 def checker_digest():
-    digest = hashlib.sha3_256(b'CEML-FRONTIER-1/CHECKER\0')
+    digest = hashlib.sha3_256(DOMAIN + b'CHECKER\0')
     for name in ('tools/frontier/ceml_frontier.py', 'tools/frontier/reference.py'):
         data = (ROOT / name).read_bytes().replace(b'\r\n', b'\n')
         digest.update(name.encode('ascii')+b'\0'+len(data).to_bytes(8,'big')+data)
@@ -566,8 +658,12 @@ def checker_digest():
 
 
 def fixture_marker(run):
-    return dict(schema='CEML-L1-ACCEPTANCE-FIXTURE-1', scope='NONSCIENTIFIC',
+    return dict(schema='CEML-L1-ACCEPTANCE-FIXTURE-2', scope='NONSCIENTIFIC',
                 run_digest=H('RUN', canonical(run)), fixture=run['run_id'])
+
+
+def is_fixture(directory):
+    return (local_path(directory) / 'acceptance.json').exists()
 
 
 def load_context(directory, test=False):
@@ -630,7 +726,7 @@ def commit_batch(directory, run, summary, test=False, fault=None):
     # A separate second computational pass over every n, after native completion.
     replay = summary_reference(start, end, max_t, max_total)
     require(summary == replay, 'full independent replay disagreement')
-    certificate = seal(dict(schema='CEML-FRONTIER-1-CERTIFICATE', status='conditional_complete',
+    certificate = seal(dict(schema=SCHEMA_IDS['certificate'], status='conditional_complete',
                             run_digest=H('RUN', canonical(run)), **{key:run[key] for key in BINDING},
                             checker_source_digest=checker_digest(),
                             independent_replay_digest=replay['transcript_digest'],
@@ -689,7 +785,53 @@ def ledger(directory, test=False):
                 before['batch_end'] == after['batch_start'] and after['predecessor_digest'] == before['digest'],
                 'ledger duplicate/fork/gap/identity mismatch')
     return dict(status='NONSCIENTIFIC_FIXTURE' if test else 'conditional_chain',
-                batches=str(len(certificates)), start=first['batch_start'], end=certificates[-1]['batch_end'])
+                batches=str(len(certificates)), start=first['batch_start'], end=certificates[-1]['batch_end'],
+                genesis_digest=first['predecessor_digest'], latest_certificate_digest=certificates[-1]['digest'])
+
+
+def reference_replay(directory):
+    """Pure-Python recomputation of one committed batch; no build, chain or authority check."""
+    directory = local_path(directory)
+    run = load_record(directory / 'run.json', 'run')
+    cert = load_record(directory / 'certificate.json', 'certificate')
+    require(cert['run_digest'] == H('RUN', canonical(run)) and
+            all(cert[key] == run[key] for key in BINDING), 'certificate/run identity mismatch')
+    result = summary_reference(int(run['batch_start']), int(run['batch_end']),
+                               int(run['max_t_per_explicit']), int(run['max_total_t']))
+    require(result['pending'] is None and result['next_n'] == run['batch_end'], 'replay unresolved')
+    require(all(cert[key] == result[key] for key in TOTALS) and
+            cert['independent_replay_digest'] == result['transcript_digest'], 'reference replay disagreement')
+    return dict(status='REFERENCE_REPLAY_MATCH', scope='arithmetic only; not a chain, build or authority check',
+                batch_start=run['batch_start'], batch_end=run['batch_end'], digest=cert['digest'],
+                transcript_digest=result['transcript_digest'])
+
+
+def inspect_batch(directory):
+    """Read-only diagnosis of one batch directory; it changes and promotes nothing."""
+    directory = local_path(directory)
+    require(directory.is_dir(), 'batch directory missing')
+    run = load_record(directory / 'run.json', 'run')
+    store = CheckpointStore(directory, run)
+    slots = {}
+    for index in range(SLOTS):
+        try:
+            found = store.read_slot(index)
+        except Refusal as error:
+            slots[str(index)] = 'FOREIGN: ' + str(error)
+            continue
+        slots[str(index)] = ('ABSENT' if found is None else 'DAMAGED' if found is DAMAGED else
+                             'RECORD generation ' + found['generation'] + ' next_n ' + found['next_n'])
+    try:
+        newest, warnings = store.recover()
+        recovery = dict(status='RECOVERABLE', generation=newest['generation'], next_n=newest['next_n'],
+                        pending=newest['pending'], warnings=warnings)
+    except Refusal as error:
+        recovery = dict(status='REFUSED', reason=str(error))
+    names = sorted(path.name for path in directory.iterdir())
+    return dict(status='INSPECTION_ONLY', run_id=run['run_id'], batch_start=run['batch_start'],
+                batch_end=run['batch_end'], slots=slots, recovery=recovery,
+                certificate='PRESENT-UNVERIFIED' if 'certificate.json' in names else 'ABSENT',
+                temporaries=str(sum(name.endswith('.tmp') for name in names)))
 
 
 def prepare_fixture(directory, run):
@@ -700,11 +842,47 @@ def prepare_fixture(directory, run):
         write_atomic(directory / name, canonical(obj))
 
 
+def run_batch(directory, run, test=False):
+    """Root checkpoint, one native scan, next generation, then commit only a complete result."""
+    context, _ = load_context(directory, test)
+    require(context == run, 'batch context changed')
+    predecessor(directory, run, test)
+    store = CheckpointStore(directory, run)
+    store.initialize()
+    started = time.perf_counter()
+    summary = consume_native(int(run['batch_start']), int(run['batch_end']),
+                             int(run['max_t_per_explicit']), int(run['max_total_t']))
+    scanned = time.perf_counter() - started
+    store.write(summary)
+    if summary['pending'] is not None:
+        return dict(status='INCOMPLETE', next_n=summary['next_n'], pending=summary['pending'])
+    cert = commit_batch(directory, run, summary, test)
+    return dict(status='NONSCIENTIFIC_FIXTURE' if test else 'COMMITTED', digest=cert['digest'],
+                batch_end=run['batch_end'], scan_and_check_seconds=format(scanned, '.6f'))
+
+
+def start_batch(manifest, out):
+    """Create one scientific batch directory. Every gate is checked before anything is written."""
+    run = load_record(manifest, 'run')
+    authority = run1_gate(run)
+    validate_manifest(run, snapshot())
+    output = local_path(out)
+    require(not output.exists(), 'batch directory already exists')
+    ensure_chain_slot(output, run)
+    output.mkdir(parents=True)
+    write_atomic(output/'run.json', canonical(run))
+    write_atomic(output/'snapshot.json', canonical(snapshot()))
+    write_atomic(output/'authority.json', authority)
+    return run_batch(output, run)
+
+
 def resume_batch(directory, test=False):
     run, _ = load_context(directory, test)
     if not test:
         run1_gate(run)
         ensure_chain_slot(directory, run)
+    require(not (local_path(directory)/'certificate.json').exists(),
+            'batch already has a final certificate; use verify-batch')
     predecessor(directory, run, test)
     store = CheckpointStore(directory, run)
     old, warnings = store.recover()
@@ -719,32 +897,112 @@ def resume_batch(directory, test=False):
     summary = consume_native(start, end, max_t, max_total)
     store.write(summary)
     if summary['pending'] is not None:
-        return dict(status='INCOMPLETE', next_n=summary['next_n'], warnings=warnings)
+        return dict(status='INCOMPLETE', next_n=summary['next_n'], pending=summary['pending'], warnings=warnings)
     cert = commit_batch(directory, run, summary, test)
     return dict(status='NONSCIENTIFIC_FIXTURE' if test else 'COMMITTED', digest=cert['digest'], warnings=warnings)
 
 
+def canonical_decimal(text, label):
+    require(isinstance(text, str) and re.fullmatch(r'0|[1-9][0-9]{0,8191}', text) is not None,
+            'noncanonical decimal: ' + label)
+    return int(text)
+
+
+def expected_acknowledgement(base_kind):
+    snap = snapshot()
+    require(base_kind in ('published', 'operational'), 'base kind')
+    digest = validate_snapshot(snap)
+    return snap, digest, ':'.join((digest, base_kind, snap[base_kind]['B']))
+
+
+def prepare_authority(authority_id, base_kind, batch_start, batch_end, acknowledge, owner_instruction):
+    """Record the operator's explicit authority for exactly one batch. Never fills in the acknowledgement."""
+    run1_status()
+    snap, digest, expected = expected_acknowledgement(base_kind)
+    require(acknowledge == expected, 'acknowledgement is not snapshot_digest:base_kind:base_B')
+    require(re.fullmatch(r'[a-zA-Z0-9_.:-]{1,128}', authority_id) is not None and
+            authority_id != 'L1-NONSCIENTIFIC', 'authority identifier')
+    require(isinstance(owner_instruction, str) and owner_instruction.isascii() and
+            0 < len(owner_instruction.strip()) <= 2048, 'owner instruction must be nonempty ASCII')
+    base = int(snap[base_kind]['B'])
+    start, end = canonical_decimal(batch_start, 'batch start'), canonical_decimal(batch_end, 'batch end')
+    require(base <= start < end and end - start <= 14400, 'invalid interval/base')
+    require(start != base or end - start == 144, 'first RUN1 pilot is exactly 144 starts')
+    record = dict(zip(AUTHORITY_KEYS, (authority_id, digest, base_kind, snap[base_kind]['B'], acknowledge,
+                                       batch_start, batch_end, owner_instruction)))
+    LOCAL.mkdir(parents=True, exist_ok=True)
+    # The previous batch keeps its own copy as authority.json, so replacement loses no evidence.
+    write_atomic(LOCAL / 'run1_authorization.json', canonical(record), True)
+    return dict(status='AUTHORITY_RECORDED_NOT_EXECUTED', authority_id=authority_id,
+                batch_start=batch_start, batch_end=batch_end)
+
+
+def prepare_manifest(out, authority_id, acknowledge, max_t, max_total, run_id=None, base_kind=None,
+                     after_certificate=None, width='144'):
+    """Write one canonical run manifest. It executes nothing and accepts nothing by default."""
+    run1_status()
+    from f1_build import verify_build
+    build = verify_build()
+    if after_certificate is None:
+        require(run_id is not None and base_kind is not None, 'first batch needs --run-id and --base-kind')
+        snap, digest, expected = expected_acknowledgement(base_kind)
+        start, previous = snap[base_kind]['B'], None
+        require(width == '144', 'first RUN1 pilot is exactly 144 starts')
+    else:
+        require(run_id is None and base_kind is None, 'a continuation inherits run ID and base from its predecessor')
+        prior = verify_batch(after_certificate)
+        run_id, base_kind = prior['run_id'], prior['base_kind']
+        snap, digest, expected = expected_acknowledgement(base_kind)
+        require(prior['snapshot_digest'] == digest and prior['native_build_digest'] == build['digest'],
+                'predecessor snapshot/build identity differs from the current tree')
+        start, previous = prior['batch_end'], prior['digest']
+    require(acknowledge == expected, 'acknowledgement is not snapshot_digest:base_kind:base_B')
+    span = canonical_decimal(width, 'width')
+    run = dict(schema=SCHEMA_IDS['run'], run_id=run_id, run1_authority_id=authority_id,
+               snapshot_digest=digest, base_kind=base_kind, base_B=snap[base_kind]['B'],
+               accepted_assumption_ack=acknowledge, batch_start=start, batch_end=str(int(start) + span),
+               predecessor_digest='0'*64, ruleset_id=RULESET, table_digest=reference.table_digest(),
+               native_build_digest=build['digest'], map_id='T-shortened-v1',
+               max_t_per_explicit=max_t, max_total_t=max_total)
+    run['predecessor_digest'] = genesis(run) if previous is None else previous
+    validate_manifest(run, snap)
+    write_atomic(out, canonical(run))
+    return dict(status='MANIFEST_WRITTEN_NOT_EXECUTED', run_digest=H('RUN', canonical(run)),
+                batch_start=run['batch_start'], batch_end=run['batch_end'],
+                predecessor_digest=run['predecessor_digest'])
+
+
 def selftest():
+    """Predesignated small-integer engineering fixtures and overhead-inclusive timings only."""
     l1_gate()
     from f1_build import verify_build
     build = verify_build()
     root = LOCAL / 'acceptance' / ('session-' + uuid.uuid4().hex)
-    results = []
-    for name in ('L1-fixture-a', 'L1-fixture-b', 'L1-fixture-c'):
+    results, previous = [], None
+    for group, name in (('chain', 'L1-fixture-a'), ('chain', 'L1-fixture-successor'),
+                        ('single-b', 'L1-fixture-b'), ('single-c', 'L1-fixture-c'),
+                        ('single-wide', 'L1-fixture-wide')):
         run = fixture_run(name, build_digest=build['digest'])
-        directory = root / name
+        if name == 'L1-fixture-successor':
+            run['predecessor_digest'] = previous
+        directory = root / group / name
         prepare_fixture(directory, run)
         started = time.perf_counter()
-        summary = consume_native(int(run['batch_start']), int(run['batch_end']), 100000, 2000000)
-        CheckpointStore(directory, run).write(summary)
-        cert = commit_batch(directory, run, summary, True)
+        outcome = run_batch(directory, run, True)
         elapsed = time.perf_counter() - started
+        require(outcome['status'] == 'NONSCIENTIFIC_FIXTURE', 'fixture did not complete')
+        cert = load_record(directory / 'certificate.json', 'certificate')
+        previous = cert['digest']
         results.append(dict(fixture=name, batch_size=str(int(run['batch_end'])-int(run['batch_start'])),
-                            completed_starts=str(int(summary['next_n'])-int(run['batch_start'])),
-                            explicit_count=summary['counts']['explicit_count'], t_steps=summary['explicit_t_steps'],
+                            explicit_count=cert['counts']['explicit_count'], t_steps=cert['explicit_t_steps'],
+                            scan_and_check_seconds=outcome['scan_and_check_seconds'],
                             elapsed_seconds=format(elapsed, '.6f'), digest=cert['digest']))
-    report = dict(scope='L1-NONSCIENTIFIC', status='fixtures_pass', native_build_digest=build['digest'],
-                  directory_flush_supported='yes' if directory_flush(root) else 'no', results=results)
+    started = time.perf_counter()
+    chain = ledger(root / 'chain', True)
+    report = dict(scope='L1-NONSCIENTIFIC', status='fixtures_pass', protocol=PROTOCOL,
+                  native_build_digest=build['digest'],
+                  directory_flush_supported='yes' if directory_flush(root) else 'no', results=results,
+                  ledger=dict(chain, elapsed_seconds=format(time.perf_counter() - started, '.6f')))
     write_atomic(root/'report.json', canonical(report))
     return report
 
@@ -756,8 +1014,19 @@ def main():
     sub.add_parser('rules')
     p = sub.add_parser('snapshot'); p.add_argument('--file', required=True)
     sub.add_parser('selftest')
+    p = sub.add_parser('prepare-authority')
+    for name in ('authority-id', 'base-kind', 'batch-start', 'batch-end', 'acknowledge', 'owner-instruction'):
+        p.add_argument('--' + name, required=True)
+    p = sub.add_parser('prepare-manifest')
+    for name in ('out', 'authority-id', 'acknowledge', 'max-t-per-explicit', 'max-total-t'):
+        p.add_argument('--' + name, required=True)
+    for name in ('run-id', 'base-kind', 'after-certificate'):
+        p.add_argument('--' + name)
+    p.add_argument('--width', default='144')
     p = sub.add_parser('pilot'); p.add_argument('--manifest', required=True); p.add_argument('--out', required=True)
     p = sub.add_parser('resume'); p.add_argument('--batch-dir', required=True)
+    p = sub.add_parser('inspect'); p.add_argument('--batch-dir', required=True)
+    p = sub.add_parser('replay'); p.add_argument('--batch-dir', required=True)
     p = sub.add_parser('verify-batch'); p.add_argument('--certificate', required=True)
     p = sub.add_parser('ledger'); p.add_argument('--dir', required=True)
     args = parser.parse_args()
@@ -765,43 +1034,44 @@ def main():
         reference.check_rules()
         result = dict(status='rules_pass', scope='NONSCIENTIFIC', table_digest=reference.table_digest())
     elif args.command == 'snapshot':
-        obj = load_record(args.file, 'snapshot')
-        result = dict(status='research_only_unaccepted', digest=validate_snapshot(obj),
-                      observed_at_utc=obj['observed_at_utc'], published=obj['published'], operational=obj['operational'])
+        obj = parse_bytes(read_bounded(args.file))
+        if isinstance(obj, dict) and obj.get('schema') == V1_SNAPSHOT_SCHEMA:
+            obj, digest, _ = v1_snapshot(args.file)
+            result = dict(status='frozen_version_1_research_only_not_runnable', digest=digest)
+        else:
+            obj = load_record(args.file, 'snapshot')
+            result = dict(status='research_only_unaccepted', digest=validate_snapshot(obj),
+                          provenance=obj['provenance'])
+        result.update(observed_at_utc=obj['observed_at_utc'], published=obj['published'],
+                      operational=obj['operational'])
     elif args.command == 'selftest':
         result = selftest()
+    elif args.command == 'prepare-authority':
+        result = prepare_authority(args.authority_id, args.base_kind, args.batch_start, args.batch_end,
+                                   args.acknowledge, args.owner_instruction)
+    elif args.command == 'prepare-manifest':
+        result = prepare_manifest(args.out, args.authority_id, args.acknowledge, args.max_t_per_explicit,
+                                  args.max_total_t, args.run_id, args.base_kind, args.after_certificate, args.width)
     elif args.command == 'pilot':
-        run = load_record(args.manifest, 'run')
-        run1_gate(run)  # refuse before creating output or executing any candidate
-        validate_manifest(run, snapshot())
-        output = local_path(args.out)
-        require(not output.exists(), 'batch directory already exists')
-        ensure_chain_slot(output, run)
-        output.mkdir(parents=True)
-        write_atomic(output/'run.json', canonical(run))
-        write_atomic(output/'snapshot.json', canonical(snapshot()))
-        load_context(output)
-        predecessor(output, run)
-        summary = consume_native(int(run['batch_start']), int(run['batch_end']),
-                                 int(run['max_t_per_explicit']), int(run['max_total_t']))
-        CheckpointStore(output, run).write(summary)
-        result = dict(status='INCOMPLETE', next_n=summary['next_n']) if summary['pending'] else commit_batch(output, run, summary)
+        result = start_batch(args.manifest, args.out)  # every gate refuses before any output exists
     elif args.command == 'resume':
         run = load_record(Path(args.batch_dir)/'run.json', 'run')
         run1_gate(run)
         result = resume_batch(args.batch_dir)
+    elif args.command in ('inspect', 'replay'):
+        require(is_fixture(args.batch_dir) or phase_is(status_text(), 'RUN1'),
+                'L1 inspects and replays only predesignated fixtures')
+        result = (inspect_batch if args.command == 'inspect' else reference_replay)(args.batch_dir)
     elif args.command == 'verify-batch':
-        directory = local_path(args.certificate).parent
-        test = (directory/'acceptance.json').exists()
-        status = (ROOT/'PROGRAM_STATUS.md').read_text('utf-8')
-        require(test or phase_is(status, 'RUN1'), 'L1 verifies only predesignated fixtures')
+        test = is_fixture(local_path(args.certificate).parent)
+        require(test or phase_is(status_text(), 'RUN1'), 'L1 verifies only predesignated fixtures')
         cert = verify_batch(args.certificate, test)
-        result = dict(status='NONSCIENTIFIC_FIXTURE' if test else 'conditional_complete', digest=cert['digest'])
+        result = dict(status='NONSCIENTIFIC_FIXTURE' if test else 'conditional_complete', digest=cert['digest'],
+                      batch_start=cert['batch_start'], batch_end=cert['batch_end'])
     else:
         dirs = list(local_path(args.dir).glob('*/certificate.json'))
         test = bool(dirs) and all((p.parent/'acceptance.json').exists() for p in dirs)
-        require(test or phase_is((ROOT/'PROGRAM_STATUS.md').read_text('utf-8'), 'RUN1'),
-                'L1 ledger accepts only fixtures')
+        require(test or phase_is(status_text(), 'RUN1'), 'L1 ledger accepts only fixtures')
         result = ledger(args.dir, test)
     print(json.dumps(result, sort_keys=True))
 

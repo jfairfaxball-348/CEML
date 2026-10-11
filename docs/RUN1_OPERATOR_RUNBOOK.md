@@ -1,0 +1,332 @@
+# RUN1 operator runbook — CEML-FRONTIER-2
+
+**Prepared package. RUN1 is NOT authorised.** Nothing in this runbook has been executed on a frontier integer. Every command in sections 5 to 9 refuses until the owner separately authorises RUN1 as described in section 4. The agent that prepared this package acknowledged nothing and authorised nothing on the owner's behalf.
+
+Use this runbook only if `PROGRAM_STATUS.md` records L1 as accepted. If it still says L1 OPEN, stop here.
+
+All commands are PowerShell, run from the repository root, with Python 3.12.10 as `python`. Runtime needs no network and uses none.
+
+## 1. What a batch is and what it proves
+
+A batch is a half-open interval `[S,E)` of consecutive integers. The native worker scans every integer in ascending order and the Python reference then recomputes every integer again. A batch is COMMITTED only when `certificate.json` exists and verifies. A checkpoint, a log line, a partial scan and an INCOMPLETE result prove nothing.
+
+A committed chain from base `B` to `E` supports exactly this statement: *if* every positive integer below `B` converges, *then* every integer in `[B,E)` converges. The base is an assumption you accept. This software does not check it.
+
+## 2. Pinned identities
+
+Check these before every session (section 5). A mismatch means the tree or build changed: stop and investigate.
+
+| Identity | Value |
+|---|---|
+| Protocol | `CEML-FRONTIER-2` (`docs/FRONTIER_PROTOCOL_V2.md`) |
+| Native build digest | `ac63b776d9693cad0c86d8b9a4d8311008ec58bd462f4489731b57c05147e6c9` |
+| Release worker `ceml_frontier.exe` SHA3-256 | `8d3a72aa077fed414ad36e8008900f95a2a0630933e5dea5e66363fd34c19b6b` |
+| Checked worker `ceml_frontier_checked.exe` SHA3-256 | `b562e74ba06d7a4f936f3e0010f36142fe7025f8059e60793aea5388820bc525` |
+| Checker source digest | `741d3e3e5067a5ed04537f612ba67606945324c726a534c20d1dcdb17ade3c8d` |
+| Parity table digest | `d368ec417e3170729f67737c414b02ced2d2f6cab349f9cd534404985058391c` |
+| Frontier test-source digest | `0c9515baabaa7fbaac45f07dddac7e129197cc853aadd996460d669d022811f9` |
+| Version-2 snapshot digest | `538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729` |
+| Frozen version-1 snapshot digest (provenance only) | `a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66` |
+| GMP runtime `libgmp-10.dll` SHA3-256 | `3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf` |
+| Toolchain | MSVC 14.44.35207, Windows SDK 10.0.26100.0, Python 3.12.10, GMP 6.3.0 release 6.3.0-2 |
+
+The source commit is the one recorded in `docs/L1_V2_ACCEPTANCE.md`. The build digest covers the worker and oracle sources, the driver, reference and build tool, every frontier test, all eight frontier schemas, both snapshots, both protocol documents, the P1 and P2 documents, the pins and the toolchain. It is computed over LF-normalised text, so a CRLF checkout does not change it.
+
+**The build digest is part of every chain's identity.** Editing any of those files, or changing the compiler, gives a different digest. An existing chain then refuses to verify or extend until the original tree and build are restored. Freeze the checkout for the life of a chain.
+
+## 3. Retained offline dependencies
+
+These ignored local files are required and are never downloaded at run time. Back them up with the checkout.
+
+| Path | Content | Check |
+|---|---|---|
+| `local/c1/cache/sha256/e82a7596…d39ea/mingw-w64-ucrt-x86_64-gmp-6.3.0-2-any.pkg.tar.zst` | GMP binary archive, 592359 bytes | SHA-256 is the directory name; SHA3-256 in `config/c1_gmp_pin.toml` |
+| `local/c1/cache/sha256/f288f944…35994/mingw-w64-gmp-6.3.0-2.src.tar.zst` | GMP source archive, 2097066 bytes | same |
+| `local/c1/gmp-setup/offline/gmp.h` | extracted header, 84402 bytes | `header_sha3_256` in the pin |
+| `local/c1/gmp-setup/offline/libgmp-10.dll` | extracted runtime, 681231 bytes | `dll_sha3_256` in the pin |
+| `local/frontier/build/` | the built workers and `build_manifest.json` | `f1_build.py --verify` |
+
+The full directory names are the `binary_sha256` and `source_sha256` values in `config/c1_gmp_pin.toml`. If any file is missing or differs, the build tool refuses with "operator provisioning required". Re-acquiring a dependency is outside RUN1 and needs its own authorisation.
+
+## 4. Before RUN1: the owner's decisions
+
+### 4.1 Choose one base
+
+| | `published` | `operational` |
+|---|---|---|
+| `B` (exclusive) | `2361183241434822606848` = 2^71 | `2392518188130438742016` = 2175982616 × 2^40 |
+| Source | Bařina, *J. Supercomputing* 81:810, published 2025-05-02 | author's project homepage, site generated 2026-10-11T11:29:26Z |
+| Tier | peer-reviewed published computational claim | author-reported, not replicated |
+| Observed by CEML | 2026-10-11T12:38:06Z, carried forward unchanged | same; **dynamic and may have moved since** |
+| Claim tier of a chain | `BATCH_CONDITIONAL_PUBLISHED` | `BATCH_CONDITIONAL_OPERATIONAL` |
+
+Neither base was reproduced by CEML. The two bases are 31334946695616135168 integers apart. One chain directory holds at most 256 batches of at most 14400 integers, that is 3686400 integers, so a published-base chain cannot reach the operational bound. A chain never changes base, and chains with different bases are never joined.
+
+Expect overlap, not novelty. The external project reports completed work far above 2^71, and its first incomplete unit of 2026-10-11 may since have been assigned or completed. A CEML batch in either region is a conditional local verification or reproduction. It is not a world-first and must not be described as one.
+
+### 4.2 The acknowledgement
+
+The acknowledgement is the exact string `snapshot_digest:base_kind:base_B`. For this snapshot it must equal one of:
+
+```text
+538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729:published:2361183241434822606848
+538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729:operational:2392518188130438742016
+```
+
+By typing it you state: "I accept, as an unverified external assumption, that every positive integer below this `B` converges, on the evidence tier named in this snapshot." It records your acceptance. It is not evidence that the assumption is true. No tool fills it in for you.
+
+### 4.3 RUN1 authority
+
+All three are required. The first two are the owner's acts.
+
+1. A fresh explicit owner instruction to start RUN1, naming the base kind.
+2. A committed status transition in `PROGRAM_STATUS.md` so that it contains exactly one line of each form:
+
+   ```text
+   **Authoritative current phase:** RUN1
+   **Scientific execution authorization:** AUTHORISED
+   ```
+
+   The phase line may continue with ` — ` and text. The authorisation line must end at `AUTHORISED`.
+3. For **each batch**, a local authority record written by `prepare-authority` (section 6). One record covers exactly one interval.
+
+Run the complete acceptance suite one last time **before** the status transition. The suite and `selftest` are L1-phase checks and refuse or fail by design once the phase is RUN1. After the transition use the session preflight in section 5.
+
+Authority template to fill in and keep with the run records:
+
+```text
+RUN1 authority
+Date (UTC):
+Owner instruction (verbatim):
+Base kind chosen: published | operational
+Acknowledgement string typed by the owner:
+Authority identifier (letters, digits, _ . : -):
+Run identifier (new, never reused):
+Assumption accepted in the owner's words:
+```
+
+## 5. Session preflight (every session, before any batch)
+
+```powershell
+python tools/frontier/f1_build.py --verify
+```
+
+```powershell
+python tools/frontier/ceml_frontier.py rules
+```
+
+```powershell
+python tools/frontier/ceml_frontier.py snapshot --file config/frontier_snapshot_v2.json
+```
+
+```powershell
+git status --short
+```
+
+Require `"status": "PASS"` with the build digest and worker hash of section 2, `rules_pass` with the table digest of section 2, `research_only_unaccepted` with the snapshot digest of section 2, and an empty `git status`. If a chain already exists, also run the ledger audit of section 7 and compare it with your external record (section 8).
+
+## 6. The initial 144-start pilot
+
+Set the names once per session. Use a new run identifier for every new chain.
+
+```powershell
+$runId = 'RUN1-published-0001'
+$authorityId = 'RUN1-owner-2026-xx-xx'
+$kind = 'published'
+$ack = '<the acknowledgement string you are accepting, from section 4.2>'
+$chain = "local/frontier/run1/$runId"
+$manifests = "local/frontier/run1/$runId-manifests"
+New-Item -ItemType Directory -Force $manifests | Out-Null
+```
+
+The first batch is `[B, B+144)`. For the published base that is `[2361183241434822606848, 2361183241434822606992)`. For the operational base it is `[2392518188130438742016, 2392518188130438742160)`.
+
+Record authority for exactly this batch:
+
+```powershell
+python tools/frontier/ceml_frontier.py prepare-authority --authority-id $authorityId --base-kind $kind --batch-start 2361183241434822606848 --batch-end 2361183241434822606992 --acknowledge $ack --owner-instruction "<the owner's instruction, ASCII>"
+```
+
+Write the manifest. The budgets shown are the protocol maxima and are finite:
+
+```powershell
+python tools/frontier/ceml_frontier.py prepare-manifest --out "$manifests/batch-0001.json" --authority-id $authorityId --acknowledge $ack --max-t-per-explicit 100000 --max-total-t 2000000 --run-id $runId --base-kind $kind
+```
+
+Run the batch:
+
+```powershell
+python tools/frontier/ceml_frontier.py pilot --manifest "$manifests/batch-0001.json" --out "$chain/batch-0001"
+```
+
+`"status": "COMMITTED"` with a `digest` means the certificate exists. `"status": "INCOMPLETE"` means a start is pending and nothing was committed: go to section 10. `"status": "REFUSED"` means nothing was promoted: go to section 10.
+
+Do not propose the next batch until section 7 passes for this one.
+
+## 7. Verify, replay and audit
+
+```powershell
+python tools/frontier/ceml_frontier.py verify-batch --certificate "$chain/batch-0001/certificate.json"
+```
+
+```powershell
+python tools/frontier/ceml_frontier.py replay --batch-dir "$chain/batch-0001"
+```
+
+```powershell
+python tools/frontier/ceml_frontier.py ledger --dir $chain
+```
+
+```powershell
+python tools/frontier/ceml_frontier.py inspect --batch-dir "$chain/batch-0001"
+```
+
+- `verify-batch` re-reads the certificate, re-checks the build, snapshot, manifest and the whole predecessor chain, and recomputes every integer of every batch back to genesis. Expect `conditional_complete`.
+- `replay` recomputes one batch with the pure-Python reference only. It checks arithmetic, not the chain, build or authority. Expect `REFERENCE_REPLAY_MATCH`.
+- `ledger` audits the whole chain once from genesis: no gap, overlap, duplicate or fork. Expect `conditional_chain`, with `start` equal to `B`, and the `genesis_digest`, `latest_certificate_digest`, `batches` and `end` you record in section 8.
+- `inspect` is a read-only diagnosis of one batch directory: slot states, the recoverable generation, warnings and whether a certificate is present.
+
+## 8. External record and backup
+
+After every committed batch, write these four `ledger` values somewhere outside this machine (paper is fine): `genesis_digest`, `latest_certificate_digest`, `batches`, `end`. Also record the snapshot digest and build digest once. Before every new batch, run `ledger` and compare. A chain that is shorter than, or different from, your external record has been rolled back or altered: stop. Without this external record the software cannot detect a rollback.
+
+Back up after every committed batch, to a different physical device:
+
+```powershell
+robocopy "local/frontier/run1" "<backup root>/run1" /E /COPY:DAT /R:1 /W:1 /XF *.tmp
+```
+
+```powershell
+robocopy "local/frontier/build" "<backup root>/build" /E /COPY:DAT /R:1 /W:1
+```
+
+```powershell
+robocopy "local/c1" "<backup root>/c1" /E /COPY:DAT /R:1 /W:1
+```
+
+Rules: never use `/MIR` or `/PURGE`; never restore a backup over a chain that has more batches than the backup; after any restore, run `f1_build.py --verify` and `ledger`, and compare with the external record. A backup is a copy, not an independent reproduction. File flush and atomic rename are used throughout, but they are not a guarantee against sudden power loss; after a power failure, run section 7 on the whole chain before continuing.
+
+## 9. Contiguous extension
+
+Each later batch starts exactly where the previous certificate ended. Authority is recorded again for the new interval.
+
+```powershell
+python tools/frontier/ceml_frontier.py prepare-authority --authority-id $authorityId --base-kind $kind --batch-start <previous batch_end> --batch-end <previous batch_end + width> --acknowledge $ack --owner-instruction "<the owner's instruction, ASCII>"
+```
+
+```powershell
+python tools/frontier/ceml_frontier.py prepare-manifest --out "$manifests/batch-0002.json" --authority-id $authorityId --acknowledge $ack --max-t-per-explicit 100000 --max-total-t 2000000 --after-certificate "$chain/batch-0001/certificate.json" --width 144
+```
+
+```powershell
+python tools/frontier/ceml_frontier.py pilot --manifest "$manifests/batch-0002.json" --out "$chain/batch-0002"
+```
+
+`prepare-manifest --after-certificate` verifies the whole predecessor chain first and inherits the run identifier, base and build identity from it. Then repeat sections 7 and 8.
+
+**Width policy.** Batch 1 is 144 by rule. Keep batch 2 at 144. After that, raise the width only on your own measured batches: at most double it after a batch that committed and passed section 7, never above 14400, and go back to the previous width after any INCOMPLETE or REFUSED result. L1 measured only small-integer fixtures (section 12). Speed at 2^71 is unknown until your first batches measure it.
+
+**Hard limits.** Width 1 to 14400. At most 256 batches in one chain directory. Per-start budget at most 100000 shortened-map steps and per-batch budget at most 2000000. The worker has a 30-second wall budget per scan. One worker, one batch at a time. Every new batch re-verifies the whole chain, so time per batch grows with chain length.
+
+## 10. Stop, resume and refusal diagnostics
+
+**Stopping.** Let the current command finish, or press Ctrl+C. Interrupting is always safe: a batch is committed only if `certificate.json` exists and verifies. Never delete or edit anything in a batch directory.
+
+**Resuming an uncommitted batch.** The authority record must still be the one for that batch (re-run `prepare-authority` for its interval if you have since recorded another).
+
+```powershell
+python tools/frontier/ceml_frontier.py inspect --batch-dir "$chain/batch-0002"
+```
+
+```powershell
+python tools/frontier/ceml_frontier.py resume --batch-dir "$chain/batch-0002"
+```
+
+Resume recovers the newest authenticated checkpoint generation, re-scans its prefix, then re-scans the whole batch from its start and commits only a complete result. A `warnings` entry means a checkpoint slot was damaged or missing and an older generation was used; the result is still fully recomputed, but note the warning and check your storage.
+
+| Message contains | Meaning | Action |
+|---|---|---|
+| `RUN1 not owner-authorised` | status lines of 4.3 not both present exactly once | owner decision; do nothing else |
+| `RUN1 authority evidence shape`, `does not cover this batch`, `fresh RUN1 owner authority missing` | authority record absent, altered, or for another interval | re-run `prepare-authority` for this exact batch |
+| `acknowledgement is not snapshot_digest:base_kind:base_B` | acknowledgement string wrong | re-read 4.2; type it exactly |
+| `first RUN1 pilot is exactly 144 starts` | first batch width is not 144 | use 144 |
+| `Native build … mismatch`, `rebuild required`, `native build identity mismatch` | tree or build differs from the chain's | restore the pinned tree and build; never edit to match |
+| `operator provisioning required`, `checksum mismatch` | a retained dependency of section 3 is missing or changed | restore from backup |
+| `batch directory already exists` | `--out` exists | use `resume` for that batch, or a new name for a new batch |
+| `another batch of this chain is uncommitted` | one batch is still active | finish, resume or quarantine it first |
+| `duplicate/overlapping batch; rerun needs a new run ID` | the interval is already present in this chain | never re-run a committed interval under the same run ID |
+| `missing/duplicate immutable predecessor`, `predecessor chain gap/identity mismatch`, `genesis mismatch` | the chain is broken before this batch | stop; restore the chain from backup and re-audit |
+| `no independently valid checkpoint`, `missing/damaged checkpoint predecessor generation`, `checkpoint fork/orphan/gap generation`, `checkpoint cursor rollback`, `slot/generation mismatch`, `root checkpoint is not the empty prefix` | checkpoint history cannot be authenticated | quarantine the attempt (below) |
+| `foreign or cross-version checkpoint record` | a file that is not a version-2 checkpoint sits in a slot | quarantine the attempt; find out how it got there |
+| `batch already has a final certificate; use verify-batch` | the batch is committed | run section 7 |
+| `record digest mismatch`, `noncanonical JSON bytes`, `certificate full replay mismatch`, `checker source identity mismatch` | a committed record or the checker changed | stop; this chain member is not trustworthy as stored; restore and re-audit |
+| `"status": "INCOMPLETE"` with `step_budget` or `total_budget` | a start did not descend within the budget | see pending starts below |
+| `ambiguous native success`, `missing/ambiguous native failure status`, `native wall budget` | the worker died, hung or misreported; for the first two an anomaly record is written under `local/frontier/refusals/` | keep the record; `inspect`, then `resume` once; if it repeats, stop and report |
+| `FileNotFoundError`, `PermissionError` | a required file is missing or locked, most often the authority record or a record file | check the path; re-run `prepare-authority` if the authority record is the missing file |
+
+**Pending starts.** With the maximum budgets, a pending start is an anomaly: preserve the directory, record the `pending` object, do not retry, skip or reorder, and report it for separate review. It is not evidence of divergence. If the budgets or the width were chosen too small, quarantine the attempt and restart the same start with the maximum budgets or a smaller width.
+
+**Quarantining an abandoned uncommitted attempt.** Only for a batch directory with **no** `certificate.json` that cannot proceed. Move the whole directory out of the chain directory, keep it, and write down why:
+
+```powershell
+New-Item -ItemType Directory -Force "local/frontier/run1/$runId-quarantine" | Out-Null
+Move-Item "$chain/batch-0002" "local/frontier/run1/$runId-quarantine/batch-0002-attempt-1"
+```
+
+Then prepare authority and a manifest again for the same start and predecessor (a new manifest file name), and run `pilot` into a new directory name. The new manifest may differ from the abandoned one only in its end and its two budgets. Never move, delete or re-run a directory that contains `certificate.json`.
+
+**Never:** edit or delete a record; copy a checkpoint or certificate between directories; reuse a run identifier for a new chain; change base inside a chain; run two batches at once; change tracked files during a chain; describe an INCOMPLETE or checkpoint-only batch as verified; let any tool or agent type the acknowledgement or authority for the owner.
+
+## 11. Independent reproduction handoff
+
+The built-in second pass is a separate Python implementation, but it shares author, machine, operating system and input with the first pass. It is a strong internal check. It is **not** an independent reproduction.
+
+**Same-code reproduction on another machine.** Give the other party the source commit that carries the RUN1 status lines (the read-only commands refuse on any other status), the files of section 3, and a copy of the chain directory. With the same pinned toolchain they build with `python tools/frontier/f1_build.py`, must obtain the build digest and worker hash of section 2, and run `ledger --dir <chain>`. With only Python 3.12.10 and no compiler they can still run `replay --batch-dir` on each batch, which needs no build. This shows the records are reproducible from the same code. Report it as a same-code re-execution.
+
+**Independent reproduction.** A different person writes their own program from the protocol, not from this code, and recomputes each certificate. `docs/FRONTIER_PROTOCOL_V2.md` sections 1 and 3 are the complete specification. For a certificate with `batch_start=S`, `batch_end=E` and the manifest's `max_t_per_explicit`:
+
+1. For each `n` from `S` to `E-1`, choose the first applicable rule in the order E2, Q4, P3, M9, S2K4-03, EXPLICIT.
+2. Compute the witness: E2 `n/2`; Q4 `3(n-1)/4+1`; P3 `(2n-1)/3`; M9 `(8n-5)/9`; S2K4-03 `(9n+5)/16`; EXPLICIT the first iterate of `T` below `n`, counting `steps` and the number of `odd` steps, with `steps=odd=0` for the five algebraic rules.
+3. Form the frame `n|rule|steps|odd|witness` followed by one newline byte, all numbers in plain decimal.
+4. Compute SHA3-256 over the ASCII bytes `CEML-FRONTIER-2/EVENTS`, one zero byte, then every frame in order.
+5. Compare with the certificate: the digest with `transcript_digest` and `independent_replay_digest`; the per-rule counts with `counts`; the sums of `steps` and `odd` with `explicit_t_steps` and `explicit_odd_steps`.
+
+Only a result obtained this way, by different code and a different build, may be reported as `INDEPENDENT_REPRODUCTION`. `GLOBAL_FRONTIER_EXTENSION` additionally needs contemporaneous independent evidence about every earlier work unit and about priority; nothing in this package provides that.
+
+## 12. Measured L1 calibration
+
+Measured on this machine by the L1 self-test on small-integer engineering fixtures. Times include the build check, the native scan, the per-frame check, both Python replays, the checkpoint writes and the certificate commit. They are overhead measurements on integers below 10000. They are not throughput at 2^71, and no speed at that magnitude has been measured.
+
+Source: the non-isolated rehearsal of the acceptance plan on 2026-10-11 (to be replaced by the OS-blocked run).
+
+| Fixture | Interval width | Explicit starts | Explicit steps | Scan and per-frame check (s) | Whole batch (s) |
+|---|---:|---:|---:|---:|---:|
+| `L1-fixture-a` | 144 | 15 | 269 | 0.089 | 0.418 |
+| `L1-fixture-successor` | 144 | 15 | 150 | 0.090 | 0.731 |
+| `L1-fixture-b` | 144 | 15 | 150 | 0.089 | 0.425 |
+| `L1-fixture-c` | 96 | 10 | 225 | 0.088 | 0.421 |
+| `L1-fixture-wide` | 9600 | 1001 | 11840 | 0.278 | 0.767 |
+
+`L1-fixture-successor` is the second batch of a two-batch chain, so its whole-batch time includes re-verifying its predecessor. The two-batch ledger audit took 0.165 s. Directory flush was reported `yes` on this volume.
+
+## 13. Truthful claim template
+
+Fill in every field from the records; delete nothing.
+
+```text
+CEML-FRONTIER-2 conditional batch chain
+Run identifier:
+Base kind and tier: published (peer-reviewed) | operational (author-reported, not replicated)
+Assumed, not verified by CEML: every positive integer below B = <B> converges
+  Source and its date:                      CEML observation time (UTC): 2026-10-11T12:38:06Z
+Verified conditional on that assumption: every integer in [<B>, <E>) converges
+Batches:        Genesis digest:        Latest certificate digest:
+Snapshot digest:        Native build digest:        Source commit:
+Rule counts (E2, Q4, P3, M9, S2K4-03, EXPLICIT):        Unresolved: 0
+Explicit shortened-map steps computed:        Run dates (UTC):
+Independent full replay performed: yes, built-in second pass (same author and machine)
+Independent reproduction by other code: none | <who, when, what>
+Overlap with externally reported work: expected; not checked against the external project's current state
+This is a finite, conditional computational result. It is not a proof of the Collatz conjecture, not a
+reproduction of the base, and not a claim of a world-first or of global frontier extension.
+```

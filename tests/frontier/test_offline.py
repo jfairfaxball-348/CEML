@@ -106,9 +106,45 @@ runpy.run_path(sys.argv[0], run_name="__main__")
         self.assertTrue(result.stdout)
 
     def test_frozen_snapshot_inspection_runs_offline(self):
+        result = self.run_cli("snapshot", "--file", "config/frontier_snapshot_v2.json")
+        self.assertEqual(0, result.returncode, result.stderr.decode("ascii", "replace"))
+        report = json.loads(result.stdout)
+        self.assertEqual(("research_only_unaccepted",
+                          "538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729"),
+                         (report["status"], report["digest"]))
+        self.assertEqual("a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66",
+                         report["provenance"]["source_digest"])
+
+    def test_version_1_snapshot_is_reported_frozen_and_not_runnable(self):
         result = self.run_cli("snapshot", "--file", "config/frontier_snapshot_v1.json")
         self.assertEqual(0, result.returncode, result.stderr.decode("ascii", "replace"))
-        self.assertIn(b"a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66", result.stdout)
+        report = json.loads(result.stdout)
+        self.assertEqual(("frozen_version_1_research_only_not_runnable",
+                          "a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66"),
+                         (report["status"], report["digest"]))
+
+    def test_l1_refuses_operator_commands_and_nonfixture_inspection(self):
+        with tempfile.TemporaryDirectory(prefix="ceml-frontier-cli-denied-") as scratch:
+            out = Path(scratch) / "manifest.json"
+            commands = (
+                ("prepare-authority", "--authority-id", "RUN1-denied", "--base-kind", "published",
+                 "--batch-start", "2361183241434822606848", "--batch-end", "2361183241434822606992",
+                 "--acknowledge", "not-an-acknowledgement", "--owner-instruction", "SIMULATED DENIAL ONLY"),
+                ("prepare-manifest", "--out", str(out), "--authority-id", "RUN1-denied",
+                 "--acknowledge", "not-an-acknowledgement", "--max-t-per-explicit", "100000",
+                 "--max-total-t", "2000000", "--run-id", "RUN1-denied", "--base-kind", "published"),
+            )
+            for arguments in commands:
+                result = self.run_cli(*arguments)
+                with self.subTest(command=arguments[0]):
+                    self.assertEqual(2, result.returncode)
+                    self.assertEqual("RUN1 not owner-authorised", json.loads(result.stdout)["reason"])
+            self.assertFalse(out.exists())
+            for command in ("inspect", "replay"):
+                result = self.run_cli(command, "--batch-dir", scratch)
+                with self.subTest(command=command):
+                    self.assertEqual(2, result.returncode)
+                    self.assertIn("only predesignated fixtures", json.loads(result.stdout)["reason"])
 
     def test_scientific_pilot_refuses_without_run1_evidence(self):
         sys.path.insert(0, str(FRONTIER))

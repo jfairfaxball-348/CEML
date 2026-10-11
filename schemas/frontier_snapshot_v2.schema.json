@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CEML-FRONTIER-2 research snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "research_only",
+    "observed_at_utc",
+    "provenance",
+    "published",
+    "operational"
+  ],
+  "properties": {
+    "schema": {
+      "const": "CEML-FRONTIER-2-SNAPSHOT"
+    },
+    "research_only": {
+      "const": "yes"
+    },
+    "observed_at_utc": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_schema",
+        "source_file",
+        "source_digest",
+        "source_sha3_256"
+      ],
+      "properties": {
+        "kind": {
+          "const": "carried_forward_without_new_observation"
+        },
+        "source_schema": {
+          "const": "CEML-FRONTIER-1-SNAPSHOT"
+        },
+        "source_file": {
+          "const": "config/frontier_snapshot_v1.json"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_sha3_256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "published": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "B",
+        "publication_date",
+        "source_url",
+        "tier"
+      ],
+      "properties": {
+        "B": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "publication_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "source_url": {
+          "type": "string",
+          "pattern": "^https://[^\\s]+$",
+          "maxLength": 512
+        },
+        "tier": {
+          "const": "peer_reviewed_published"
+        }
+      }
+    },
+    "operational": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "B",
+        "headline_B",
+        "first_incomplete_end",
+        "first_incomplete_unit",
+        "first_unassigned_unit",
+        "work_unit_size",
+        "site_generated_utc",
+        "source_url",
+        "tier"
+      ],
+      "properties": {
+        "B": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "headline_B": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "first_incomplete_end": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "first_incomplete_unit": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "first_unassigned_unit": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "work_unit_size": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 8192
+        },
+        "site_generated_utc": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "source_url": {
+          "type": "string",
+          "pattern": "^https://[^\\s]+$",
+          "maxLength": 512
+        },
+        "tier": {
+          "const": "author_reported_not_replicated"
+        }
+      }
+    }
+  }
+}

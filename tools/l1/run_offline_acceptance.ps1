@@ -69,10 +69,15 @@ $outputDir = Join-Path $root ('local/frontier/os-offline/' + $runId)
 New-Item -ItemType Directory -Path $outputDir -ErrorAction Stop | Out-Null
 $shell = Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe'
 $child = $null
+$childExitCode = ''
 $isolated = $false
 $checksPassed = $false
 $restored = $false
+$watchdogRemoved = $false
+$reconnected = $false
+$passed = $false
 $failureKind = ''
+$stage = 'watchdog-registration'
 $startedUtc = [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')
 
 function Assert-Isolation {
@@ -119,20 +124,27 @@ try {
         -ExecutionTimeLimit (New-TimeSpan -Minutes 2) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
     Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $triggers -Principal $principal -Settings $settings | Out-Null
     if (@(Get-ScheduledTask -TaskName $taskName).Count -ne 1) { throw 'Cleanup watchdog not registered' }
+    $stage = 'rule-creation'
     New-NetFirewallRule -PolicyStore PersistentStore -Name $ruleNames[0] -DisplayName $ruleNames[0] `
         -Group $group -Enabled True -Profile Any -Direction Inbound -Action Block `
         -Program Any -Protocol Any -LocalAddress Any -RemoteAddress Any | Out-Null
     New-NetFirewallRule -PolicyStore PersistentStore -Name $ruleNames[1] -DisplayName $ruleNames[1] `
         -Group $group -Enabled True -Profile Any -Direction Outbound -Action Block `
         -Program Any -Protocol Any -LocalAddress Any -RemoteAddress Any | Out-Null
+    $stage = 'isolation-verification'
     Assert-Isolation
+    $stage = 'blocked-probe'
     $blockedProbe = & $PythonPath $helper --probe
     if ($LASTEXITCODE -ne 2 -or ($blockedProbe | ConvertFrom-Json).connected) { throw 'Network probe was not blocked' }
     $isolated = $true
+    $stage = 'child-start'
     $arguments = '"' + $helper + '" --run --output-dir "' + $outputDir + '" --expected-source ' + $plan.source_sha256
     $child = Start-Process -FilePath $PythonPath -ArgumentList $arguments -WorkingDirectory $root -WindowStyle Hidden `
         -PassThru -RedirectStandardOutput (Join-Path $outputDir 'driver.stdout.log') `
         -RedirectStandardError (Join-Path $outputDir 'driver.stderr.log')
+    # Hold the process handle now; otherwise the exit code can be unavailable later.
+    $null = $child.Handle
+    $stage = 'child-monitor'
     $deadline = [DateTime]::UtcNow.AddMinutes(20)
     while (!$child.HasExited) {
         if ([DateTime]::UtcNow -ge $deadline) { throw 'Acceptance exceeded 20-minute isolation budget' }
@@ -141,25 +153,36 @@ try {
         $child.Refresh()
     }
     $child.WaitForExit()
+    $childExitCode = [string]$child.ExitCode
+    $stage = 'final-isolation-verification'
     Assert-Isolation
+    $stage = 'final-blocked-probe'
     $blockedProbe = & $PythonPath $helper --probe
     if ($LASTEXITCODE -ne 2 -or ($blockedProbe | ConvertFrom-Json).connected) { throw 'Final network probe was not blocked' }
-    if ($child.ExitCode -ne 0) { throw 'Engineering child failed' }
+    $stage = 'child-exit-code'
+    if ($childExitCode -ne '0') { throw 'Engineering child failed' }
+    $stage = 'evidence-check'
     $checks = Get-Content -LiteralPath (Join-Path $outputDir 'checks.json') -Raw | ConvertFrom-Json
     if ($checks.status -ne 'ENGINEERING-CHECKS-PASS' -or $checks.source_sha256 -ne $plan.source_sha256) {
         throw 'Engineering evidence incomplete'
     }
+    $stage = 'final-source-identity'
     $endPlan = & $PythonPath $helper --plan
     if ($LASTEXITCODE -ne 0 -or ($endPlan | ConvertFrom-Json).source_sha256 -ne $plan.source_sha256) {
         throw 'Final source identity changed'
     }
     $checksPassed = $true
+    $stage = 'completed'
 } catch {
     $failureKind = $_.Exception.GetType().Name
 } finally {
-    if ($null -ne $child -and !$child.HasExited) {
-        & (Join-Path $env:SystemRoot 'System32/taskkill.exe') /PID $child.Id /T /F 2>&1 | Out-Null
-    }
+    # Nothing in this block may prevent the rule removal that follows it.
+    try {
+        if ($null -ne $child -and !$child.HasExited) {
+            Start-Process -FilePath (Join-Path $env:SystemRoot 'System32/taskkill.exe') `
+                -ArgumentList @('/PID', [string]$child.Id, '/T', '/F') -WindowStyle Hidden -Wait
+        }
+    } catch { }
     try {
         foreach ($name in $ruleNames) {
             $rules = @(Get-NetFirewallRule -PolicyStore PersistentStore -Name $name -ErrorAction SilentlyContinue)
@@ -169,21 +192,35 @@ try {
         if ($remaining.Count -ne 0) { throw 'Isolation rules still present; watchdog retained' }
         $restored = $true
         Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+        $watchdogRemoved = (@(Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue).Count -eq 0)
     } catch {
         $restored = $false
         $failureKind = 'CleanupFailed-WatchdogRetained'
     }
-    $status = if ($checksPassed -and $isolated -and $restored) { 'OS-BLOCKED-ENGINEERING-CHECKS-PASS' } else { 'FAIL' }
-    $record = @{schema='CEML-L1-OS-ISOLATION-PREP-1'; scope='L1-NONSCIENTIFIC'; status=$status;
+    # Restoration is observed, not assumed: the same zero-payload probe must connect again.
+    if ($restored) {
+        for ($attempt = 0; $attempt -lt 10 -and !$reconnected; $attempt++) {
+            try {
+                $null = & $PythonPath $helper --probe
+                $reconnected = ($LASTEXITCODE -eq 0)
+            } catch { }
+            if (!$reconnected) { Start-Sleep -Seconds 3 }
+        }
+    }
+    $passed = ($checksPassed -and $isolated -and $restored -and $watchdogRemoved -and $reconnected)
+    $status = if ($passed) { 'OS-BLOCKED-ENGINEERING-CHECKS-PASS' } else { 'FAIL' }
+    $record = @{schema='CEML-L1-OS-ISOLATION-2'; scope='L1-NONSCIENTIFIC'; status=$status;
         started_utc=$startedUtc; finished_utc=[DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ');
         source_sha256=$plan.source_sha256; launcher_sha256=$launcherHash;
         connected_baseline=$true; os_rules_verified=$isolated; rules_removed=$restored;
-        checks_passed=$checksPassed; failure_kind=$failureKind; scientific_execution='NOT_RUN';
+        watchdog_removed=$watchdogRemoved; connected_after_restore=$reconnected;
+        checks_passed=$checksPassed; child_exit_code=$childExitCode; last_stage=$stage;
+        failure_kind=$failureKind; scientific_execution='NOT_RUN';
         limitations='No power-loss guarantee; OS rules are observed, not a hardware network air gap'}
     $json = $record | ConvertTo-Json -Compress
     [IO.File]::WriteAllText((Join-Path $outputDir 'isolation.json'), $json, [Text.Encoding]::ASCII)
     Write-Output $json
     $runLock.Dispose()
 }
-if (!$checksPassed -or !$restored) { exit 2 }
+if (!$passed) { exit 2 }
 exit 0

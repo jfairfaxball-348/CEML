@@ -1,3 +1,13 @@
+# P0 active claim supplement (2026-10-11)
+
+The original single-rung claim policy remains applicable **only to historical CEML-SCI-1 evidence**. For the new exhaustive-frontier programme, every claim must specify:
+- the exact half-open verified interval and **exclusive upper bound**;
+- peer-reviewed external base assumption vs author-reported operational base, source and timestamp, and whether that base was independently reproduced;
+- proof-backed excluded counts vs actual trajectories evaluated, unresolved count, rule and software versions;
+- validation tier (mathematical proof / self-test / software acceptance / local scientific batch / independent rerun / recognised global extension).
+A completed batch is a *conditional finite computational convergence certificate*, not a proof of the Collatz conjecture or automatic evidence of a world-first. "Beyond the published frontier", "not in known completed units", and "never checked by anyone" are strictly different claims. An unfinished or large trajectory is not divergence.
+
+---
 # CEML Claim Policy
 
 Status: **Bootstrap policy**

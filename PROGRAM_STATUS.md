@@ -1,80 +1,27 @@
 # CEML Programme Status
 
-**Authoritative current phase:** C1 — COMPLETE, STOPPED FOR OPERATOR REVIEW (V1 NOT ENTERED)  
-**Scientific execution authorization:** DENIED  
-**Production implementation authorization:** AUTHORIZED ONLY UNDER THE APPROVED C1 HANDOFF AND REQUIRED AUDIT/CALIBRATION ORDER  
-**Scientific master-seed generation:** DENIED  
-**Magnitude-rung semantics:** FROZEN as decimal-digits-v1  
-**Final executable ladder values:** PROVISIONAL / NOT FROZEN  
-**Local machine profile:** MEASURED AND FROZEN — `config/local_machine_profile.json`, digest `fed3d3c38d5ec932e0f0c311344e19c15190dcfca77d9c026bcb82a178116a9e`  
-**Scientific protocol version:** CEML-SCI-1  
-**Checkpoint format:** CEML-CKPT-1  
-**Hardware-audit contract:** R4 FROZEN  
-**Implementation specification:** I1 FROZEN / APPROVED  
-**Calibration suite:** CEML-CAL-1 FROZEN  
-**Last status update:** 2026-10-05
+**Authoritative current phase:** P1 — CLOUD RESEARCH ONLY (P0 pivot committed)
+**Scientific execution authorization:** DENIED
+**Local Codex / local machine access authorization:** DENIED IN P1
+**New frontier scientific protocol:** PLANNED AS CEML-FRONTIER-1; NOT YET FROZEN
+**New batch-verifier implementation:** NOT IMPLEMENTED OR VALIDATED
+**Old ladder status:** SUPERSEDED AS ACTIVE TARGET; HISTORICAL EVIDENCE RETAINED
+**Old scientific master-seed generation:** DENIED
+**Last P0 decision:** 2026-10-11 — owner-directed soft pivot
 
-## Gate decisions
+## Live baseline and completed historical gates
+P0 entry main: `63fc41610603782eefc709139e6dcbdcca97b78f`. Repo tree, recent commits, open/recent PRs and Actions were inspected. One historical merged PR (#1) was found, with no open PRs and no recorded workflow runs at entry. No CI success is asserted.
 
-| Gate | Status | Evidence / consequence |
-|---|---|---|
-| BOOTSTRAP | COMPLETE | Governance and scaffold committed before R1. |
-| R1 | **PASS — 2026-10-04** | `docs/LITERATURE_AUDIT.md` records the state-of-the-art evidence base and caveats. |
-| R2 | **PASS — 2026-10-04** | `docs/ALGORITHM_AUDIT.md` freezes algorithmic invariants, threat model, validation implications and a machine-neutral shortlist. |
-| R3 | **PASS — 2026-10-04** | `docs/REPRODUCIBILITY_VALIDATION_AUDIT.md` plus CEML-SCI-1 documents/schemas freeze scientific semantics, deterministic start generation, canonical integrity, checkpoint/restart, V1 and anomaly rules. |
-| R4 | **PASS — 2026-10-04** | `docs/HARDWARE_AUDIT_SPEC.md` freezes privacy-safe observation, bounded calibration, route activation, resource safety, filesystem-durability testing and evidence/refusal rules. |
-| I1 | **PASS — 2026-10-04** | `docs/CODEX_HANDOFF.md`, `config/calibration_suite_v1.json`, `schemas/c1_evidence.schema.json` and `schemas/hardware_profile.schema.json` provide an executable C1 specification without machine guessing or production implementation. |
-| C1 | **PASS — 2026-10-05 (agent-assessed; operator review required)** | `docs/C1_COMPLETION.md`, the sanitized `local_reports/` artifacts, `local_reports/BUILD_MANIFEST.json` (build digest `14f2811832f052c84cadd83759e6d23e14f657cbf7c9d6cc0fa7f24dceaa312b`, engine commit `5c354aadc85d7e80372d3c49547b1c73bc2d449f`) and `config/local_machine_profile.json`. Limitations are listed in the completion record. C1 has stopped. |
-| V1 | NOT ENTERED | Not authorized by C1 completion. Requires operator review of the C1 package and a separate reviewed status transition. |
-| E1 | NOT ENTERED | Scientific ladder execution, final ladder freeze and scientific seed event remain unauthorized. |
+Original BOOTSTRAP, R1–R4, I1 are PASS. C1 was recorded as agent-assessed PASS on 2026-10-05; its Windows/MSVC C17/GMP engine, calibration, build/profile, checkpoint store, reference oracle and Python scripts remain preserved but await operator review. Old V1/E1: NEVER ENTERED. C1 calibration did not validate an interval-verification engine. New P0: PASS for reorientation/documentation only, not a mathematical or code validation. P1: CURRENT.
 
-## I1 acceptance summary
+## Frontier evidence hierarchy as of 2026-10-11
+- **Peer-reviewed published**: every positive integer n < `2361183241434822606848` (2^71), Barina (2025), published claim, not CEML reproduction.
+- **Live homepage rounded completed claim**: n < `2392312122059207475200` (2075 * 2^60).
+- **Live work-unit progress, exact lowest incomplete**: unit ID `2175982616` of size `1099511627776` (2^40). Homepage says all lower units complete, yielding **reported** n < `2392518188130438742016`. This is a dynamic, NOT independently replicated, work-unit-ledger statement.
+- The first reported incomplete interval at snapshot was `[2392518188130438742016,2392518189229950369792)`; dynamic overlap/assignment may change at any time. No world-first claim is permitted from this snapshot.
+- P1 must distinguish published-supported starting modes from operational-report-dependent modes. See `docs/P0_FRONTIER_AUDIT.md`.
 
-I1 freezes, without inspecting the actual machine or selecting a local performance winner:
+## New phase limits
+P1 may do cloud research, proof checking, documentation and appropriate GitHub changes. It may not call local Codex, use the local hardware, build/implement the production verifier, run scientific trajectories, generate a scientific seed, open V1/E1, or validate a scientific interval. The old `ceml.exe` was hard-gated to legacy phase strings; this P1 status intentionally authorises none of those modes. Do not manually bypass its guards.
 
-- definition-oracle, production-engine, affine-block, hierarchical batching, terminal-safety, counter, route, checkpoint, canonicalization, audit, calibration, build/profile and validation interfaces;
-- code-level C/T/U, affine, split/composition, exact-count, first-1 and arbitrary-precision invariants;
-- the terminal-safe macro rule: for nonterminal `n`, a macro is definition-level safe only when `k <= bit_length(n)-1`, otherwise exact direct/odd-only handoff/decomposition is required;
-- a public-API candidate baseline and explicit rejection of private GMP/FLINT internals, raw limb serialization and other unsupported/high-risk baselines;
-- stable route IDs and fail-closed REQUIRE activation evidence;
-- versioned C1 artifact paths and schemas;
-- CEML-CAL-1 deterministic engineering input generation, case ordering, benchmark matrix and hard suite maxima;
-- evidence sufficiency, variability/tie-break and refusal rules;
-- Linux/macOS/Windows privacy-minimized audit adapters plus a deterministic sensitive-data gate;
-- an offline-capable two-layer dependency lock/pin strategy;
-- CEML-CKPT-1 platform adapter, interruption/recovery and fresh-process restart requirements;
-- engineering-only build/profile digest domains that do not modify any CEML-SCI-1 digest rule;
-- required CLI authorization boundaries and all twelve V1 implementation hooks.
-
-## Current C1 boundary
-
-C1 may now inspect the dedicated local machine only within the R4/I1 observation scope, establish conservative local safety ceilings, run the bounded deterministic CEML-CAL-1 suite, make only evidence-backed engineering selections, implement the selected exact engine, build it, test the intended checkpoint filesystem and freeze sanitized build/profile artifacts.
-
-C1 may not:
-
-- generate, request or use the scientific master seed;
-- derive or evaluate a scientific start;
-- freeze the final executable ladder;
-- exceed CEML-CAL-1 or stricter local safety bounds;
-- guess unavailable machine facts or import another machine's measurements;
-- silently install, upgrade or substitute dependencies;
-- select private/unsupported backend routes;
-- accept a benchmark without exact correctness agreement and activation proof;
-- weaken CEML-SCI-1, CEML-CKPT-1, R4 privacy or V1 requirements;
-- claim V1 or proceed to E1 automatically.
-
-C1 completion requires the sanitized reports, benchmark summary/bundle index, engineering decision log, exact build manifest, offline lock/pin evidence, target-filesystem checkpoint durability evidence, sensitive-data-scan PASS and `config/local_machine_profile.json`. C1 then stops for review.
-
-## C1 result
-
-C1 produced its required package and stopped. Scientific execution, scientific master-seed generation, final ladder freeze, V1 and E1 remain exactly as stated above. The engine executable refuses `validate`, `prepare` and `run` under this status. A rejection of any recorded C1 interpretation or decision on review reopens C1 through additive history; it is never patched silently.
-
-## Non-substitution rule
-
-A hardware observation is not a benchmark. A benchmark is not V1 validation. Validation is not scientific execution. A resource stop, failed restart, corrupt artifact or long runtime is not divergence. A suspected counterexample is an anomaly requiring separate certification.
-
-## Change control
-
-Any material change to CEML-SCI-1 map/count, rung, start-generation, integrity, checkpoint, result or anomaly semantics requires an explicit new scientific protocol/schema version and reviewed repository history.
-
-Any relaxation of the R4 privacy/evidence/refusal contract requires an explicit reviewed R4 contract revision. Any material change to the CEML-I1 implementation/calibration/profile contract requires a reviewed I1 engineering-specification revision before affected C1 evidence is accepted.
+Exit P1 only after proved priority rules, complete exact decision predicates, conservative limitations and repeatable independent test plans are committed. P2 then freezes NEW schemas and implementation semantics. Historical files/schemas remain authoritative solely for legacy data.

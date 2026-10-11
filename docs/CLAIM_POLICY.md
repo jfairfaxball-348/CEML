@@ -1,3 +1,9 @@
+# CEML-FRONTIER-1 P2 claim-tier freeze (2026-10-11)
+
+The additive normative frontier claim language is `docs/FRONTIER_PROTOCOL_V1.md` §6. P2 is protocol-specification PASS only; old C1 calibration, fixture proofs, authored snapshot, formal-source citations and all hypothetical scientific batches remain categorically distinct. Rule proofs are `RULE_PROVED_CONDITIONAL`; future green L1 tests are at most `ENGINE_TESTED`; only actual committed exact, full independently rechecked batches under a selected acknowledged baseline may use `BATCH_CONDITIONAL_PUBLISHED` or `BATCH_CONDITIONAL_OPERATIONAL`. Neither tier means the external base was independently reproduced; operational-mode claims cannot borrow publication-tier provenance. A separate independent run and contemporaneous other-project work-unit evidence are needed for `INDEPENDENT_REPRODUCTION` and `GLOBAL_FRONTIER_EXTENSION`. No implicit world first; failure or long orbit never implies divergence. No scientific batch now exists.
+
+---
+
 # P0 active claim supplement (2026-10-11)
 
 The original single-rung claim policy remains applicable **only to historical CEML-SCI-1 evidence**. For the new exhaustive-frontier programme, every claim must specify:

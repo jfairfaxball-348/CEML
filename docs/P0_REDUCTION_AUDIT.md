@@ -30,3 +30,7 @@ Terence Tao, *Almost all orbits of the Collatz map attain almost bounded values*
 
 ## P1 obligations and independent testing
 For each rule freeze precise domain, exception, proof, integer-only predicate, used lower certificate, rule ID and separate reference tests. Tests on representative positive small inputs and all residues for a chosen k complement but do NOT establish universal validity; test all 1<=n<=a modest limit with reference T and an independently implemented predicate; test boundaries, k=0 errors, high integer values and overflow rejection. Verify parity/a/b identities against direct iteration, composition order, and thresholds symbolically. For P3 independently check p odd, p<n, T(p)=n including n=2. Freeze a smallest *sufficient* set; mark any unproved or complex sieve INACTIVE.
+
+## P1 proof-certified successor (2026-10-11)
+
+**The original P0 exploratory audit above is preserved as P0 history.** The independent P1 proof and integer-only predicates (including the newly proved M9 class, the minimal nonredundant k=4 S2K4-03 residue, source-pinned audit and full modulus-144 accounting) are now in [docs/P1_EXCLUSION_PROOFS.md](P1_EXCLUSION_PROOFS.md). If a P0 candidate assertion differs from P1, P1's proved theorem and exact domain control the future P2 protocol; neither research document executes a scientific batch.

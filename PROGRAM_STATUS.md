@@ -1,13 +1,23 @@
 # CEML Programme Status
 
-**Authoritative current phase:** L1 — FUTURE LOCAL IMPLEMENTATION GATE; NOT OWNER-AUTHORISED OR EXECUTED
+**Authoritative current phase:** L1 — OPEN; OWNER-INVOKED IMPLEMENTATION/TESTING SESSION EXECUTED
 **Scientific execution authorization:** DENIED (including any L1 science pilot; RUN1 remains separately gated)
-**Local Codex / local machine access authorization:** DENIED UNTIL A NEW EXPLICIT L1 OWNER INVOCATION
-**New frontier scientific protocol:** CEML-FRONTIER-1 SPECIFICATION FROZEN BY P2; IMPLEMENTATION AND ACCEPTANCE NOT DONE
-**New batch-verifier implementation:** NOT IMPLEMENTED OR VALIDATED
+**Local Codex / local machine access authorization:** THIS L1 INVOCATION RECORDED; FRESH FOCUSED CONTINUATION REQUIRED AFTER EXIT
+**New frontier scientific protocol:** CEML-FRONTIER-1 FROZEN; ENGINEERING IMPLEMENTATION EXISTS; ACCEPTANCE OPEN
+**New batch-verifier implementation:** SEPARATE GMP/PYTHON CANDIDATE BUILT AND TESTED; NOT ACCEPTED FOR RUN1
 **Old ladder status:** SUPERSEDED AS ACTIVE TARGET; HISTORICAL EVIDENCE RETAINED
 **Old scientific master-seed generation:** DENIED
 **Last P0 decision:** 2026-10-11 — owner-directed soft pivot
+
+## L1 measured exit — 2026-10-11
+
+The owner invoked main's `NEXT_SESSION_PROMPT.md` and subsequently directed continuation. Entry/live main and P2 PR #4 merge SHA were both `abd5d5bd0c6bb3a5cfbd1b83d52122b04d324016`; P2 merged 2026-10-11T12:52:38Z. Entry had no open PRs or Actions runs. The single local L1 attempt does not amend old C1 authority or authorise RUN1.
+
+Separate C17/GMP release and checked workers compiled from exact offline pins. The Python standard-library driver/reference, full small-batch replay, canonical schemas/digests, atomic records, authority refusals and fault tests exist. A full 91-test run passed without skips; the final affected 9-test batch suite passed after adding the one-active-batch guard (92 distinct tests covered). Clean reproduction and Python network-denied build/selftest passed. Only small acceptance intervals and bounded high-bit identities executed. Details/hashes: [L1_ACCEPTANCE.md](docs/L1_ACCEPTANCE.md).
+
+**L1 OPEN:** later-generation torn-checkpoint recovery cannot authenticate a missing parent using only the two rotating records; the implementation conservatively refuses that ambiguity. [L1_RECOVERY_V2_PROPOSAL.md](docs/L1_RECOVERY_V2_PROPOSAL.md) proposes a prospective three-slot version 2 for review; it is not active or implemented. OS-level network-isolated build/acceptance remain NOT_RUN: firewall administration was unavailable and no adapter was disabled. Python network-import/socket denial passed but does not substitute for that missing observation.
+
+**One next gate:** fresh owner-authorised focused L1 continuation after recovery-amendment review and arranging OS-level isolation. No RUN1 handoff, scientific interval, accepted external base, frontier claim or V1/E1 execution exists. Any old future/unimplemented L1 wording below is historical and superseded by this measured exit, never reinterpreted as acceptance.
 
 ## Live baseline and completed historical gates
 P0 entry main: `63fc41610603782eefc709139e6dcbdcca97b78f`. Repo tree, recent commits, open/recent PRs and Actions were inspected. One historical merged PR (#1) was found, with no open PRs and no recorded workflow runs at entry. No CI success is asserted.

@@ -2,7 +2,7 @@
 
 CEML's active purpose is **gap-free exhaustive Collatz frontier verification**, not the former isolated extreme-magnitude random ladder. The previous programme is preserved at [the 2026-10-11 entry commit](https://github.com/jfairfaxball-348/CEML/tree/63fc41610603782eefc709139e6dcbdcca97b78f).
 
-**Current gate:** P2 specification PASS; next gate is ONE future separately owner-authorised local L1 implementation and acceptance session. **Do not use local Codex or run a scientific batch without new owner authorisation.** The old C1 engine exists and was agent-assessed complete, but has not passed legacy V1 and has NOT been adapted to interval coverage.
+**Current gate:** L1 OPEN after the owner-invoked implementation/test session. The separate verifier builds and its executed tests pass; later-generation recovery and OS-level network-isolated acceptance remain open. See [L1 acceptance](docs/L1_ACCEPTANCE.md) and the [prospective recovery amendment](docs/L1_RECOVERY_V2_PROPOSAL.md). **Only a fresh focused L1 continuation is next; RUN1 remains denied.** C1 and its gates remain unchanged.
 
 Read, in order:
 1. `PROGRAM_STATUS.md`, `PROJECT_CHARTER.md`, `ROADMAP.md`, `AGENTS.md`;
@@ -15,4 +15,4 @@ Priorities: source-pinned published vs operational frontiers; strict mathematica
 
 Workstreams: A cloud research/governance; B one later focused local Codex implementation; C actual local CLI science, offline. See `ROADMAP.md`.
 
-No P2 source document is evidence that the interval verifier exists or passed L1. `NEXT_SESSION_PROMPT.md` now contains the ONE future L1 handoff, not RUN1 authority.
+P2 documents are specification evidence. L1 evidence describes a separate tested candidate, not accepted software or science. `NEXT_SESSION_PROMPT.md` contains the focused OPEN-gate continuation, not RUN1 authority.

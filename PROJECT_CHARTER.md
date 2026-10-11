@@ -1,48 +1,21 @@
-# CEML Project Charter
+# CEML Project Charter — version 0.2 (P0 pivot, 2026-10-11)
 
-Status: **Charter v0.1 — CEML-SCI-1 scientific semantics frozen at R3**
+## Active purpose and authority
+CEML now means the continuing repository programme formerly called *Collatz Extreme Magnitude Ladder*. Under explicit owner authority on 2026-10-11, its **active** scientific objective is exhaustive, reproducible verification of consecutive positive integers immediately above a well-evidenced contiguous Collatz frontier. Use exact descending-trajectory certificates and proved congruence exclusions so only unresolved starts require explicit computation. A meaningful result is a precisely delimited, locally reproduced interval; world-frontier advancement is a longer-term conditional objective, not a guaranteed outcome.
 
-## Root purpose
+The original single-random-odd-start-per-decimal-magnitude ladder is **superseded as an active programme, not repudiated or erased**. Its frozen CEML-SCI-1, CEML-CKPT-1, R1–R4, I1, C1, calibrations, source and reports remain historically authoritative for their original scope; see pre-pivot commit [63fc416](https://github.com/jfairfaxball-348/CEML/tree/63fc41610603782eefc709139e6dcbdcca97b78f). Neither C1-PASS nor an old V1 test transfers to the new scientific protocol.
 
-CEML exists to answer one empirical question:
+## New scientific contract
+- Research and governance are cloud-only; ONE later independently authorised local Codex implementation stage (L1); subsequent verification is a wholly offline local CLI operation (RUN1). These are exactly three workstreams.
+- Scientific coverage consists of consecutive nonoverlapping half-open intervals [start,end) with exact integer endpoints, accounting for EVERY integer. Every exclusion is theorem-backed; no statistical or heuristic skips.
+- A base frontier is an explicit **assumption with evidence provenance**; CEML never silently treats an externally reported basin as independently reproduced. Internal proof dependency across ranges is permitted only through committed contiguous predecessors; ascending provisional certification within one atomic batch is permitted.
+- The initial frontier is fixed in a versioned offline snapshot. It may be updated prospectively by an explicit cloud-side evidence revision, never by the offline runner contacting a server.
+- Validation, batch execution and public novelty claims are separate gates. No universal convergence or counterexample claims arise from finite checks. Every anomaly freezes certification pending separate review.
 
-> Does the qualitative or quantitative behaviour of one randomly predetermined Collatz orbit change as the starting magnitude is increased by many orders of magnitude?
+The new protocol will receive a distinct version at P2 (working identifier CEML-FRONTIER-1). The old scientific/rung/checkpoint schemas are NOT silently repurposed. Exact batch identity, accounting, chain-of-custody and recovery will be frozen only at P2.
 
-For each frozen magnitude rung, CEML will choose exactly one reproducibly random positive odd integer before trajectory inspection, evaluate its orbit exactly with a validated high-magnitude implementation, and preserve enough provenance for independent reproduction and verification.
+## Success criteria
+A locally independently reproducible batch, whose coverage is complete under its expressly accepted base assumption, is useful even if another project covered the interval first. Extending an accepted global frontier requires independently defensible external evidence and non-overlap with prior work; never infer novelty from size alone. Maintain a gap-free CEML ledger. Avoid vast tracked trajectory data.
 
-## Scope
-
-The programme is intentionally narrow. Its baseline output is a sequence of individually auditable isolated-start experiments at rapidly increasing magnitudes.
-
-R3 freezes a magnitude rung as an exact decimal-digit count D whose sampling set is all positive odd D-digit integers. The provisional ladder values remain `10^6`, `10^7`, `10^8`, `10^9`, and `10^10` decimal digits; those values are hypotheses, not commitments.
-
-## Explicit exclusions
-
-CEML is not:
-
-- a proof of the Collatz conjecture;
-- a proof-oriented divergence search;
-- contiguous verification over an interval;
-- a high-throughput many-start search;
-- survivor ranking, peak chasing, or anomaly selection;
-- a statistical convergence study unless a separate design is adopted;
-- a continuation of another Collatz repository;
-- a cloud-first computation programme.
-
-No prior Collatz project supplies CEML architecture, terminology, assumptions or research state by default.
-
-## Scientific invariants versus engineering choices
-
-CEML-SCI-1 freezes standard/shortcut map semantics, first-1 termination, exact standard/shortcut/odd counts, decimal-digit rung meaning, deterministic one-start generation, exact arithmetic, canonical integrity/provenance rules, checkpoint/restart equivalence, result statuses, validation independence and anomaly/freeze behaviour.
-
-Engineering choices may depend on the later measured local machine: language, arithmetic backend, compiler, flags, macro/block parameters, allocation strategy, thread count, checkpoint cadence, storage layout and bounded validation/calibration parameters. They may not change a frozen scientific invariant.
-
-## Success criterion
-
-Success does not require a counterexample. Success is a trustworthy, independently auditable ladder in which each sampled integer was fixed before observation, generated by the frozen protocol, evaluated exactly, associated with the exact machine/build profile, restartable from integrity-checked state, and reported with validated accounting.
-
-If every tested number reaches 1, that is a valid result.
-
-## Authority rule
-
-The Git history of this repository is the authoritative CEML record. External sources can inform decisions only after they are explicitly audited and cited here.
+## References
+[Frontier evidence](docs/P0_FRONTIER_AUDIT.md), [reduction proofs](docs/P0_REDUCTION_AUDIT.md), [batch/architecture plan](docs/P0_BATCH_MODEL.md), [current gate](PROGRAM_STATUS.md), [historical charter at entry](https://github.com/jfairfaxball-348/CEML/blob/63fc41610603782eefc709139e6dcbdcca97b78f/PROJECT_CHARTER.md).

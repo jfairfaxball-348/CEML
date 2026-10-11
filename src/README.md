@@ -1,7 +1,3 @@
-# Source
+# Native source — retained CEML-C1 implementation
 
-Production engine implementation is intentionally absent.
-
-R1–R4 and I1 must complete before C1 is authorized to write the hardware-adaptive implementation. The eventual hot loop is expected to be compiled and exact, but language/backend/architecture are not selected at bootstrap.
-
-Small reference-oracle code may be added earlier only when a research/validation gate explicitly requires it and it cannot be confused with the production engine.
+The legacy C1 C17 source is present in this directory and was frozen on 2026-10-05 under old CEML-SCI-1 with agent-assessed engineering calibration and a built executable. **It is not an exhaustive-frontier verifier and was not validated under V1.** The active P1 research gate does not authorise rebuilding or scientific execution. See [C1 history](../docs/C1_COMPLETION.md), [new P0 architecture](../docs/P0_BATCH_MODEL.md) and [new status](../PROGRAM_STATUS.md). A later distinct L1 may reuse selected arithmetic/oracle/store routines only after P2 mathematics and validation requirements are frozen.

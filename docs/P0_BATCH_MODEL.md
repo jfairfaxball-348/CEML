@@ -1,0 +1,32 @@
+# CEML-P0 — Minimal offline interval verification model
+This is an **architecture outline**, NOT a frozen P2 protocol, a RUN1 manifest or authority to implement/execute.
+
+## Input and authoritative assumptions
+Accept local immutable frontier snapshot (published bound, exact operational reported bound, source/retrieval time, classification, checksum/provenance); local build/protocol identity; explicit accepted base B; exact nonnegative [start,end) with start>=B; rule-table identity; budgets and output directory. **No network access** in the runner or during resume/validation. The mode `published_base` differs from `operational_reported_base`; certificates state this conditional dependency. A frozen run never self-updates a live frontier.
+
+## Coverage state machine and accounting
+For each batch [S,E), enforce S equals committed CEML prefix end or equals the explicit initial B on the very first batch. Sort processing in integer-increasing order. Integer n below an accepted baseline is already covered; otherwise assign exactly one category: E2, Q4, P3, S2K, explicit_trajectory_certified, or unresolved. In a purely frontier batch S>=B, `already_below_base=0`. With other bounds, enforce:
+`E-S = already_below_base + E2 + Q4 + P3 + S2K + explicit_trajectory_certified + unresolved`
+using integer counters, no implicit skipped gaps and no double accounting. Track `trajectories_evaluated = explicit_trajectory_certified + unresolved_trajectory_attempts` separately; an unresolved value counted once in unresolved may have been evaluated, so no duplicate summation. Unresolved means no proof at that n; fail closure, do not promote the batch.
+
+A certificate may say VERIFIED only if the scanner visited the exact sequence of positions without gap, all counts reconcile, no unresolved point exists, exact proof table identity is known, lower dependency chain is committed, and checksum/atomic write re-read succeeds. For intra-batch ascending proofs, n can rely on prior *provisional* m<n only conditionally; promotion of entire batch must be atomic and roll back on a gap. Cross-batch conditional proof cannot depend on an uncommitted batch.
+
+## Runtime design: smallest sensible viable prototype
+Python CLI handles only orchestration, exact bounds, batch ordering, manifest, reports and resume; existing C17 direct-T oracle/GMP support may be reused, but its million-digit hierarchical affine scheduler and old `prepare/run` authorisation are NOT reusable without replacement/gating. Native tight loop should use overflow-checked 128-bit representation for ~71-bit starting values (trajectories can grow), arbitrary precision GMP fallback if intermediate exceeds bounds, and an entirely separate definition-level oracle. **Neither 128-bit input handling nor GMP fallback is proved until tested.** Begin with trivial E2/Q4/P3 and optionally a SMALL table of certified 2^k residue classes; profile later, don't import GPU/distributed complexity.
+
+Never silently run old C1 executable by editing the current phase to E1. Keep it blocked. The offline verifier requires distinct code paths, protocols and acceptance gates.
+
+Suggested CLI surface at P2: `status --snapshot FILE`; `check-rules --suite FILE`; `pilot --snapshot FILE --start N --end M --work-budget ...`; `resume --checkpoint ...`; `verify-batch --certificate FILE`; `ledger --dir ...`. Exact syntax and protocol are *not* yet frozen, nor is a local Codex handoff.
+
+## Minimal durable records
+Retain one bounded per-batch certificate: protocol/build/snapshot digests, exact decimal S,E, rule-set ID, base reliance and prior-batch certificate digest; exact per-category counts, evaluated trajectory count, unresolved count; ordered scan accounting digest or equivalent independently checkable coverage integrity; elapsed wall/cpu and observed work units; status and checksum. Keep a local progress marker with exact `next_n` and a checkpointed proof/count state; write temporary generation, fsync, atomic same-directory rename, re-read and verify, retain prior good generation for rollback. Recover by scanning verified content, NOT trusting an unvalidated latest pointer. Do not commit raw trajectories or a row per start. Large detailed temporary evidence belongs in ignored `local/` directories. Manual optional Git commit of compact completed certificates only, never automatic.
+
+A crash, power interruption, resource stop, non-descent within budget, overflow without exact fallback, failed checksum or gap leaves batch INCOMPLETE. Resume must not accidentally promote counts from an uncommitted checkpoint. Anomaly: preserve input/current exact state/trace and halt certification for independent review. Anomalies do not imply divergence.
+
+## Validation separate from scientific runs
+Reference C-step/T-step/odd-only tests with different code; independent construction of each residue table and universal inequality proof; integer boundary/high-bit overflow checks and GMP transition; test enumerated micro-intervals against a naive independent oracle; simulate death before/after checkpoint writes/renames; exact restart equivalence; status-gate fail-closed; verify network disconnected, network tools absent and no APIs; byte-level certificate reproducibility; corruption/duplicate/dropped-range rejection. Check a sample of individual starts and *entire* small calibration intervals independently. A self-test is not acceptance; acceptance is not scientific interval completion.
+
+## Pilot/feasibility and minimal Codex scope
+After P1 proof freeze and P2 contract, one operator-authorised L1 implements a narrow C/Python wrapper and tests only. RUN1 separately authorises a sequence of seconds/minutes-scale pilots, increasing batch sizes only on actual local throughput measurements. Log **number of integers accounted for**, **explicit trajectories**, and **Collatz T operations** separately. The live modern-GPU report of ~5 seconds per 2^40 numbers does not predict a single laptop's performance. If the public frontier advances first, mark the CEML pilot as independent replication or conditional check, not a world first.
+
+No L1 prompt or scientific job is authorized by this P0 document.

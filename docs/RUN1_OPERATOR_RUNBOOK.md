@@ -1,6 +1,6 @@
 # RUN1 operator runbook — CEML-FRONTIER-2
 
-**Prepared package. RUN1 is NOT authorised.** Nothing in this runbook has been executed on a frontier integer. Every command in sections 5 to 9 refuses until the owner separately authorises RUN1 as described in section 4. The agent that prepared this package acknowledged nothing and authorised nothing on the owner's behalf.
+**Prepared package. RUN1 is NOT authorised.** Nothing in this runbook has been executed on a frontier integer. Every scientific command in sections 6 to 10 refuses until the owner separately authorises RUN1 as described in section 4. The session preflight of section 5 works in any phase, and the read-only commands of section 7 also work on the engineering fixtures. The agent that prepared this package acknowledged nothing and authorised nothing on the owner's behalf.
 
 Use this runbook only if `PROGRAM_STATUS.md` records L1 as accepted. If it still says L1 OPEN, stop here.
 
@@ -19,12 +19,12 @@ Check these before every session (section 5). A mismatch means the tree or build
 | Identity | Value |
 |---|---|
 | Protocol | `CEML-FRONTIER-2` (`docs/FRONTIER_PROTOCOL_V2.md`) |
-| Native build digest | `ac63b776d9693cad0c86d8b9a4d8311008ec58bd462f4489731b57c05147e6c9` |
+| Native build digest | `eba03082200f1aa9d304a45a64bbc455643c0f19e8765382136afb1b68d9d8b2` |
 | Release worker `ceml_frontier.exe` SHA3-256 | `8d3a72aa077fed414ad36e8008900f95a2a0630933e5dea5e66363fd34c19b6b` |
 | Checked worker `ceml_frontier_checked.exe` SHA3-256 | `b562e74ba06d7a4f936f3e0010f36142fe7025f8059e60793aea5388820bc525` |
-| Checker source digest | `741d3e3e5067a5ed04537f612ba67606945324c726a534c20d1dcdb17ade3c8d` |
+| Checker source digest | `a7fff362e46e87e9c131a166a514f7ec3168b108275e7356e739b3a6552217bd` |
 | Parity table digest | `d368ec417e3170729f67737c414b02ced2d2f6cab349f9cd534404985058391c` |
-| Frontier test-source digest | `0c9515baabaa7fbaac45f07dddac7e129197cc853aadd996460d669d022811f9` |
+| Frontier test-source digest | `86375e48f88d039ce408e58567baed51c61ec224afecfff0f2e595d28ab41609` |
 | Version-2 snapshot digest | `538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729` |
 | Frozen version-1 snapshot digest (provenance only) | `a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66` |
 | GMP runtime `libgmp-10.dll` SHA3-256 | `3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf` |
@@ -163,6 +163,8 @@ python tools/frontier/ceml_frontier.py pilot --manifest "$manifests/batch-0001.j
 
 Do not propose the next batch until section 7 passes for this one.
 
+**First-execution note.** L1 was not allowed to run a scientific batch, so this pilot is the first end-to-end execution of the authorised path. In L1 that path was exercised through the worker only for the single integer 10000 under a synthetic status file, and through the driver only with the scan mocked. If the first pilot refuses for a reason that section 10 does not explain, stop. A refusal promotes nothing. A code fix at that point needs review and changes the build identity, which is harmless only because no chain exists yet.
+
 ## 7. Verify, replay and audit
 
 ```powershell
@@ -226,7 +228,7 @@ python tools/frontier/ceml_frontier.py pilot --manifest "$manifests/batch-0002.j
 
 **Width policy.** Batch 1 is 144 by rule. Keep batch 2 at 144. After that, raise the width only on your own measured batches: at most double it after a batch that committed and passed section 7, never above 14400, and go back to the previous width after any INCOMPLETE or REFUSED result. L1 measured only small-integer fixtures (section 12). Speed at 2^71 is unknown until your first batches measure it.
 
-**Hard limits.** Width 1 to 14400. At most 256 batches in one chain directory. Per-start budget at most 100000 shortened-map steps and per-batch budget at most 2000000. The worker has a 30-second wall budget per scan. One worker, one batch at a time. Every new batch re-verifies the whole chain, so time per batch grows with chain length.
+**Hard limits.** Width 1 to 14400. At most 256 batches in one chain directory; a 257th is refused before it is created. Per-start budget at most 100000 shortened-map steps and per-batch budget at most 2000000. The worker has a 30-second wall budget per scan. One worker, one batch at a time. Every new batch re-verifies the whole chain, so time per batch grows with chain length. Every chain starts at its base and cannot be continued by a second chain, so with this build one base supports at most 256 × 14400 = 3686400 verified integers. This is a pilot-scale tool. L1 exercised chains of two batches only; the 256 limit was tested by lowering it, not by building 256 batches.
 
 ## 10. Stop, resume and refusal diagnostics
 
@@ -246,7 +248,10 @@ Resume recovers the newest authenticated checkpoint generation, re-scans its pre
 
 | Message contains | Meaning | Action |
 |---|---|---|
-| `RUN1 not owner-authorised` | status lines of 4.3 not both present exactly once | owner decision; do nothing else |
+| `RUN1 not owner-authorised` | the phase is not RUN1, or scientific execution is not `AUTHORISED` | owner decision; do nothing else |
+| `missing/duplicate authoritative status field` | one of the two status lines of 4.3 is absent or appears more than once | the status file is malformed; the owner corrects it |
+| `L1 inspects and replays only predesignated fixtures`, `L1 verifies only predesignated fixtures`, `L1 ledger accepts only fixtures` | a read-only command was used on a scientific directory outside RUN1 status | owner decision; do nothing else |
+| `selected external B mismatch`, `snapshot identity mismatch`, `snapshot provenance does not match` | the manifest or the stored snapshot is not the pinned one | regenerate the manifest with `prepare-manifest`; never edit one by hand |
 | `RUN1 authority evidence shape`, `does not cover this batch`, `fresh RUN1 owner authority missing` | authority record absent, altered, or for another interval | re-run `prepare-authority` for this exact batch |
 | `acknowledgement is not snapshot_digest:base_kind:base_B` | acknowledgement string wrong | re-read 4.2; type it exactly |
 | `first RUN1 pilot is exactly 144 starts` | first batch width is not 144 | use 144 |
@@ -260,6 +265,9 @@ Resume recovers the newest authenticated checkpoint generation, re-scans its pre
 | `foreign or cross-version checkpoint record` | a file that is not a version-2 checkpoint sits in a slot | quarantine the attempt; find out how it got there |
 | `batch already has a final certificate; use verify-batch` | the batch is committed | run section 7 |
 | `record digest mismatch`, `noncanonical JSON bytes`, `certificate full replay mismatch`, `checker source identity mismatch` | a committed record or the checker changed | stop; this chain member is not trustworthy as stored; restore and re-audit |
+| `checkpoint run mismatch`, `checkpoint identity mismatch`, `prefix replay mismatch`, `claimed prefix is not completely resolved`, `self-hashed checkpoint is not stored canonically` | a checkpoint contradicts its batch or the recomputed prefix; it is a lying record, not a torn one | quarantine the attempt; keep it for review |
+| `resume native prefix mismatch` | the worker's re-scan of the recovered prefix disagrees with the checkpoint | stop; keep the directory; report it as an anomaly |
+| `certificate cycle/depth limit`, `local chain directory resource limit` | the chain directory already holds 256 batches | the chain is full; every chain starts at its base, so this build cannot verify further from this base (see the hard limits in section 9) |
 | `"status": "INCOMPLETE"` with `step_budget` or `total_budget` | a start did not descend within the budget | see pending starts below |
 | `ambiguous native success`, `missing/ambiguous native failure status`, `native wall budget` | the worker died, hung or misreported; for the first two an anomaly record is written under `local/frontier/refusals/` | keep the record; `inspect`, then `resume` once; if it repeats, stop and report |
 | `FileNotFoundError`, `PermissionError` | a required file is missing or locked, most often the authority record or a record file | check the path; re-run `prepare-authority` if the authority record is the missing file |
@@ -297,17 +305,17 @@ Only a result obtained this way, by different code and a different build, may be
 
 Measured on this machine by the L1 self-test on small-integer engineering fixtures. Times include the build check, the native scan, the per-frame check, both Python replays, the checkpoint writes and the certificate commit. They are overhead measurements on integers below 10000. They are not throughput at 2^71, and no speed at that magnitude has been measured.
 
-Source: the non-isolated rehearsal of the acceptance plan on 2026-10-11 (to be replaced by the OS-blocked run).
+Source: the unisolated rehearsal of the acceptance plan on 2026-10-11; to be replaced by the OS-blocked run.
 
 | Fixture | Interval width | Explicit starts | Explicit steps | Scan and per-frame check (s) | Whole batch (s) |
 |---|---:|---:|---:|---:|---:|
-| `L1-fixture-a` | 144 | 15 | 269 | 0.089 | 0.418 |
-| `L1-fixture-successor` | 144 | 15 | 150 | 0.090 | 0.731 |
-| `L1-fixture-b` | 144 | 15 | 150 | 0.089 | 0.425 |
+| `L1-fixture-a` | 144 | 15 | 269 | 0.089 | 0.423 |
+| `L1-fixture-successor` | 144 | 15 | 150 | 0.089 | 0.727 |
+| `L1-fixture-b` | 144 | 15 | 150 | 0.089 | 0.414 |
 | `L1-fixture-c` | 96 | 10 | 225 | 0.088 | 0.421 |
-| `L1-fixture-wide` | 9600 | 1001 | 11840 | 0.278 | 0.767 |
+| `L1-fixture-wide` | 9600 | 1001 | 11840 | 0.278 | 0.792 |
 
-`L1-fixture-successor` is the second batch of a two-batch chain, so its whole-batch time includes re-verifying its predecessor. The two-batch ledger audit took 0.165 s. Directory flush was reported `yes` on this volume.
+`L1-fixture-successor` is the second batch of a two-batch chain, so its whole-batch time includes re-verifying its predecessor. The two-batch ledger audit took 0.176 s. Directory flush was reported `yes` on this volume.
 
 ## 13. Truthful claim template
 

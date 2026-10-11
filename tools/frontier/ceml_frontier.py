@@ -33,6 +33,10 @@ FAULT_POINTS = ('before_create', 'before_write', 'during_write', 'before_flush',
                 'before_rename', 'after_rename', 'after_directory_flush')
 RULESET = 'E2-Q4-P3-M9-S2K4-03-v1'
 MAX_RECORD = 128 * 1024
+MAX_EVENT_BYTES = 16 * 1024 * 1024
+MAX_CHAIN = 256
+NATIVE_L1_CAP = 10000
+NATIVE_WALL_SECONDS = 30
 IDENTITY = ('run_id', 'snapshot_digest', 'base_kind', 'base_B', 'ruleset_id',
             'table_digest', 'native_build_digest')
 BINDING = IDENTITY + ('batch_start', 'batch_end', 'predecessor_digest')
@@ -257,13 +261,18 @@ def validate_manifest(run, snap, test=False):
     else:
         require(run['base_B'] == snap[run['base_kind']]['B'], 'selected external B mismatch')
         require(run['run1_authority_id'] != 'L1-NONSCIENTIFIC', 'engineering fixture is not science')
+        require(start != base or end - start == 144, 'first RUN1 pilot is exactly 144 starts')
     if start == base:
         require(run['predecessor_digest'] == genesis(run), 'genesis mismatch')
     return run
 
 
+def status_path():
+    return ROOT / 'PROGRAM_STATUS.md'
+
+
 def status_text():
-    return (ROOT / 'PROGRAM_STATUS.md').read_text('utf-8')
+    return status_path().read_text('utf-8')
 
 
 def run1_status():
@@ -277,8 +286,9 @@ def run1_gate(run):
     run1_status()
     raw = read_bounded(LOCAL / 'run1_authorization.json')
     evidence = parse_bytes(raw)
-    require(isinstance(evidence, dict) and set(evidence) == set(AUTHORITY_KEYS), 'RUN1 authority evidence shape')
-    require(evidence['owner_instruction'] and evidence['authority_id'] == run['run1_authority_id'],
+    require(isinstance(evidence, dict) and set(evidence) == set(AUTHORITY_KEYS) and
+            all(isinstance(value, str) for value in evidence.values()), 'RUN1 authority evidence shape')
+    require(evidence['owner_instruction'].strip() and evidence['authority_id'] == run['run1_authority_id'],
             'fresh RUN1 owner authority missing')
     for key in AUTHORITY_KEYS[1:-1]:
         require(evidence[key] == run[key], 'RUN1 authority does not cover this batch')
@@ -291,8 +301,9 @@ def l1_gate():
     status = status_text()
     require(phase_is(status, 'L1') and
             status_field(status, 'Scientific execution authorization').split()[0] == 'DENIED', 'L1 fixture phase not established')
-    evidence = parse_bytes((LOCAL/'l1_authorization.json').read_bytes())
-    require(set(evidence) == {'scope', 'owner_instruction', 'entry_main', 'p2_merge', 'authorized_on'} and
+    evidence = parse_bytes(read_bounded(LOCAL/'l1_authorization.json'))
+    require(isinstance(evidence, dict) and
+            set(evidence) == {'scope', 'owner_instruction', 'entry_main', 'p2_merge', 'authorized_on'} and
             evidence['scope'] == 'L1-IMPLEMENTATION-ACCEPTANCE-ONLY' and evidence['owner_instruction'] and
             evidence['entry_main'] == evidence['p2_merge'] == 'abd5d5bd0c6bb3a5cfbd1b83d52122b04d324016',
             'fresh L1 invocation evidence missing')
@@ -339,6 +350,11 @@ def validate_summary(summary, start, end, max_t, max_total):
     cursor = int(summary['next_n'])
     require(start <= cursor <= end, 'cursor out of bounds')
     prefix = summary_reference(start, cursor, max_t, max_total)
+    # The replay must itself reach the claimed cursor: a cursor beyond the first
+    # unresolved start would otherwise be compared with a shorter prefix's counters.
+    require(prefix['next_n'] == summary['next_n'] and prefix['pending'] is None,
+            'claimed prefix is not completely resolved by independent replay')
+    require(sum(map(int, summary['counts'].values())) == cursor - start, 'prefix coverage sum mismatch')
     for key in TOTALS[:-1]:
         require(summary[key] == prefix[key], 'prefix replay mismatch: ' + key)
     pending = summary['pending']
@@ -404,14 +420,15 @@ def consume_native(start, end, max_t, max_total, exe=None):
     env = dict(os.environ)
     env.pop('CEML_FRONTIER_DRIVER_MODE', None)
     env.pop('CEML_FRONTIER_STATUS_PATH', None)
-    if start >= 10000:
-        require(phase_is(status_text(), 'RUN1'), 'large native scan requires RUN1')
+    # Same boundary as the worker's own gate: any scan ending above the L1 cap needs RUN1.
+    if end > NATIVE_L1_CAP:
+        run1_status()
         env['CEML_FRONTIER_DRIVER_MODE'] = 'RUN1-AUTHORIZED'
-        env['CEML_FRONTIER_STATUS_PATH'] = str(ROOT/'PROGRAM_STATUS.md')
+        env['CEML_FRONTIER_STATUS_PATH'] = str(status_path())
     process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, cwd=Path(exe).parent, env=env)
     # Bounded pipe polling in this process, with no helper threads or per-n files.
-    deadline, stderr, buffer = time.monotonic()+30, bytearray(), bytearray()
+    deadline, stderr, buffer = time.monotonic()+NATIVE_WALL_SECONDS, bytearray(), bytearray()
     frames, event_bytes = [], 0
     try:
         if os.name == 'nt':
@@ -443,7 +460,7 @@ def consume_native(start, end, max_t, max_total, exe=None):
                 buffer[:] = rest
                 require(len(frames) <= end-start, 'extra native frame')
             require(len(buffer) <= 32768 and len(stderr) <= 32768, 'native pipe limit')
-            require(event_bytes <= 16*1024*1024, 'event memory resource limit')
+            require(event_bytes <= MAX_EVENT_BYTES, 'event memory resource limit')
             if process.poll() is not None and not progressed and not available(process.stdout) and not available(process.stderr):
                 break
             require(time.monotonic() < deadline, 'native wall budget')
@@ -567,25 +584,34 @@ class CheckpointStore:
         return self.directory / f'ckpt.{index}.json'
 
     def read_slot(self, index):
-        """None if ABSENT, DAMAGED for a torn file, else a shape-valid self-hashed record.
+        """None if ABSENT, DAMAGED for a torn file, else a canonical self-hashed record.
 
-        A canonical record of any other kind or protocol version is FOREIGN and refuses.
+        Protocol 4.5. Only bytes that are not JSON, or a version-2 checkpoint object
+        whose own digest fails, are DAMAGED. Any other parseable JSON is FOREIGN and
+        refuses. A record whose digest verifies is self-hashed, so it must also be
+        canonical and shape-valid; if it is not, that is a contradiction and refuses.
         """
         path = local_path(self.slot(index))
         if not path.exists():
             return None
         try:
             with path.open('rb') as stream:
-                obj = parse_bytes(stream.read(MAX_RECORD + 1))
-        except (Refusal, OSError):
+                data = stream.read(MAX_RECORD + 1)
+            if len(data) > MAX_RECORD:
+                return DAMAGED
+            obj = json.loads(data.decode('ascii'))
+        except (OSError, ValueError, RecursionError):
             return DAMAGED
         require(isinstance(obj, dict) and obj.get('schema') == SCHEMA_IDS['checkpoint'],
                 'foreign or cross-version checkpoint record')
         try:
-            validate_shape(obj, 'checkpoint')
-            require(obj == seal(obj, 'CHECKPOINT'), 'checkpoint hash mismatch')
+            self_hashed = obj == seal(obj, 'CHECKPOINT')
         except Refusal:
             return DAMAGED
+        if not self_hashed:
+            return DAMAGED
+        require(canonical(obj) == data, 'self-hashed checkpoint is not stored canonically')
+        validate_shape(obj, 'checkpoint')
         return obj
 
     def recover(self):
@@ -666,14 +692,31 @@ def is_fixture(directory):
     return (local_path(directory) / 'acceptance.json').exists()
 
 
-def load_context(directory, test=False):
+def load_manifest(directory, test=False):
+    """Read and fully validate run.json and snapshot.json; a fixture must carry its exact marker."""
     directory = local_path(directory)
     run = load_record(directory / 'run.json', 'run')
     snap = load_record(directory / 'snapshot.json', 'snapshot')
     if test:
-        require(parse_bytes((directory/'acceptance.json').read_bytes()) == fixture_marker(run),
+        require(parse_bytes(read_bounded(directory/'acceptance.json')) == fixture_marker(run),
                 'acceptance fixture marker mismatch')
     validate_manifest(run, snap, test)
+    return run, snap
+
+
+def read_only_gate(directory):
+    """Gate for inspect and replay, checked before any slot is read or any start recomputed.
+
+    A directory claiming to be a fixture must be a predesignated fixture in full.
+    Anything else is science and needs RUN1 status and a valid scientific manifest.
+    """
+    test = is_fixture(directory)
+    require(test or phase_is(status_text(), 'RUN1'), 'L1 inspects and replays only predesignated fixtures')
+    return load_manifest(directory, test)[0]
+
+
+def load_context(directory, test=False):
+    run, snap = load_manifest(directory, test)
     from f1_build import verify_build
     build = verify_build()
     require(build['digest'] == run['native_build_digest'], 'native build identity mismatch')
@@ -698,11 +741,10 @@ def predecessor(directory, run, test=False, seen=None):
 def ensure_chain_slot(directory, run):
     """Batches of one local chain share a directory; refuse duplicate/active work."""
     directory = local_path(directory)
-    paths = list(directory.parent.glob('*/run.json'))
-    require(len(paths) <= 256, 'local chain directory resource limit')
+    paths = [path for path in directory.parent.glob('*/run.json') if path.parent != directory]
+    # This batch plus its siblings may not exceed what verify_batch can traverse.
+    require(len(paths) < MAX_CHAIN, 'local chain directory resource limit')
     for path in paths:
-        if path.parent == directory:
-            continue
         prior = load_record(path, 'run')
         if prior['run_id'] != run['run_id']:
             continue
@@ -745,7 +787,7 @@ def verify_batch(certificate_path, test=False, seen=None, _ledger_predecessors=N
     require(path.name == 'certificate.json', 'immutable certificate filename required')
     cert = load_record(path, 'certificate')
     seen = set() if seen is None else set(seen)
-    require(cert['digest'] not in seen and len(seen) < 256, 'certificate cycle/depth limit')
+    require(cert['digest'] not in seen and len(seen) < MAX_CHAIN, 'certificate cycle/depth limit')
     seen.add(cert['digest'])
     run, _ = load_context(path.parent, test)
     require(cert['run_digest'] == H('RUN', canonical(run)) and
@@ -792,7 +834,7 @@ def ledger(directory, test=False):
 def reference_replay(directory):
     """Pure-Python recomputation of one committed batch; no build, chain or authority check."""
     directory = local_path(directory)
-    run = load_record(directory / 'run.json', 'run')
+    run = read_only_gate(directory)
     cert = load_record(directory / 'certificate.json', 'certificate')
     require(cert['run_digest'] == H('RUN', canonical(run)) and
             all(cert[key] == run[key] for key in BINDING), 'certificate/run identity mismatch')
@@ -810,14 +852,14 @@ def inspect_batch(directory):
     """Read-only diagnosis of one batch directory; it changes and promotes nothing."""
     directory = local_path(directory)
     require(directory.is_dir(), 'batch directory missing')
-    run = load_record(directory / 'run.json', 'run')
+    run = read_only_gate(directory)
     store = CheckpointStore(directory, run)
     slots = {}
     for index in range(SLOTS):
         try:
             found = store.read_slot(index)
         except Refusal as error:
-            slots[str(index)] = 'FOREIGN: ' + str(error)
+            slots[str(index)] = 'REFUSED: ' + str(error)
             continue
         slots[str(index)] = ('ABSENT' if found is None else 'DAMAGED' if found is DAMAGED else
                              'RECORD generation ' + found['generation'] + ' next_n ' + found['next_n'])
@@ -869,6 +911,10 @@ def start_batch(manifest, out):
     output = local_path(out)
     require(not output.exists(), 'batch directory already exists')
     ensure_chain_slot(output, run)
+    # Build identity and predecessor are checked here too, so a refusal leaves no directory behind.
+    from f1_build import verify_build
+    require(verify_build()['digest'] == run['native_build_digest'], 'native build identity mismatch')
+    predecessor(output, run)
     output.mkdir(parents=True)
     write_atomic(output/'run.json', canonical(run))
     write_atomic(output/'snapshot.json', canonical(snapshot()))
@@ -890,6 +936,9 @@ def resume_batch(directory, test=False):
     max_t, max_total = int(run['max_t_per_explicit']), int(run['max_total_t'])
     if cursor > start:
         replayed = consume_native(start, cursor, max_t, max_total)
+        # The native prefix must be complete to the recovered cursor and agree on every total.
+        require(replayed['next_n'] == old['next_n'] and replayed['pending'] is None,
+                'resume native prefix mismatch')
         for key in TOTALS[:-1]:
             require(replayed[key] == old[key], 'resume native prefix mismatch')
     # Re-scan the whole small batch from its original start: avoids serializing hash state
@@ -1059,8 +1108,7 @@ def main():
         run1_gate(run)
         result = resume_batch(args.batch_dir)
     elif args.command in ('inspect', 'replay'):
-        require(is_fixture(args.batch_dir) or phase_is(status_text(), 'RUN1'),
-                'L1 inspects and replays only predesignated fixtures')
+        # Both functions apply read_only_gate before reading any slot or recomputing any start.
         result = (inspect_batch if args.command == 'inspect' else reference_replay)(args.batch_dir)
     elif args.command == 'verify-batch':
         test = is_fixture(local_path(args.certificate).parent)

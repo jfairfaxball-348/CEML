@@ -105,20 +105,26 @@ function Assert-Isolation {
 try {
     # The watchdog is registered BEFORE any network change. It also runs at boot
     # after a reboot. Inline fixed UUID-only cleanup does not trust mutable files.
+    # It enumerates the whole store with -ErrorAction Stop, so an empty result means
+    # the rules are absent and never that the query failed. On any doubt it exits 1
+    # and stays registered; the timed trigger repeats and the boot trigger remains.
     $cleanup = @"
 `$ErrorActionPreference = 'Stop'
 try {
-    foreach (`$name in @('$($ruleNames[0])', '$($ruleNames[1])')) {
-        `$r = @(Get-NetFirewallRule -PolicyStore PersistentStore -Name `$name -ErrorAction SilentlyContinue)
-        if (`$r.Count -gt 0) { `$r | Remove-NetFirewallRule -ErrorAction Stop }
-    }
+    `$names = @('$($ruleNames[0])', '$($ruleNames[1])')
+    `$found = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop | Where-Object { `$names -contains `$_.Name })
+    if (`$found.Count -gt 0) { `$found | Remove-NetFirewallRule -ErrorAction Stop }
+    `$left = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop | Where-Object { `$names -contains `$_.Name })
+    if (`$left.Count -ne 0) { exit 1 }
     Unregister-ScheduledTask -TaskName '$taskName' -Confirm:`$false -ErrorAction Stop
     exit 0
 } catch { exit 1 }
 "@
     $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($cleanup))
     $action = New-ScheduledTaskAction -Execute $shell -Argument ('-NoProfile -NonInteractive -EncodedCommand ' + $encoded)
-    $triggers = @((New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(25)), (New-ScheduledTaskTrigger -AtStartup))
+    $timed = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(25) `
+        -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Hours 12)
+    $triggers = @($timed, (New-ScheduledTaskTrigger -AtStartup))
     $principal = New-ScheduledTaskPrincipal -UserId 'SYSTEM' -LogonType ServiceAccount -RunLevel Highest
     $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
         -ExecutionTimeLimit (New-TimeSpan -Minutes 2) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
@@ -184,15 +190,17 @@ try {
         }
     } catch { }
     try {
-        foreach ($name in $ruleNames) {
-            $rules = @(Get-NetFirewallRule -PolicyStore PersistentStore -Name $name -ErrorAction SilentlyContinue)
-            if ($rules.Count -gt 0) { $rules | Remove-NetFirewallRule -ErrorAction Stop }
-        }
-        $remaining = @(Get-NetFirewallRule -PolicyStore ActiveStore -Group $group -ErrorAction SilentlyContinue)
+        # Whole-store enumeration with -ErrorAction Stop: a failed query throws and keeps
+        # the watchdog. It can never be mistaken for "the rules are absent".
+        $present = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop |
+            Where-Object { $ruleNames -contains $_.Name })
+        if ($present.Count -gt 0) { $present | Remove-NetFirewallRule -ErrorAction Stop }
+        $remaining = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop |
+            Where-Object { $ruleNames -contains $_.Name -or $_.Group -eq $group })
+        $remaining += @(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop |
+            Where-Object { $ruleNames -contains $_.Name -or $_.Group -eq $group })
         if ($remaining.Count -ne 0) { throw 'Isolation rules still present; watchdog retained' }
         $restored = $true
-        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
-        $watchdogRemoved = (@(Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue).Count -eq 0)
     } catch {
         $restored = $false
         $failureKind = 'CleanupFailed-WatchdogRetained'
@@ -206,6 +214,15 @@ try {
             } catch { }
             if (!$reconnected) { Start-Sleep -Seconds 3 }
         }
+    }
+    # The watchdog goes only after verified absence AND an observed reconnection.
+    # Otherwise it stays, repeats, and removes itself once its own check succeeds.
+    if ($restored -and $reconnected) {
+        try {
+            Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+            $watchdogRemoved = (@(Get-ScheduledTask -ErrorAction Stop |
+                Where-Object { $_.TaskName -eq $taskName }).Count -eq 0)
+        } catch { $watchdogRemoved = $false }
     }
     $passed = ($checksPassed -and $isolated -and $restored -and $watchdogRemoved -and $reconnected)
     $status = if ($passed) { 'OS-BLOCKED-ENGINEERING-CHECKS-PASS' } else { 'FAIL' }

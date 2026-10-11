@@ -146,6 +146,28 @@ runpy.run_path(sys.argv[0], run_name="__main__")
                     self.assertEqual(2, result.returncode)
                     self.assertIn("only predesignated fixtures", json.loads(result.stdout)["reason"])
 
+    def test_marker_file_does_not_open_inspect_or_replay_for_a_nonfixture_interval(self):
+        # Independent-review finding: the mere presence of acceptance.json used to be enough.
+        sys.path.insert(0, str(FRONTIER))
+        import ceml_frontier as driver
+        run = driver.fixture_run("L1-fixture-a", build_digest="0" * 64)
+        run.update(base_B="5000", batch_start="5000", batch_end="5010",
+                   accepted_assumption_ack=run["snapshot_digest"] + ":published:5000")
+        run["predecessor_digest"] = driver.genesis(run)
+        for marker in (b"", b"{}", driver.canonical(driver.fixture_marker(run))):
+            with tempfile.TemporaryDirectory(prefix="ceml-frontier-cli-marker-") as scratch:
+                directory = Path(scratch)
+                (directory / "run.json").write_bytes(driver.canonical(run))
+                (directory / "snapshot.json").write_bytes((ROOT / "config/frontier_snapshot_v2.json").read_bytes())
+                (directory / "acceptance.json").write_bytes(marker)
+                before = sorted(path.name for path in directory.iterdir())
+                for command in ("inspect", "replay"):
+                    result = self.run_cli(command, "--batch-dir", scratch)
+                    with self.subTest(command=command, marker=len(marker)):
+                        self.assertEqual(2, result.returncode)
+                        self.assertEqual("REFUSED", json.loads(result.stdout)["status"])
+                self.assertEqual(before, sorted(path.name for path in directory.iterdir()))
+
     def test_scientific_pilot_refuses_without_run1_evidence(self):
         sys.path.insert(0, str(FRONTIER))
         import ceml_frontier as driver

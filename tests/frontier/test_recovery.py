@@ -320,6 +320,66 @@ class ContradictionTests(StoreCase):
         with self.assertRaises(driver.Refusal):
             store.recover()
 
+    def test_cursor_moved_past_the_pending_start_with_unchanged_counters_refuses(self):
+        # Independent-review finding: the honest counters of [2,7) were kept while
+        # next_n was moved beyond the unresolved start and pending was cleared.
+        for label, max_t, max_total in (("step_budget", 1, 2000000), ("total_budget", 100000, 5)):
+            run = driver.fixture_run("L1-fixture-a", max_t=max_t, max_total=max_total, build_digest="0" * 64)
+            directory = Path(tempfile.mkdtemp(dir=self.scratch.name)) / "batch"
+            store = driver.CheckpointStore(directory, run)
+            store.initialize()
+            honest = store.write(driver.summary_reference(START, END, max_t, max_total))
+            self.assertEqual(("7", label, 5), (honest["next_n"], honest["pending"]["reason"],
+                                              sum(map(int, honest["counts"].values()))))
+            for cursor in (8, 100, 146):
+                forged = driver.seal(dict(copy.deepcopy(honest), next_n=str(cursor), pending=None), "CHECKPOINT")
+                (directory / "ckpt.1.json").write_bytes(driver.canonical(forged))
+                with self.subTest(budget=label, cursor=cursor):
+                    with self.assertRaisesRegex(driver.Refusal, "not completely resolved"):
+                        driver.checkpoint_valid(forged, run)
+                    before = files(directory)
+                    with self.assertRaises(driver.Refusal):
+                        store.recover()
+                    with self.assertRaises(driver.Refusal):
+                        store.write(driver.summary_reference(START, END, max_t, max_total))
+                    self.assertEqual(before, files(directory))
+            # A cursor that keeps the pending object but claims more coverage also refuses.
+            inflated = copy.deepcopy(honest)
+            inflated["counts"]["e2_count"] = str(int(inflated["counts"]["e2_count"]) + 1)
+            with self.assertRaises(driver.Refusal):
+                driver.checkpoint_valid(driver.seal(inflated, "CHECKPOINT"), run)
+            (directory / "ckpt.1.json").write_bytes(driver.canonical(honest))
+            self.assertEqual(honest, store.recover()[0])
+
+    def linked(self, generation, parent, cursor):
+        """A correctly bound, sealed record at an arbitrary generation number."""
+        return driver.seal(dict(schema=driver.SCHEMA_IDS["checkpoint"],
+                                run_digest=driver.H("RUN", driver.canonical(self.manifest)),
+                                generation=str(generation), previous_checkpoint_digest=parent,
+                                **{key: self.manifest[key] for key in driver.BINDING}, **prefix(cursor)),
+                           "CHECKPOINT")
+
+    def test_generation_bound_refuses_on_write_and_on_read(self):
+        top = 2 ** 64 - 1
+        directory, store = self.fresh()
+        older = self.linked(top - 1, "1" * 64, 7)
+        newest = self.linked(top, older["digest"], 15)
+        self.put(directory, (top - 1) % 3, older)
+        self.put(directory, top % 3, newest)
+        recovered, warnings = store.recover()
+        self.assertEqual((newest, True), (recovered, bool(warnings)))
+        before = files(directory)
+        with self.assertRaisesRegex(driver.Refusal, "generation overflow"):
+            store.write(prefix(31))
+        self.assertEqual(before, files(directory))
+        # The same linked pair one step higher is unreadable, whatever its slots and hashes say.
+        directory, store = self.fresh()
+        over = self.linked(top + 1, newest["digest"], 31)
+        self.put(directory, top % 3, newest)
+        self.put(directory, (top + 1) % 3, over)
+        with self.assertRaisesRegex(driver.Refusal, "generation overflow"):
+            store.recover()
+
 
 class CrossVersionTests(StoreCase):
     def version_1_checkpoint(self, record):
@@ -330,9 +390,14 @@ class CrossVersionTests(StoreCase):
         return driver.canonical(old)
 
     def test_foreign_and_version_1_records_refuse_instead_of_falling_back(self):
-        foreign = (self.version_1_checkpoint(self.records[4][4]), b"{}", b"[]", b"null", b'"torn"',
+        old = self.version_1_checkpoint(self.records[4][4])
+        foreign = (old, b"{}", b"[]", b"null", b'"torn"',
                    driver.canonical(self.manifest), driver.canonical({"schema": "CEML-FRONTIER-CKPT-3"}),
-                   driver.canonical(driver.seal({"schema": "CEML-FRONTIER-2-CERTIFICATE"}, "CERTIFICATE")))
+                   driver.canonical(driver.seal({"schema": "CEML-FRONTIER-2-CERTIFICATE"}, "CERTIFICATE")),
+                   # Parseable but not canonical: a re-saved version-1 record is still foreign, not torn.
+                   old + b"\n", json.dumps(json.loads(old), indent=2).encode("ascii"),
+                   b"1", b"true", b"[1]", b'{"generation":1,"schema":"CEML-FRONTIER-CKPT-1"}',
+                   b' {"schema": "CEML-FRONTIER-1-RUN"} ')
         checked = 0
         for newest in (0, 1, 2, 4, 6):
             for slot in range(3):
@@ -343,6 +408,41 @@ class CrossVersionTests(StoreCase):
                         self.assert_refused_unchanged(directory, store)
                     checked += 1
         self.assertEqual(5 * 3 * len(foreign), checked)
+
+    def test_self_hashed_record_that_is_shape_invalid_or_noncanonical_refuses(self):
+        # A matching self-digest rules out a torn write, so these are contradictions.
+        record = self.records[4][4]
+        extra = driver.seal(dict(record, unexpected="yes"), "CHECKPOINT")
+        padded = driver.seal(dict(record, generation="04"), "CHECKPOINT")
+        missing = {key: value for key, value in record.items() if key != "pending"}
+        missing = driver.seal(missing, "CHECKPOINT")
+        stored = driver.canonical(record)
+        cases = (driver.canonical(extra), driver.canonical(padded), driver.canonical(missing),
+                 stored + b"\n", b" " + stored, json.dumps(record, indent=1).encode("ascii"),
+                 json.dumps(dict(reversed(list(record.items()))), separators=(",", ":")).encode("ascii"))
+        self.assertNotEqual(stored, cases[-1])
+        for index, data in enumerate(cases):
+            directory, store = self.clone(4)
+            (directory / "ckpt.1.json").write_bytes(data)
+            with self.subTest(case=index):
+                with self.assertRaises(driver.Refusal):
+                    store.read_slot(1)
+                self.assert_refused_unchanged(directory, store)
+
+    def test_version_2_objects_that_cannot_be_self_hashed_are_only_damaged(self):
+        record = self.records[4][4]
+        unsigned = {key: value for key, value in record.items() if key != "digest"}
+        cases = (b'{"generation":1,"schema":"CEML-FRONTIER-CKPT-2"}', driver.canonical(unsigned),
+                 driver.canonical(dict(unsigned, digest="0" * 64)),
+                 json.dumps(dict(record, generation=4)).encode("ascii"),
+                 b'{"schema":"CEML-FRONTIER-CKPT-2","value":NaN}')
+        for index, data in enumerate(cases):
+            directory, store = self.clone(4)
+            (directory / "ckpt.1.json").write_bytes(data)
+            with self.subTest(case=index):
+                self.assertIs(driver.DAMAGED, store.read_slot(1))
+                recovered, warnings = store.recover()
+                self.assertEqual((self.records[4][3], True), (recovered, bool(warnings)))
 
     def test_version_1_digest_domains_never_validate_version_2_records(self):
         record = self.records[3][3]

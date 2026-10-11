@@ -389,7 +389,7 @@ class Run1AuthorityGateTests(unittest.TestCase):
                          "owner_instruction": "SIMULATED ACCEPTANCE GATE ONLY"}
         self.write_status()
         self.write_evidence()
-        self.root_patch = mock.patch.object(driver, "ROOT", self.root)
+        self.root_patch = mock.patch.object(driver, "status_path", return_value=self.root / "PROGRAM_STATUS.md")
         self.local_patch = mock.patch.object(driver, "LOCAL", self.local)
         self.root_patch.start()
         self.local_patch.start()
@@ -430,6 +430,8 @@ class Run1AuthorityGateTests(unittest.TestCase):
 
     def test_wrong_owner_acknowledgement_base_or_interval_refuse(self):
         for key, value in (("authority_id", "wrong"), ("owner_instruction", ""),
+                           ("owner_instruction", "   "), ("owner_instruction", {"nested": "yes"}),
+                           ("owner_instruction", None), ("authority_id", None),
                            ("accepted_assumption_ack", "wrong"), ("snapshot_digest", "1" * 64),
                            ("base_kind", "operational"), ("base_B", "2"),
                            ("batch_end", str(int(self.run["batch_end"]) + 144))):
@@ -438,6 +440,19 @@ class Run1AuthorityGateTests(unittest.TestCase):
             self.write_evidence(altered)
             with self.subTest(field=key), self.assertRaises(driver.Refusal):
                 driver.run1_gate(self.run)
+
+    def test_scientific_first_batch_width_is_part_of_manifest_validity(self):
+        # The rule binds verification and the ledger too, not only the execution gate.
+        driver.validate_manifest(self.run, self.snapshot)
+        for width in (1, 143, 145, 14400):
+            run = copy.deepcopy(self.run)
+            run["batch_end"] = str(int(run["batch_start"]) + width)
+            with self.subTest(width=width), self.assertRaisesRegex(driver.Refusal, "exactly 144 starts"):
+                driver.validate_manifest(run, self.snapshot)
+        later = copy.deepcopy(self.run)
+        later.update(batch_start=self.run["batch_end"], batch_end=str(int(self.run["batch_end"]) + 288),
+                     predecessor_digest="a" * 64)
+        driver.validate_manifest(later, self.snapshot)
 
     def test_initial_pilot_is_exactly_one_144_start_interval(self):
         for width in (1, 143, 145, 14400):

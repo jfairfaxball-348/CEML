@@ -339,7 +339,7 @@ class BatchTests(unittest.TestCase):
         (directory/'ckpt.2.json').write_bytes(driver.canonical(self.run))
         refused = driver.inspect_batch(directory)
         self.assertEqual('REFUSED', refused['recovery']['status'])
-        self.assertTrue(refused['slots']['2'].startswith('FOREIGN'))
+        self.assertEqual('REFUSED: foreign or cross-version checkpoint record', refused['slots']['2'])
         with self.assertRaises((driver.Refusal, OSError)):
             driver.reference_replay(directory)
         cold = self.prepare('cold')

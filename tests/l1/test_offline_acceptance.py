@@ -262,9 +262,16 @@ class LauncherStaticTests(unittest.TestCase):
                           "Invoke-RestMethod", "Remove-Item", "-PolicyStore GPO"):
             self.assertNotIn(forbidden.lower(), self.text.lower())
         self.assertEqual(2, self.text.count("New-NetFirewallRule -PolicyStore PersistentStore -Name $ruleNames["))
-        self.assertEqual(2, len(re.findall(r"Remove-NetFirewallRule", self.text)))
-        for removal in re.finditer(r"[^\n]*Remove-NetFirewallRule[^\n]*", self.text):
-            self.assertRegex(removal.group(), r"^\s+if \(`?\$r(ules)?\.Count -gt 0\)")
+        # Exactly two removals, each fed only by a list filtered to this run's two rule names.
+        removals = re.findall(r"[^\n]*Remove-NetFirewallRule[^\n]*", self.text)
+        self.assertEqual(["    if (`$found.Count -gt 0) { `$found | Remove-NetFirewallRule -ErrorAction Stop }",
+                          "        if ($present.Count -gt 0) { $present | Remove-NetFirewallRule -ErrorAction Stop }"],
+                         removals)
+        self.assertIn("`$found = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop | "
+                      "Where-Object { `$names -contains `$_.Name })", self.text)
+        self.assertIn("$present = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop |\n"
+                      "            Where-Object { $ruleNames -contains $_.Name })", self.text)
+        self.assertIn("`$names = @('$($ruleNames[0])', '$($ruleNames[1])')", self.text)
         self.assertIn("$group = 'CEML-L1Offline-' + $runId", self.text)
         self.assertIn("$ruleNames = @($group + '-Inbound', $group + '-Outbound')", self.text)
         self.assertEqual(1, self.text.count("Register-ScheduledTask "))
@@ -274,10 +281,24 @@ class LauncherStaticTests(unittest.TestCase):
             "if ($Mode -eq 'Preflight')", "if (!$admin)", "Reviewed source/launcher hashes required",
             "$baseline = & $PythonPath $helper --probe", "Register-ScheduledTask ",
             "New-NetFirewallRule ", "$isolated = $true", "$child = Start-Process", "} finally {",
-            "$rules | Remove-NetFirewallRule", "$restored = $true", "$passed = (")]
+            "$present | Remove-NetFirewallRule", "$restored = $true", "$reconnected = ($LASTEXITCODE -eq 0)",
+            "if ($restored -and $reconnected) {", "Unregister-ScheduledTask -TaskName $taskName",
+            "$passed = (")]
         self.assertEqual(sorted(order), order)
         tail = self.text[self.text.index("} finally {"):]
         self.assertLess(tail.index("} catch { }"), tail.index("Remove-NetFirewallRule"))
+        # Independent-review finding: an empty lookup must mean absent, never a failed query,
+        # and the watchdog may go only after verified absence and an observed reconnection.
+        for line in self.text.split("\n"):
+            if "Get-NetFirewallRule" in line or "Unregister-ScheduledTask" in line:
+                self.assertNotIn("SilentlyContinue", line)
+        self.assertEqual(1, self.text.count("Unregister-ScheduledTask -TaskName $taskName"))
+        self.assertIn("if (`$left.Count -ne 0) { exit 1 }", self.text)
+        self.assertLess(self.text.index("if (`$left.Count -ne 0) { exit 1 }"),
+                        self.text.index("Unregister-ScheduledTask -TaskName '$taskName'"))
+        self.assertIn("-RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Hours 12)",
+                      self.text)
+        self.assertIn("(New-ScheduledTaskTrigger -AtStartup)", self.text)
         self.assertIn("-ArgumentList @('/PID', [string]$child.Id, '/T', '/F')", tail)
         self.assertIn("$passed = ($checksPassed -and $isolated -and $restored -and $watchdogRemoved -and $reconnected)",
                       self.text)

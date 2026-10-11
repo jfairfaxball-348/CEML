@@ -249,6 +249,17 @@ class StartBatchGateTests(SyntheticGate):
             for path, data in original.items():
                 path.write_bytes(data)
 
+    def test_stale_build_or_broken_predecessor_refuses_before_any_directory_exists(self):
+        with mock.patch.object(f1_build, "verify_build", return_value={"digest": "1" * 64}):
+            with self.assertRaisesRegex(driver.Refusal, "native build identity mismatch"):
+                self.start()
+        self.assertFalse(self.chain.exists())
+        with mock.patch.object(driver, "predecessor", side_effect=driver.Refusal("missing predecessor")):
+            with self.assertRaisesRegex(driver.Refusal, "missing predecessor"):
+                self.start()
+        self.assertFalse(self.chain.exists())
+        self.execute.assert_not_called()
+
     def test_existing_directory_and_second_active_batch_refuse(self):
         self.start()
         with self.assertRaises(driver.Refusal):

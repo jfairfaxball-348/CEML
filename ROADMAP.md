@@ -21,6 +21,8 @@ Do not launch L1 prematurely. Frontiers may move during research; P2 must define
 
 ## L1 measured exit and singular successor
 
+Owner update 2026-10-11: recovery decision and focused continuation authorised; selected prospective CEML-FRONTIER-2 three-slot amendment. OS-isolation launcher prepared/preflight-tested, actual elevated acceptance NOT_RUN. See [completion preparation](docs/L1_CONTINUATION_READY.md). The next prompt now covers the remaining implementation, review, actual acceptance and operator handoff. L1 stays OPEN; RUN1 remains denied. The original exit below is retained history.
+
 The owner-invoked attempt is recorded in [L1 acceptance](docs/L1_ACCEPTANCE.md). Its sole successor is a fresh focused [L1 continuation](NEXT_SESSION_PROMPT.md), because acceptance remains OPEN. The recovery amendment is a draft, not a changed v1 contract. RUN1 remains denied. The following P2 statement is historical.
 
 ## P2 freeze and singular successor (historical)

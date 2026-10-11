@@ -2,7 +2,7 @@
 
 CEML's active purpose is **gap-free exhaustive Collatz frontier verification**, not the former isolated extreme-magnitude random ladder. The previous programme is preserved at [the 2026-10-11 entry commit](https://github.com/jfairfaxball-348/CEML/tree/63fc41610603782eefc709139e6dcbdcca97b78f).
 
-**Current gate:** L1 OPEN after the owner-invoked implementation/test session. The separate verifier builds and its executed tests pass; later-generation recovery and OS-level network-isolated acceptance remain open. See [L1 acceptance](docs/L1_ACCEPTANCE.md) and the [prospective recovery amendment](docs/L1_RECOVERY_V2_PROPOSAL.md). **Only a fresh focused L1 continuation is next; RUN1 remains denied.** C1 and its gates remain unchanged.
+**Current gate:** L1 OPEN. The owner authorised the three-slot prospective v2 amendment and focused engineering continuation; the [completion preparation](docs/L1_CONTINUATION_READY.md) records permission, the preflight-tested elevation/isolation launcher and outstanding work. Invoke the updated [fresh-session prompt](NEXT_SESSION_PROMPT.md) to complete v2 implementation, required review, actual OS-blocked acceptance and an operator package. RUN1 remains denied. Existing [L1 acceptance](docs/L1_ACCEPTANCE.md) measurements and C1 gates remain preserved.
 
 Read, in order:
 1. `PROGRAM_STATUS.md`, `PROJECT_CHARTER.md`, `ROADMAP.md`, `AGENTS.md`;

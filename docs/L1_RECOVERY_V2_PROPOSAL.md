@@ -1,6 +1,8 @@
 # L1 recovery refusal and proposed CEML-FRONTIER-2 amendment
 
 Date: 2026-10-11. **DRAFT FOR OWNER REVIEW; NOT AN ACTIVE CONTRACT.**
+
+**Owner decision recorded later on 2026-10-11:** the owner authorised the agent's choice; the minimal three-slot CEML-FRONTIER-2 amendment is selected for the focused continuation. No further owner decision is missing. This document remains a design proposal until new v2 protocol/schemas are frozen, implemented, reviewed and accepted; v1 is unchanged. See L1_CONTINUATION_READY.md. Original proposal text below is retained as history and does not negate this later permission. RUN1 remains denied.
 The frozen CEML-FRONTIER-1 protocol, four v1 schemas, snapshot and P2 audit remain unchanged. L1 is OPEN. This document authorises neither a new implementation session nor RUN1.
 
 ## Reproducible ambiguity in the two-slot obligation

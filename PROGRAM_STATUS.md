@@ -2,12 +2,18 @@
 
 **Authoritative current phase:** L1 — OPEN; OWNER-INVOKED IMPLEMENTATION/TESTING SESSION EXECUTED
 **Scientific execution authorization:** DENIED (including any L1 science pilot; RUN1 remains separately gated)
-**Local Codex / local machine access authorization:** THIS L1 INVOCATION RECORDED; FRESH FOCUSED CONTINUATION REQUIRED AFTER EXIT
+**Local Codex / local machine access authorization:** OWNER-AUTHORISED FOCUSED L1 CONTINUATION PREPARED; INVOKE CURRENT NEXT_SESSION_PROMPT
 **New frontier scientific protocol:** CEML-FRONTIER-1 FROZEN; ENGINEERING IMPLEMENTATION EXISTS; ACCEPTANCE OPEN
 **New batch-verifier implementation:** SEPARATE GMP/PYTHON CANDIDATE BUILT AND TESTED; NOT ACCEPTED FOR RUN1
 **Old ladder status:** SUPERSEDED AS ACTIVE TARGET; HISTORICAL EVIDENCE RETAINED
 **Old scientific master-seed generation:** DENIED
 **Last P0 decision:** 2026-10-11 — owner-directed soft pivot
+
+## Owner-authorised completion preparation — 2026-10-11
+
+The owner has authorised the agent to choose the recovery amendment and prepare the next session to complete engineering, including Windows elevation/UAC or an administrator command for true OS-blocked acceptance. The chosen prospective design is three-slot **CEML-FRONTIER-2**. The owner-decision gate is resolved; v2 contracts/implementation and acceptance are still outstanding. This remains the focused continuation of the single L1 attempt, not RUN1. See [completion preparation](docs/L1_CONTINUATION_READY.md) and the updated [fresh-session prompt](NEXT_SESSION_PROMPT.md).
+
+Standalone bounded OS-blocking/restoration launcher, standard-library acceptance helper and harness tests are prepared. Read-only Windows preflight PASS; 8 harness tests PASS, no skips. Elevated firewall/watchdog execution and OS-isolated build/acceptance remain NOT_RUN. No network policy changed. The next session must complete v2, required review/acceptance and the operator package; no extra routine engineering permission is required. Existing L1 evidence below is historical measurement, not a PASS or scientific result.
 
 ## L1 measured exit — 2026-10-11
 
@@ -17,7 +23,7 @@ Separate C17/GMP release and checked workers compiled from exact offline pins. T
 
 **L1 OPEN:** later-generation torn-checkpoint recovery cannot authenticate a missing parent using only the two rotating records; the implementation conservatively refuses that ambiguity. [L1_RECOVERY_V2_PROPOSAL.md](docs/L1_RECOVERY_V2_PROPOSAL.md) proposes a prospective three-slot version 2 for review; it is not active or implemented. OS-level network-isolated build/acceptance remain NOT_RUN: firewall administration was unavailable and no adapter was disabled. Python network-import/socket denial passed but does not substitute for that missing observation.
 
-**One next gate:** fresh owner-authorised focused L1 continuation after recovery-amendment review and arranging OS-level isolation. No RUN1 handoff, scientific interval, accepted external base, frontier claim or V1/E1 execution exists. Any old future/unimplemented L1 wording below is historical and superseded by this measured exit, never reinterpreted as acceptance.
+**One next gate (updated):** invoke the prepared owner-authorised focused L1 completion prompt; recovery direction and elevation permission are recorded above. Actual v2 implementation, review and OS-level acceptance remain required. No scientific interval, accepted external base, frontier claim or V1/E1 execution exists. Old future/unimplemented L1 wording is historical, never acceptance.
 
 ## Live baseline and completed historical gates
 P0 entry main: `63fc41610603782eefc709139e6dcbdcca97b78f`. Repo tree, recent commits, open/recent PRs and Actions were inspected. One historical merged PR (#1) was found, with no open PRs and no recorded workflow runs at entry. No CI success is asserted.

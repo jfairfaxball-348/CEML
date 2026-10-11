@@ -8,7 +8,7 @@ Research date: **2026-10-11** (UK); primary live project page generated `Sun, 11
 | Historic peer-reviewed | Bařina, *Convergence verification of the Collatz problem*, J. Supercomputing 77, 2681–2688 (2021), https://doi.org/10.1007/s11227-020-03368-x | earlier 2^68 = **295147905179352825856**; overtaken |
 | B, live headline | Bařina's current primary operational https://pcbarina.fit.vut.cz/ (2026-10-11 retrieval) | B = 2075*2^60 = **2392312122059207475200** (rounded-to-2^60 public statement) |
 | C, live exact work-unit pointer | Same live page, showing "Lowest incomplete: work unit 2175982616 * 2^40; all work units below are verified" | B = 2175982616*2^40 = **2392518188130438742016** (author-reported contiguous completed prefix, NOT independent reproduction) |
-| D, pending/unassigned | Same live page: "Lowest unassigned" equals work unit 2175982616 at snapshot; work unit size 2^40 = **1099511627776** | first not-claimed-complete unit **[2392518188130438742016, 2392518189229950369792]** — use exact formula `[2175982616*2^40, 2175982617*2^40)`; never infer this unit is permanently unassigned |
+| D, pending/unassigned | Same live page: "Lowest unassigned" equals work unit 2175982616 at snapshot; work unit size 2^40 = **1099511627776** | first not-claimed-complete unit **[2392518188130438742016, 2392518189229950369792)** — use exact formula `[2175982616*2^40, 2175982617*2^40)`; never infer this unit is permanently unassigned |
 
 **Authoritative exact end of first incomplete unit:** 2175982617*2^40 = **2392518189229950369792** (exact arithmetic; dynamic work-unit index). This row deliberately does NOT certify this interval.
 

@@ -20,6 +20,18 @@ The owner's live continuation consists of these seven committed batches. The lau
 | 9 | `[2392518188130438830000,2392518188130438844400)` | 14400 | `f936d6262777af7933143e7576b8e776c4a936eadc6091f16479005c694868f7` |
 | 10 | `[2392518188130438844400,2392518188130438858000)` | 13600 | `5f46665571ef5e85ed629576cd1e7f231ba1c8abe7a7d7975d408d94c14be17a` |
 
+The owner then used the quantity-only command for another 100000 integers. The saved chain was audited and the last batch separately replayed and inspected before recording this additional prefix.
+
+| Batch | Half-open interval | Width | Certificate digest |
+|---|---|---:|---|
+| 11 | `[2392518188130438858000,2392518188130438872400)` | 14400 | `bf87af5c756ad390d47e9fb33153cce81d29cda1e430ed0bdf895dfac4f65d74` |
+| 12 | `[2392518188130438872400,2392518188130438886800)` | 14400 | `57cb4c724b07252d76642b69b9267c7bf3450bd47b88585d50105ca1beaccc27` |
+| 13 | `[2392518188130438886800,2392518188130438901200)` | 14400 | `7ba5446572317e0bb372bce29086ac3bff2a7161db40b3f9706dcbc64937424d` |
+| 14 | `[2392518188130438901200,2392518188130438915600)` | 14400 | `e6bd0fd0d07f39e244cad25f55f34d776bc08a256407f54eadd916c0c6da8f47` |
+| 15 | `[2392518188130438915600,2392518188130438930000)` | 14400 | `8bb0a9f5d5a1da975e27f5792e8d5c1a6331eb3afa85e561e9e0b3dd4bfda712` |
+| 16 | `[2392518188130438930000,2392518188130438944400)` | 14400 | `6d6d2cca47253ebadfdf62eb0823f01a142b4fdc956d9880022aded9a84b535a` |
+| 17 | `[2392518188130438944400,2392518188130438958000)` | 13600 | `c02b25bf00b1dfd64d9eb7a33f054038c333655043ac495a2e5e2a185137278d` |
+
 ```text
 CEML-FRONTIER-2 conditional batch chain
 Run identifier: RUN1-operational-0001
@@ -27,18 +39,19 @@ Base kind and tier: operational (author-reported, not replicated)
 Assumed, not verified by CEML: every positive integer below B = 2392518188130438742016 converges
   Source and its date: author's project homepage https://pcbarina.fit.vut.cz/, generated 2026-10-11T11:29:26Z
   CEML observation time (UTC): 2026-10-11T12:38:06Z
-Verified conditional on that assumption: every integer in [2392518188130438742016,2392518188130438858000) converges
-Batches: 10 (115984 integers)
+Verified conditional on that assumption: every integer in [2392518188130438742016,2392518188130438958000) converges
+Batches: 17 (215984 integers)
 Genesis digest: a416bf0f89ebdb16911baf830b6c375d280829bd58587dd7787e36f5d3c53caf
-Latest certificate digest: 5f46665571ef5e85ed629576cd1e7f231ba1c8abe7a7d7975d408d94c14be17a
+Latest certificate digest: c02b25bf00b1dfd64d9eb7a33f054038c333655043ac495a2e5e2a185137278d
 Snapshot digest: 538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729
 Native build digest: c0263b353e05b9f3d09730e67d321254952c7dbdc2a6d892f7ffe2b14b89c032
 Source commit of pilot 1: 641e7b64acd01397f360a14eb1659107e7732459
 Source commit of owner's 100000-integer continuation: 789dca672cdd3bbe9ed7d30d93f465f2e2e47c7b
-Rule counts (E2, Q4, P3, M9, S2K4-03, EXPLICIT): 57992, 28996, 9666, 3221, 4026, 12083
+Source commit at confirmation of batches 11–17: c10da89922e5185d4d0bb8076136a5f991fadd96 (records bind the build digest, not a Git SHA)
+Rule counts (E2, Q4, P3, M9, S2K4-03, EXPLICIT): 107992, 53996, 17999, 5999, 7499, 22499
 Unresolved: 0
-Explicit shortened-map steps computed: 143886 (87966 odd; 231852 standard-map steps)
-Run dates (UTC): 2026-10-12; certificate filesystem timestamps from 08:53:51Z (pilot 1) to 09:48:32Z (batch 10)
+Explicit shortened-map steps computed: 268595 (164230 odd; 432825 standard-map steps)
+Run dates (UTC): 2026-10-12; certificate filesystem timestamps from 08:53:51Z (pilot 1) to 11:03:59Z (batch 17)
 Independent full replay performed: yes, built-in second pass (same author and machine)
 Independent reproduction by other code: none
 Overlap with externally reported work: expected; not checked against the external project's current state
@@ -54,4 +67,8 @@ Pilot 3's native scan and per-frame check took 0.716840 seconds; its whole pilot
 
 The owner executed the [one-command continuation](RUN1_ONE_COMMAND.md), adding exactly 100000 integers in seven sequential batches within the unchanged 14400 maximum. Those batches computed 123934 explicit shortened-map steps, including 75768 odd steps (199702 standard-map steps). Their certificate filesystem timestamps run from 09:46:42Z to 09:48:32Z; these timestamps are not an exact end-to-end timing measurement. The owner's screenshot showed the final `CONDITIONAL_RUN_COMPLETE` status, and its latest digest and endpoint match the saved ledger. The accepted build still verifies with the original identity. The agent executed no scientific batch in this confirmation session; only read-only verification and aggregate documentation were performed. No further continuation is authorised or started by this record.
 
-The record above is an aggregate summary and digest record. Raw batch records, checkpoints and per-integer data remain ignored local files. Publishing this document provides an external digest record. The owner subsequently removed the separate-device backup requirement; no backup action is outstanding. The reusable PowerShell command is now `python C:\CEML\tools\operator\run_frontier.py X`, changing only X. The launcher audits and discovers the latest committed end, checks published/local anchors, reuses this chain's accepted assumption, and saves a local continuation receipt after verification. See `RUN1_ONE_COMMAND.md`. This procedure update executes no new batch and preserves the frozen verifier's identity and existing records.
+The owner's second 100000-integer continuation added `[2392518188130438858000,2392518188130438958000)` in batches 11–17. It computed 124709 explicit shortened-map steps, with 76264 odd steps (200973 standard-map steps). Certificate filesystem timestamps run from 11:01:07Z to 11:03:59Z; these are not an exact whole-command timing measurement. The full ledger, final reference replay and checkpoint inspection passed read-only confirmation. There is no pending work, checkpoint warning or unresolved start. The local continuation receipt matches the 17-batch ledger exactly, and the accepted build identity remains unchanged. No scientific batch was executed by the agent during confirmation or publication.
+
+Logging has two separate parts: the offline runner automatically saves local manifests, authority records, checkpoints, immutable certificates and its continuation receipt. An agent updates and publishes this aggregate Git record only after verification. The runner never commits, pushes or depends on GitHub. Raw batch records, checkpoints and per-integer data remain ignored local files; GitHub carries intervals, aggregate counts, verification statements and digests. This document's published prefix is an external anchor and can lag subsequent local runs until the next verified publication.
+
+The owner removed the separate-device backup requirement; no backup action is outstanding. The reusable PowerShell command is `python C:\CEML\tools\operator\run_frontier.py X`, changing only X. The launcher audits and discovers the latest committed end, checks published/local anchors, reuses this chain's accepted assumption, and saves a local continuation receipt after verification. See `RUN1_ONE_COMMAND.md`. Publication preserves the frozen verifier's identity and every existing batch record.

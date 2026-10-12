@@ -1,13 +1,27 @@
 # CEML Programme Status
 
-**Authoritative current phase:** L1 — PASS, AGENT-ASSESSED ON RECORDED EVIDENCE AND OWNER-ACCEPTED 2026-10-12; RUN1 NOT AUTHORISED
-**Scientific execution authorization:** DENIED (including any L1 science pilot; RUN1 remains separately gated)
-**Local Codex / local machine access authorization:** FOCUSED L1 CONTINUATION COMPLETE AND OWNER-ACCEPTED 2026-10-12; NO FURTHER LOCAL SESSION IS AUTHORISED UNTIL THE OWNER SEPARATELY INSTRUCTS RUN1
+**Authoritative current phase:** RUN1 — OWNER-AUTHORISED 2026-10-12 ON THE OPERATIONAL BASE; OFFLINE PILOT RUN BY THE OWNER UNDER docs/RUN1_OPERATOR_RUNBOOK.md
+**Scientific execution authorization:** AUTHORISED
+**Local Codex / local machine access authorization:** RUN1 BATCH COMMANDS ARE RUN BY THE OWNER; AGENT SESSIONS MAY CHECK, EXPLAIN AND RECORD, AND NEVER RUN A BATCH OR TYPE AN ACKNOWLEDGEMENT
 **New frontier scientific protocol:** CEML-FRONTIER-2 FROZEN (THREE-SLOT RECOVERY); CEML-FRONTIER-1 FROZEN, UNCHANGED, RETAINED AS HISTORY, NEVER RUNNABLE
-**New batch-verifier implementation:** VERSION-2 GMP/PYTHON VERIFIER BUILT, TESTED, INDEPENDENTLY REVIEWED, ACCEPTED UNDER OS-ENFORCED NETWORK BLOCKING AND OWNER-ACCEPTED (L1 PASS); NEVER RUN ON A FRONTIER INTEGER; RUN1 NOT AUTHORISED
+**New batch-verifier implementation:** VERSION-2 GMP/PYTHON VERIFIER, L1 PASS OWNER-ACCEPTED 2026-10-12; IN USE FOR RUN1 FROM 2026-10-12; NO COMMITTED SCIENTIFIC BATCH IS RECORDED HERE YET
 **Old ladder status:** SUPERSEDED AS ACTIVE TARGET; HISTORICAL EVIDENCE RETAINED
 **Old scientific master-seed generation:** DENIED
 **Last P0 decision:** 2026-10-11 — owner-directed soft pivot
+
+## RUN1 authorisation — 2026-10-12
+
+**Owner instruction, verbatim:** "start RUN1 on the operational base". It was given in the session after L1 had been accepted and merged, and after the two bases and what each means had been set out. The assistant had recommended the published base for the first pilot; the owner chose the operational base.
+
+**What is authorised.** RUN1 under CEML-FRONTIER-2 with base kind `operational`: `B = 2392518188130438742016` (2175982616 × 2^40), from the version-2 snapshot with digest `538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729`. It starts with exactly the 144-start pilot `[2392518188130438742016, 2392518188130438742160)`. Contiguous extension follows only as [docs/RUN1_OPERATOR_RUNBOOK.md](docs/RUN1_OPERATOR_RUNBOOK.md) allows. The owner runs every batch command. Each batch needs its own authority record, with the acknowledgement typed by the owner.
+
+**What the base is.** An author-reported operational bound that CEML has not replicated: observed 2026-10-11T12:38:06Z from a page generated 2026-10-11T11:29:26Z, and not refreshed since. It is dynamic and the first unit above it may have been assigned or completed externally by now. A committed chain on it earns at most `BATCH_CONDITIONAL_OPERATIONAL`: conditional on that report, not a reproduction of the base, and not a claim of novelty or of global frontier extension. Expect overlap.
+
+**What has not happened at this commit.** No acknowledgement has been recorded, no batch has run and no scientific result exists. This status change alone executes nothing. Agents never run a batch and never type an acknowledgement or an authority record. Results are recorded here only after a batch is committed and verified under runbook section 7, using the claim template of runbook section 13.
+
+**Consequences of the phase change.** The L1 suites and `selftest` are L1-phase checks and refuse or fail in this phase by design; they were run one last time immediately before this change (171 and 27 tests, zero skips) on the accepted identities. Any change to an identity-bound file ends the validity of the L1 evidence for the changed software and strands any chain. The first pilot is the first end-to-end execution of the authorised path; if it refuses for a reason the runbook does not explain, stop.
+
+**Status-file discipline.** The driver and the worker each require exactly one phase line and exactly one scientific-authorisation line. The driver's parser also refuses Windows (CRLF) line endings in this file; `.gitattributes` pins it to LF.
 
 ## L1 version-2 continuation — 2026-10-11 to 2026-10-12
 
@@ -17,7 +31,7 @@ The owner invoked the focused continuation on `codex/l1-offline-frontier` and au
 
 **L1 PASS, agent-assessed, 2026-10-12.** The last open gate, the OS-enforced network-blocked build and acceptance run, was met on the owner's third attempt: run `387ae837`, 08:05:32Z to 08:08:08Z, status `OS-BLOCKED-ENGINEERING-CHECKS-PASS` on the reviewed identities, with blocking verified before and after the checks, 171 and 27 tests passing with zero skips, three identical build digests, and the rules and watchdog verified removed and connectivity observed again. The first attempt refused at its connectivity baseline before any change. The second stopped in the watchdog-registration stage on a launcher defect (a rule-name list that was one joined string) before any firewall rule or task existed; the defect was fixed and the elevated path is also exercised by a simulation. The review sub-agent then reviewed the final sources, cross-checked the evidence independently and judged that it supports recording a pass. "Agent-assessed" means the agent that wrote the software reached this verdict; no human has reviewed the code and no hosted CI exists. **The owner accepted the record on 2026-10-12** ("I'm happy with all that. Can you accept L1, commit, merge, push etc everything so we are ready to go."). Limits of the evidence are listed in the acceptance record, sections 6 and 9.
 
-**One next gate.** RUN1, which is not authorised. It needs the owner's separate explicit instruction, base choice and personally typed acknowledgement, and follows [docs/RUN1_OPERATOR_RUNBOOK.md](docs/RUN1_OPERATOR_RUNBOOK.md); the [fresh-session prompt](NEXT_SESSION_PROMPT.md) describes that stage and authorises nothing. The owner's acceptance of L1 is not RUN1 authority. No scientific interval, accepted external base, frontier claim or V1/E1 execution exists. Any change to an identity-bound file ends the validity of the L1 evidence for the changed software. The sections below are retained history; where they name a next gate, this section supersedes them.
+**Superseded on 2026-10-12.** The owner then authorised RUN1 on the operational base; see the RUN1 authorisation section above. The remaining sections below are retained history.
 
 ## Owner-authorised completion preparation — 2026-10-11
 

@@ -14,6 +14,8 @@ The launcher checks the locally frozen published aggregate anchor and, when pres
 
 The owner has removed the separate-device backup requirement. It is optional and is not a prerequisite or outstanding task. The final printed digest and published aggregate progress record remain useful external references. Local receipts alone cannot detect replacement or rollback of all local files together. The offline command performs no network or Git operation.
 
+After the run finishes, verify and publish the aggregate to GitHub and the website feed with `python C:\CEML\tools\publication\publish.py`. This is a separate owner-invoked network command, not part of scientific execution. To publish live informational progress in the background, separately run `python C:\CEML\tools\publication\live.py start`; use `stop` to stop uploads. See `WEBSITE_PUBLICATION.md` for setup and boundaries.
+
 For a read-only rehearsal, append --plan. Legacy --count X, an explicit --acknowledge, an optional exact --expected-latest digest pin, and the spelling check-next X still work. Without an explicit pin, the latest committed endpoint is discovered dynamically on every invocation. Do not infer completion from a partial checkpoint or receipt after an interruption.
 
 This update changes the operator procedure and convenience launcher outside the frozen verifier identity. It changes no frozen v1/v2 contract, snapshot, worker, checker or batch record. The original 100000-integer run remains recorded in RUN1_PROGRESS.md. The example command above is for owner use; no new scientific quantity was executed while preparing this update.

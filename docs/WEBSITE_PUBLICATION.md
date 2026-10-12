@@ -1,33 +1,53 @@
-# Public website publication
+# Website and GitHub publication
 
-The public research website (`jfairfaxball-348/john-fairfaxball-research`, Collatz page) shows this programme's progress. It reads one file from this repository's `main` branch at request time:
+The public research website (`jfairfaxball-348/john-fairfaxball-research`, `/collatz`) reads `frontier_progress_for_website.json` from CEML `main` on every request. That JSON is derived from the authoritative aggregate `docs/RUN1_PROGRESS.md`. Publishing it updates the website tally without a website rebuild.
 
-- `frontier_progress_for_website.json` (repository root, schema version 1)
+## End-of-run command
 
-That file is **derived**, never edited by hand. `docs/RUN1_PROGRESS.md` remains the authoritative aggregate record; the JSON re-expresses only its already published batch tables and claim block.
+After the quantity command returns, paste this into PowerShell from any directory:
 
-## Publishing a new verified aggregate
-
-After a verified aggregate update to `docs/RUN1_PROGRESS.md` (the existing agent publication step), run from the repository root:
-
-```text
-python tools/publication/website_progress.py
-python tools/publication/website_progress.py --check
-python -m unittest discover -s tests/publication -v
+```powershell
+python C:/CEML/tools/publication/publish.py
 ```
 
-Commit the regenerated JSON in the same commit as the `RUN1_PROGRESS.md` change. The website then shows the new tally on its next request; no website rebuild is needed.
+It checks the clean, synchronized `main` checkout and accepted source ancestry, holds the same operator lock as the launcher, and independently verifies the accepted build, rules, snapshot, full ledger, final certificate, reference replay and checkpoint inspection. The retained receipt must match exactly. Unexpected or incomplete batch directories/manifests stop publication. Only this verification authorises updating the aggregate; a checkpoint cursor or receipt alone does not.
 
-The generator refuses (exit 2) if the batch tables are not consecutive and contiguous from the base, if widths or totals disagree, if the latest digest does not match the final batch, or if any start is unresolved. `--check` fails (exit 1) if the committed JSON is stale.
+It appends aggregate rows for newly verified batches, preserves historical records, updates the current claim and programme/start pages, and derives and validates the website JSON. It publishes exactly those four allowed aggregate files through a GitHub branch, PR and merge, checking actual GitHub statuses and checks before merging. No force push or review bypass is used. It then fast-forwards local main. Raw records, per-integer events and identifying machine fields are never uploaded. Repeating it with an already published chain reports `ALREADY_PUBLISHED` without another commit. `--preview` performs verification and derives the proposal without network or tracked-file changes.
 
-## Boundaries
+If GitHub checks or required reviews prevent merging, the PR remains available, with its URL retained privately in `local/frontier/publication-pr.json`. Finish that PR through the normal review flow before running another publication command. A remote/local divergence or interrupted synchronization stops safely rather than overwriting history. Verification can take several minutes on a long chain. Publication is refused while the launcher is active; it never stops or resumes science.
 
-- The generator reads only `docs/RUN1_PROGRESS.md`. It reads no batch directory, checkpoint, receipt or other local file, uses no network and executes nothing scientific.
-- It is outside the frozen verifier identity. It changes no CEML-FRONTIER-1/2 contract, snapshot, worker, checker, launcher behaviour or batch record. The launcher still anchors on `docs/RUN1_PROGRESS.md`, not on this JSON.
-- The website states the result with the same limits as the claim block: conditional on the author-reported operational base, not a proof of the conjecture, not a reproduction of the base and not a world-first or global frontier claim.
+## GitHub sign-in
 
-## Live view (not active)
+GitHub CLI is installed on this PC. Sign in once as `jfairfaxball-348`:
 
-The website page also has scaffolding for a live view of the local machine. It is currently **offline by design** and shows "working offline". No publisher exists in this repository, and the offline runner remains network-free (AGENTS.md item 8).
+```powershell
+gh auth login --hostname github.com --git-protocol https --web
+```
 
-Any future live publisher would need a separate owner decision and must be a separate, optional, read-only sidecar process: it may only read local state, must never be imported by or become a dependency of the runner or verifier, must not affect whether a batch commits, and must publish no machine names, paths, addresses or other private identifiers. Live status is informational only; only verified, published aggregates count towards the public tally. The website-side status format is documented in the website repository at `docs/frontier-live-status.md`.
+Complete browser authorization and let the terminal finish. Credentials remain in the CLI credential store. Never paste a token into a command or repository file. Both publishing tools use `gh api`; neither needs a token in source or environment files.
+
+## Optional live progress
+
+The owner authorised the separate observer on 2026-10-12. Start it once per Windows session:
+
+```powershell
+python C:/CEML/tools/publication/live.py start
+```
+
+It runs hidden in the background, reads the launcher process and local immutable certificates/checkpoints, and uploads an allowlist matching the website's strict status schema about once a minute. No process command line, PID, host/device name, address, path, credential or per-integer data is published. Private logs and control files are under ignored `local/frontier/live-publisher/`. Read-only process observation is used only to infer the requested quantity and session start.
+
+```powershell
+python C:/CEML/tools/publication/live.py stop
+```
+
+Stopping it publishes paused status and ends only uploads. Network errors retry on the next minute; the scientific runner is unaffected. `preview` prints allowlisted status locally without uploading; `once` performs one upload. No Windows service or logon task is installed; after reboot run `start` again.
+
+The public source is `https://raw.githubusercontent.com/jfairfaxball-348/CEML/live-status/frontier_live_status.json`, on a dedicated branch containing only informational status. Heartbeats create small ordinary commits on that branch and never merge into main or trigger website deployments. The website reads it by default, adds a freshness query and polls every 15 seconds. Its existing five-minute stale limit shows Working offline when the observer is unavailable. `FRONTIER_LIVE_STATUS_URL` can override the source; an explicitly empty setting disables live status. No Vercel secret, tunnel or inbound PC port is required.
+
+Live checkpoint cursors are provisional. Recent `committed` entries are local file observations with canonical digest/identity checks; the observer performs no full ledger/replay verification and makes no independent verification claim. The authoritative tally changes only after separate verified publication. All claims remain conditional on the accepted author-reported base, with no conjecture proof, base reproduction or world-frontier claim.
+
+## Engineering boundary and checks
+
+All publication tools are outside the frozen verifier identity. The runner imports none of them, remains network-free and never commits automatically. They do not write any batch directory, change frozen contracts/worker/checker/snapshot bytes, alter continuation acknowledgement rules or execute a scientific quantity.
+
+For manual aggregate edits, regenerate the website JSON with `python tools/publication/website_progress.py`. Check with `python tools/publication/website_progress.py --check` and `python -m unittest discover -s tests/publication -v`. The generator refuses discontinuity, width/total/digest disagreement and unresolved starts. Tests exercise privacy, provisional cursors, torn/corrupt records, rollback, preserved history and failed GitHub checks without executing science or using the network.

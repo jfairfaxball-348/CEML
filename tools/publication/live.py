@@ -65,14 +65,23 @@ def active_runner():
         if '--plan' in line:
             continue
         # Only the accepted absolute path or the documented repository-relative path.
-        pattern = r'(?:C:[\\/]CEML[\\/])?tools[\\/]operator[\\/]run_frontier[.]py["\s]+(?:check-next\s+|--count\s+)?([1-9][0-9]*)\b'
-        match = re.search(pattern, line, re.IGNORECASE)
-        if match:
-            runs.append({'requested': int(match[1]), 'started_at': item['started'],
+        parsed = parse_runner_command(line)
+        if parsed:
+            runs.append({**parsed, 'started_at': item['started'],
                          'started': datetime.fromisoformat(item['started']).timestamp()})
     if len(runs) > 1:
         raise ValueError('Multiple launchers observed')
     return runs[0] if runs else None
+
+
+def parse_runner_command(line):
+    if '--plan' in line:
+        return None
+    prefix = r'(?:C:[\\/]CEML[\\/])?tools[\\/]operator[\\/]run_frontier[.]py["\s]+'
+    if re.search(prefix + r'start\b', line, re.IGNORECASE):
+        return dict(requested=None, mode='continuous')
+    match = re.search(prefix + r'(?:check-next\s+|--count\s+)?([1-9][0-9]*)\b', line, re.IGNORECASE)
+    return dict(requested=int(match[1]), mode='finite') if match else None
 
 
 def snapshot(chain, runner, now, previous_session=None):
@@ -127,10 +136,12 @@ def snapshot(chain, runner, now, previous_session=None):
     if session_source:
         done = sum(width for width, finished in completed if finished >= session_source['started'])
         done += current['processed'] if current else 0
-        if done > session_source['requested']:
+        requested = session_source['requested']
+        if requested is not None and done > requested:
             raise ValueError('Observed session progress exceeds request')
-        session = dict(requested=session_source['requested'], completed=done, started_at=session_source['started_at'])
-    state = 'running' if runner else 'stopped' if current or session and session['completed'] < session['requested'] else 'idle'
+        session = dict(requested=requested, completed=done, started_at=session_source['started_at'], mode=session_source.get('mode', 'finite'))
+    unfinished = session and session['requested'] is not None and session['completed'] < session['requested']
+    state = 'running' if runner else 'stopped' if current or unfinished else 'idle'
     message = ('Local observations; checkpoints are provisional. Verified tally changes only after separate publication.'
                if runner else 'No verification run active. Live observations do not change the published verified tally.')
     return dict(schema_version=1, state=state, updated_at=iso(now), message=message,

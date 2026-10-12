@@ -4,7 +4,7 @@
 **Scientific execution authorization:** AUTHORISED
 **Local Codex / local machine access authorization:** OWNER-REQUESTED AGENT EXECUTION OF PILOTS 1–3 ONLY; LATER 100000-INTEGER RUN IS STARTED BY THE OWNER; SEE docs/RUN1_PROGRESS.md
 **New frontier scientific protocol:** CEML-FRONTIER-2 FROZEN (THREE-SLOT RECOVERY); CEML-FRONTIER-1 FROZEN, UNCHANGED, RETAINED AS HISTORY, NEVER RUNNABLE
-**New batch-verifier implementation:** VERSION-2 GMP/PYTHON VERIFIER, L1 PASS OWNER-ACCEPTED 2026-10-12; FIRST RUN1 PILOT COMMITTED AND VERIFIED; SEE docs/RUN1_PROGRESS.md
+**New batch-verifier implementation:** VERSION-2 GMP/PYTHON VERIFIER, L1 PASS OWNER-ACCEPTED 2026-10-12; RUN1 PILOTS 1–3 COMMITTED AND VERIFIED (15984 INTEGERS); OWNER'S NEXT 100000-INTEGER RUN PREPARED, NOT RUN; SEE docs/RUN1_PROGRESS.md
 **Old ladder status:** SUPERSEDED AS ACTIVE TARGET; HISTORICAL EVIDENCE RETAINED
 **Old scientific master-seed generation:** DENIED
 **Last P0 decision:** 2026-10-11 — owner-directed soft pivot
@@ -12,6 +12,8 @@
 ## RUN1 authorisation — 2026-10-12
 
 **Subsequent owner instruction and result.** The owner explicitly requested agent execution of the first pilot and supplied the acknowledgement and commands. It committed and passed `verify-batch`, `replay` and `ledger` for all 144 integers in `[2392518188130438742016,2392518188130438742160)`, with certificate `99d6907248aa02a517d638469d60ab0f659af0a045b0444531e93fde1380f8a2`. The owner then wrote: "I authorise the next level of pilot which is the next 1440 integers. Pilot 3 will be the following 14400." This directs those two contiguous pilots, overriding the usual width schedule, within the frozen hard limits. The planned later 100000-integer run is to be launched by the owner. The aggregate claim, identities and verification record are in [RUN1 progress](docs/RUN1_PROGRESS.md); the author-reported base remains assumed and unreplicated.
+
+**Pilots 2 and 3 completed.** Both committed and passed certificate verification, reference replay and chain audit, with no pending work or checkpoint warnings. The chain now has three batches covering `[2392518188130438742016,2392518188130438758000)` (15984 integers), latest digest `ab213f7ba9016bc54afe67873747e605dd88813480a695e8fb54b9b0821f46e6`. All original accepted build identities remain unchanged. The later `[2392518188130438758000,2392518188130438858000)` continuation is prepared for the owner to start through the [single-command operator launcher](docs/RUN1_ONE_COMMAND.md), in seven sequential batches; it has not started. The aggregate launcher invokes the existing CLI, outside the frozen verifier's identity inputs. Separate-device backup remains outstanding because no additional device was available.
 
 **Owner instruction, verbatim:** "start RUN1 on the operational base". It was given in the session after L1 had been accepted and merged, and after the two bases and what each means had been set out. The assistant had recommended the published base for the first pilot; the owner chose the operational base.
 

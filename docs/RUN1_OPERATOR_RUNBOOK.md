@@ -19,12 +19,12 @@ Check these before every session (section 5). A mismatch means the tree or build
 | Identity | Value |
 |---|---|
 | Protocol | `CEML-FRONTIER-2` (`docs/FRONTIER_PROTOCOL_V2.md`) |
-| Native build digest | `eba03082200f1aa9d304a45a64bbc455643c0f19e8765382136afb1b68d9d8b2` |
+| Native build digest | `c0263b353e05b9f3d09730e67d321254952c7dbdc2a6d892f7ffe2b14b89c032` |
 | Release worker `ceml_frontier.exe` SHA3-256 | `8d3a72aa077fed414ad36e8008900f95a2a0630933e5dea5e66363fd34c19b6b` |
 | Checked worker `ceml_frontier_checked.exe` SHA3-256 | `b562e74ba06d7a4f936f3e0010f36142fe7025f8059e60793aea5388820bc525` |
-| Checker source digest | `a7fff362e46e87e9c131a166a514f7ec3168b108275e7356e739b3a6552217bd` |
+| Checker source digest | `26e5e2e5b235fac140f0ee4afbac064a246f97fec316fb39d955d51659fc3970` |
 | Parity table digest | `d368ec417e3170729f67737c414b02ced2d2f6cab349f9cd534404985058391c` |
-| Frontier test-source digest | `86375e48f88d039ce408e58567baed51c61ec224afecfff0f2e595d28ab41609` |
+| Frontier test-source digest | `360343f9cf63d1ed9a9c85d9f6bfe3ae99e30d622231fbf344276aea31fc4a72` |
 | Version-2 snapshot digest | `538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729` |
 | Frozen version-1 snapshot digest (provenance only) | `a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66` |
 | GMP runtime `libgmp-10.dll` SHA3-256 | `3eb5419c614771eab626c5d3f7e6cdc64279c4b5cf2eca0a28840baf9b4d75cf` |
@@ -305,17 +305,17 @@ Only a result obtained this way, by different code and a different build, may be
 
 Measured on this machine by the L1 self-test on small-integer engineering fixtures. Times include the build check, the native scan, the per-frame check, both Python replays, the checkpoint writes and the certificate commit. They are overhead measurements on integers below 10000. They are not throughput at 2^71, and no speed at that magnitude has been measured.
 
-Source: the unisolated rehearsal of the acceptance plan on 2026-10-11; to be replaced by the OS-blocked run.
+Source: the unisolated rehearsal of the acceptance plan on 2026-10-12; to be replaced by the OS-blocked run.
 
 | Fixture | Interval width | Explicit starts | Explicit steps | Scan and per-frame check (s) | Whole batch (s) |
 |---|---:|---:|---:|---:|---:|
-| `L1-fixture-a` | 144 | 15 | 269 | 0.089 | 0.423 |
-| `L1-fixture-successor` | 144 | 15 | 150 | 0.089 | 0.727 |
-| `L1-fixture-b` | 144 | 15 | 150 | 0.089 | 0.414 |
-| `L1-fixture-c` | 96 | 10 | 225 | 0.088 | 0.421 |
-| `L1-fixture-wide` | 9600 | 1001 | 11840 | 0.278 | 0.792 |
+| `L1-fixture-a` | 144 | 15 | 269 | 0.092 | 0.441 |
+| `L1-fixture-successor` | 144 | 15 | 150 | 0.093 | 0.794 |
+| `L1-fixture-b` | 144 | 15 | 150 | 0.100 | 0.446 |
+| `L1-fixture-c` | 96 | 10 | 225 | 0.094 | 0.464 |
+| `L1-fixture-wide` | 9600 | 1001 | 11840 | 0.281 | 0.798 |
 
-`L1-fixture-successor` is the second batch of a two-batch chain, so its whole-batch time includes re-verifying its predecessor. The two-batch ledger audit took 0.176 s. Directory flush was reported `yes` on this volume.
+`L1-fixture-successor` is the second batch of a two-batch chain, so its whole-batch time includes re-verifying its predecessor. The two-batch ledger audit took 0.165 s. Directory flush was reported `yes` on this volume.
 
 ## 13. Truthful claim template
 

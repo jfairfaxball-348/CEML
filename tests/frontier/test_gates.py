@@ -116,6 +116,38 @@ class ReadOnlyCommandGateTests(unittest.TestCase):
             wrong_base = dict(rebased(5000, 5010), run1_authority_id="RUN1-synthetic")
             self.assert_gate_refuses(self.directory(wrong_base, None))
 
+    def test_phase_alone_never_opens_read_only_commands_on_science(self):
+        # Confirmation-review note: RUN1 as a phase with science still denied used to be enough.
+        base = int(driver.snapshot()["published"]["B"])
+        science = dict(rebased(base, base + 144), run1_authority_id="RUN1-synthetic")
+        directory = self.directory(science, None)
+        for status in (RUN1.replace("AUTHORISED", "DENIED"), RUN1.replace("AUTHORISED", "AUTHORISED-NOT"),
+                       RUN1 + RUN1, L1, ""):
+            with mock.patch.object(driver, "status_text", return_value=status):
+                with self.subTest(status=status[:60]):
+                    self.assertFalse(driver.science_readable(False))
+                    self.assert_gate_refuses(directory)
+        # Positive control: full RUN1 status and a valid scientific manifest pass the gate
+        # itself, which reads two records and computes nothing.
+        with mock.patch.object(driver, "status_text", return_value=RUN1):
+            self.assertTrue(driver.science_readable(False))
+            self.assertEqual(science, driver.read_only_gate(directory))
+        self.assertTrue(driver.science_readable(True))
+        self.spy_summary_reference.assert_not_called()
+
+    def test_only_listed_run_ids_and_intervals_are_fixtures(self):
+        self.assertEqual({"L1-fixture-a": {(2, 146), (146, 290)}, "L1-fixture-b": {(143, 287)},
+                          "L1-fixture-c": {(17, 113)}, "L1-fixture-wide": {(2, 9602)}}, driver.FIXTURE_INTERVALS)
+        # The successor is the second batch of the L1-fixture-a chain, never a chain of its own.
+        lone = rebased(146, 290)
+        lone["run_id"] = "L1-fixture-successor"
+        lone["predecessor_digest"] = driver.genesis(lone)
+        with self.assertRaisesRegex(driver.Refusal, "not a predesignated L1 fixture"):
+            driver.validate_manifest(lone, driver.snapshot(), True)
+        self.assert_gate_refuses(self.directory(lone, driver.canonical(driver.fixture_marker(lone))))
+        for name in ("L1-fixture-a", "L1-fixture-successor", "L1-fixture-b", "L1-fixture-c", "L1-fixture-wide"):
+            driver.validate_manifest(driver.fixture_run(name, build_digest="0" * 64), driver.snapshot(), True)
+
     def test_valid_fixture_passes_the_gate_and_reaches_the_reader(self):
         fixture = driver.fixture_run("L1-fixture-a", build_digest="0" * 64)
         directory = self.directory(fixture, driver.canonical(driver.fixture_marker(fixture)))
@@ -313,26 +345,40 @@ class NativeBoundaryTests(unittest.TestCase):
         result = driver.consume_native(9999, 10000, 100000, 2000000)
         self.assertEqual(("10000", None), (result["next_n"], result["pending"]))
 
-    def test_authorised_handshake_reaches_the_worker_for_one_small_even_integer(self):
-        # Gate fixture only: 10000 is the first integer whose scan the worker gates.
-        # It is far below every base, and the status file is synthetic.
-        with tempfile.TemporaryDirectory(dir=driver.LOCAL, prefix="gate-handshake-") as scratch:
+    def test_driver_gate_needs_full_run1_status_and_then_only_passes_it_on(self):
+        # No worker is started here. Under a synthetic RUN1 status the driver would hand
+        # the worker the authority environment; that hand-off is observed on a mock.
+        # The accepting branch of the worker itself is deliberately not executed in L1.
+        with tempfile.TemporaryDirectory(dir=driver.LOCAL, prefix="gate-status-") as scratch:
             path = Path(scratch) / "status.md"
-            for text in (RUN1, RUN1.replace("RUN1\n", "RUN1 " + DASH + " synthetic gate fixture\n")):
-                path.write_bytes(text.encode("utf-8"))
-                with mock.patch.object(driver, "status_path", return_value=path):
-                    result = driver.consume_native(10000, 10001, 100000, 2000000)
-                with self.subTest(status=len(text)):
-                    self.assertEqual(("10001", None, "1"),
-                                     (result["next_n"], result["pending"], result["counts"]["e2_count"]))
-                    self.assertEqual(driver.H("EVENTS", b"10000|E2|0|0|5000\n"), result["transcript_digest"])
-            for text in (L1, RUN1.replace("AUTHORISED", "DENIED"), RUN1.replace("RUN1", "RUN10"), RUN1 + RUN1):
+            for text in (L1, RUN1.replace("AUTHORISED", "DENIED"), RUN1.replace("RUN1", "RUN10"),
+                         RUN1.replace("AUTHORISED", "AUTHORISED-NOT"), RUN1 + RUN1, ""):
                 path.write_bytes(text.encode("utf-8"))
                 with mock.patch.object(driver, "status_path", return_value=path), \
                      mock.patch.object(driver.subprocess, "Popen") as launch:
                     with self.subTest(refused=text[:48]), self.assertRaises(driver.Refusal):
-                        driver.consume_native(10000, 10001, 100000, 2000000)
+                        driver.consume_native(10000, 10001, 100000, 2000000, exe=sys.executable)
                     launch.assert_not_called()
+            for text in (RUN1, RUN1.replace("RUN1\n", "RUN1 " + DASH + " synthetic gate fixture\n")):
+                path.write_bytes(text.encode("utf-8"))
+                stop = RuntimeError("mock: no worker is started in this test")
+                with mock.patch.object(driver, "status_path", return_value=path), \
+                     mock.patch.object(driver.subprocess, "Popen", side_effect=stop) as launch:
+                    with self.subTest(passed=len(text)), self.assertRaises(RuntimeError):
+                        driver.consume_native(10000, 10001, 100000, 2000000, exe=sys.executable)
+                    environment = launch.call_args.kwargs["env"]
+                    self.assertEqual(("RUN1-AUTHORIZED", str(path)),
+                                     (environment["CEML_FRONTIER_DRIVER_MODE"],
+                                      environment["CEML_FRONTIER_STATUS_PATH"]))
+        # Below the cap the driver passes no authority at all, whatever the environment held.
+        with mock.patch.dict(driver.os.environ, {"CEML_FRONTIER_DRIVER_MODE": "RUN1-AUTHORIZED",
+                                                 "CEML_FRONTIER_STATUS_PATH": "anything"}), \
+             mock.patch.object(driver.subprocess, "Popen", side_effect=RuntimeError("mock")) as launch:
+            with self.assertRaises(RuntimeError):
+                driver.consume_native(2, 146, 100000, 2000000, exe=sys.executable)
+            environment = launch.call_args.kwargs["env"]
+            self.assertNotIn("CEML_FRONTIER_DRIVER_MODE", environment)
+            self.assertNotIn("CEML_FRONTIER_STATUS_PATH", environment)
 
 
 class L1GateTests(unittest.TestCase):
@@ -389,7 +435,14 @@ class L1GateTests(unittest.TestCase):
 
 class SelftestTests(unittest.TestCase):
     def test_selftest_commits_five_fixtures_and_audits_the_two_batch_chain(self):
-        report = driver.selftest()
+        # The invocation-evidence gate has its own tests; here it is mocked so the test does
+        # not depend on an ignored local file, and the session it creates is removed again.
+        folder = driver.LOCAL / "acceptance"
+        before = set(folder.iterdir()) if folder.is_dir() else set()
+        self.addCleanup(lambda: [shutil.rmtree(path) for path in set(folder.iterdir()) - before])
+        with mock.patch.object(driver, "l1_gate") as gate:
+            report = driver.selftest()
+        gate.assert_called_once_with()
         self.assertEqual(("L1-NONSCIENTIFIC", "fixtures_pass", "CEML-FRONTIER-2", f1_build.build_digest()),
                          (report["scope"], report["status"], report["protocol"], report["native_build_digest"]))
         sizes = {item["fixture"]: item["batch_size"] for item in report["results"]}

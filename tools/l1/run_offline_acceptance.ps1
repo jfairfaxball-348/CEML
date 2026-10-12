@@ -38,6 +38,11 @@ function Assert-FirewallPrerequisites {
     $bypass = @(Get-NetFirewallRule -PolicyStore ActiveStore -Enabled True -Action Allow |
         Get-NetFirewallSecurityFilter | Where-Object { [int]$_.OverrideBlockRules -eq 1 })
     if ($bypass.Count -ne 0) { throw 'Authenticated firewall bypass rules require review' }
+    # Cleanup depends on these exact whole-store enumerations. Prove they work here,
+    # in Preflight and before any change, rather than discovering a failure afterwards.
+    $null = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop)
+    $null = @(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)
+    $null = @(Get-ScheduledTask -ErrorAction Stop)
 }
 
 Assert-FirewallPrerequisites
@@ -51,6 +56,10 @@ if (!$admin) { throw 'Start this reviewed script in an administrator PowerShell 
 if (!$ExpectedSourceSha256 -or !$ExpectedLauncherSha256 -or
     $ExpectedSourceSha256.ToLowerInvariant() -ne $plan.source_sha256 -or
     $ExpectedLauncherSha256.ToLowerInvariant() -ne $launcherHash) { throw 'Reviewed source/launcher hashes required' }
+if (@(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop |
+        Where-Object { $_.Name -like 'CEML-L1Offline-*' }).Count -ne 0) {
+    throw 'Block rules from an earlier run are still present; restore the network first'
+}
 
 # The OS releases this exclusive checkout-local lock on process exit.
 $lockPath = Join-Path $root 'local/frontier/os-offline.lock'
@@ -105,13 +114,15 @@ function Assert-Isolation {
 try {
     # The watchdog is registered BEFORE any network change. It also runs at boot
     # after a reboot. Inline fixed UUID-only cleanup does not trust mutable files.
-    # It enumerates the whole store with -ErrorAction Stop, so an empty result means
-    # the rules are absent and never that the query failed. On any doubt it exits 1
-    # and stays registered; the timed trigger repeats and the boot trigger remains.
+    # It first tries to remove its two rules by exact name, which needs no enumeration.
+    # It then enumerates the whole store with -ErrorAction Stop, so an empty result
+    # means the rules are absent and never that the query failed. On any doubt it exits
+    # 1 and stays registered; the timed trigger repeats and the boot trigger remains.
     $cleanup = @"
 `$ErrorActionPreference = 'Stop'
 try {
     `$names = @('$($ruleNames[0])', '$($ruleNames[1])')
+    foreach (`$name in `$names) { try { Remove-NetFirewallRule -PolicyStore PersistentStore -Name `$name -ErrorAction Stop } catch { } }
     `$found = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop | Where-Object { `$names -contains `$_.Name })
     if (`$found.Count -gt 0) { `$found | Remove-NetFirewallRule -ErrorAction Stop }
     `$left = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop | Where-Object { `$names -contains `$_.Name })
@@ -189,6 +200,11 @@ try {
                 -ArgumentList @('/PID', [string]$child.Id, '/T', '/F') -WindowStyle Hidden -Wait
         }
     } catch { }
+    # Removal by exact name comes first and needs no enumeration, so the rules go even
+    # if the enumeration below were to fail. A rule that is already gone throws; ignore it.
+    foreach ($name in $ruleNames) {
+        try { Remove-NetFirewallRule -PolicyStore PersistentStore -Name $name -ErrorAction Stop } catch { }
+    }
     try {
         # Whole-store enumeration with -ErrorAction Stop: a failed query throws and keeps
         # the watchdog. It can never be mistaken for "the rules are absent".

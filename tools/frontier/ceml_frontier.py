@@ -47,6 +47,10 @@ AUTHORITY_KEYS = ('authority_id', 'snapshot_digest', 'base_kind', 'base_B', 'acc
 FIXTURES = {'L1-fixture-a': (2, 146), 'L1-fixture-b': (143, 287),
             'L1-fixture-c': (17, 113), 'L1-fixture-successor': (146, 290),
             'L1-fixture-wide': (2, 9602)}
+# Intervals a fixture manifest may carry, by run ID. 'L1-fixture-successor' only names the
+# second batch of the L1-fixture-a chain; it is never itself a run ID.
+FIXTURE_INTERVALS = {'L1-fixture-a': {(2, 146), (146, 290)}, 'L1-fixture-b': {(143, 287)},
+                     'L1-fixture-c': {(17, 113)}, 'L1-fixture-wide': {(2, 9602)}}
 sys.set_int_max_str_digits(10000)
 
 
@@ -253,9 +257,8 @@ def validate_manifest(run, snap, test=False):
     require(run['accepted_assumption_ack'] == ':'.join((run['snapshot_digest'], run['base_kind'], run['base_B'])),
             'external assumption acknowledgement mismatch')
     if test:
-        allowed = {(2,146), (146,290)} if run['run_id'] == 'L1-fixture-a' else {FIXTURES.get(run['run_id'])}
         require(run['run1_authority_id'] == 'L1-NONSCIENTIFIC' and
-                (start, end) in allowed, 'not a predesignated L1 fixture')
+                (start, end) in FIXTURE_INTERVALS.get(run['run_id'], ()), 'not a predesignated L1 fixture')
         expected_base = 2 if run['run_id'] == 'L1-fixture-a' else start
         require(base == expected_base and run['base_kind'] == 'published', 'fixture identity mismatch')
     else:
@@ -279,6 +282,17 @@ def run1_status():
     status = status_text()
     require(phase_is(status, 'RUN1') and
             status_field(status, 'Scientific execution authorization') == 'AUTHORISED', 'RUN1 not owner-authorised')
+
+
+def science_readable(test):
+    """Read-only commands recompute starts: a fixture, or full RUN1 status, never the phase alone."""
+    if test:
+        return True
+    try:
+        run1_status()
+    except Refusal:
+        return False
+    return True
 
 
 def run1_gate(run):
@@ -711,7 +725,7 @@ def read_only_gate(directory):
     Anything else is science and needs RUN1 status and a valid scientific manifest.
     """
     test = is_fixture(directory)
-    require(test or phase_is(status_text(), 'RUN1'), 'L1 inspects and replays only predesignated fixtures')
+    require(science_readable(test), 'L1 inspects and replays only predesignated fixtures')
     return load_manifest(directory, test)[0]
 
 
@@ -1112,14 +1126,14 @@ def main():
         result = (inspect_batch if args.command == 'inspect' else reference_replay)(args.batch_dir)
     elif args.command == 'verify-batch':
         test = is_fixture(local_path(args.certificate).parent)
-        require(test or phase_is(status_text(), 'RUN1'), 'L1 verifies only predesignated fixtures')
+        require(science_readable(test), 'L1 verifies only predesignated fixtures')
         cert = verify_batch(args.certificate, test)
         result = dict(status='NONSCIENTIFIC_FIXTURE' if test else 'conditional_complete', digest=cert['digest'],
                       batch_start=cert['batch_start'], batch_end=cert['batch_end'])
     else:
         dirs = list(local_path(args.dir).glob('*/certificate.json'))
         test = bool(dirs) and all((p.parent/'acceptance.json').exists() for p in dirs)
-        require(test or phase_is(status_text(), 'RUN1'), 'L1 ledger accepts only fixtures')
+        require(science_readable(test), 'L1 ledger accepts only fixtures')
         result = ledger(args.dir, test)
     print(json.dumps(result, sort_keys=True))
 

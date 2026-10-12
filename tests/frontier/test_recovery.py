@@ -429,6 +429,19 @@ class CrossVersionTests(StoreCase):
                     store.read_slot(1)
                 self.assert_refused_unchanged(directory, store)
 
+    def test_oversized_slot_is_damaged_and_padding_to_the_exact_limit_is_a_contradiction(self):
+        record = driver.canonical(self.records[4][4])
+        directory, store = self.clone(4)
+        (directory / "ckpt.1.json").write_bytes(record + b" " * (driver.MAX_RECORD + 1 - len(record)))
+        self.assertIs(driver.DAMAGED, store.read_slot(1))
+        self.assertEqual((self.records[4][3], True), (store.recover()[0], bool(store.recover()[1])))
+        # At exactly the limit the padded bytes still parse and the digest still verifies,
+        # so this is a self-hashed record stored non-canonically, not a torn one.
+        (directory / "ckpt.1.json").write_bytes(record + b" " * (driver.MAX_RECORD - len(record)))
+        with self.assertRaisesRegex(driver.Refusal, "not stored canonically"):
+            store.read_slot(1)
+        self.assert_refused_unchanged(directory, store)
+
     def test_version_2_objects_that_cannot_be_self_hashed_are_only_damaged(self):
         record = self.records[4][4]
         unsigned = {key: value for key, value in record.items() if key != "digest"}

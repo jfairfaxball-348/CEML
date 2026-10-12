@@ -262,11 +262,17 @@ class LauncherStaticTests(unittest.TestCase):
                           "Invoke-RestMethod", "Remove-Item", "-PolicyStore GPO"):
             self.assertNotIn(forbidden.lower(), self.text.lower())
         self.assertEqual(2, self.text.count("New-NetFirewallRule -PolicyStore PersistentStore -Name $ruleNames["))
-        # Exactly two removals, each fed only by a list filtered to this run's two rule names.
+        # Exactly four removals: by this run's exact rule names, or fed by a list filtered to them.
         removals = re.findall(r"[^\n]*Remove-NetFirewallRule[^\n]*", self.text)
-        self.assertEqual(["    if (`$found.Count -gt 0) { `$found | Remove-NetFirewallRule -ErrorAction Stop }",
-                          "        if ($present.Count -gt 0) { $present | Remove-NetFirewallRule -ErrorAction Stop }"],
-                         removals)
+        self.assertEqual(
+            ["    foreach (`$name in `$names) { try { Remove-NetFirewallRule -PolicyStore PersistentStore "
+             "-Name `$name -ErrorAction Stop } catch { } }",
+             "    if (`$found.Count -gt 0) { `$found | Remove-NetFirewallRule -ErrorAction Stop }",
+             "        try { Remove-NetFirewallRule -PolicyStore PersistentStore -Name $name -ErrorAction Stop } catch { }",
+             "        if ($present.Count -gt 0) { $present | Remove-NetFirewallRule -ErrorAction Stop }"],
+            removals)
+        self.assertIn("    foreach ($name in $ruleNames) {\n"
+                      "        try { Remove-NetFirewallRule -PolicyStore PersistentStore -Name $name", self.text)
         self.assertIn("`$found = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop | "
                       "Where-Object { `$names -contains `$_.Name })", self.text)
         self.assertIn("$present = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop |\n"
@@ -299,6 +305,19 @@ class LauncherStaticTests(unittest.TestCase):
         self.assertIn("-RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Hours 12)",
                       self.text)
         self.assertIn("(New-ScheduledTaskTrigger -AtStartup)", self.text)
+        # Confirmation-review finding: the enumerations cleanup relies on are proven in the
+        # prerequisites, which Preflight and every isolation check run before and during blocking,
+        # and removal by exact name does not wait for an enumeration to succeed.
+        prerequisites = self.text[self.text.index("function Assert-FirewallPrerequisites {"):
+                                  self.text.index("Assert-FirewallPrerequisites\nif ($Mode -eq 'Preflight')")]
+        for query in ("$null = @(Get-NetFirewallRule -PolicyStore PersistentStore -ErrorAction Stop)",
+                      "$null = @(Get-NetFirewallRule -PolicyStore ActiveStore -ErrorAction Stop)",
+                      "$null = @(Get-ScheduledTask -ErrorAction Stop)"):
+            self.assertIn(query, prerequisites)
+        self.assertLess(tail.index("try { Remove-NetFirewallRule -PolicyStore PersistentStore -Name $name"),
+                        tail.index("$present = @(Get-NetFirewallRule"))
+        self.assertLess(self.text.index("Block rules from an earlier run are still present"),
+                        self.text.index("$runLock = [IO.File]::Open("))
         self.assertIn("-ArgumentList @('/PID', [string]$child.Id, '/T', '/F')", tail)
         self.assertIn("$passed = ($checksPassed -and $isolated -and $restored -and $watchdogRemoved -and $reconnected)",
                       self.text)

@@ -1,6 +1,8 @@
 # Start the next 100000 integers with one command
 
-Pilot 3 has committed and passed certificate verification, full reference replay and chain audit. The next interval is `[2392518188130438758000,2392518188130438858000)`: exactly 100000 additional integers. This run has not been started by the agent.
+**Completed by the owner on 2026-10-12.** The command below successfully added the specified 100000 integers. The saved ten-batch chain, final certificate and reference replay passed read-only confirmation; see [RUN1 progress](RUN1_PROGRESS.md) for the current endpoint and digest. The original command's default pilot-3 anchor is now stale and deliberately refuses a repeat. This page retains the executed instruction as history; it does not authorise another run.
+
+At preparation, pilot 3 had committed and passed certificate verification, full reference replay and chain audit. The selected interval was `[2392518188130438758000,2392518188130438858000)`: exactly 100000 additional integers. The owner subsequently started and completed this run; the agent did not execute it.
 
 Open PowerShell and paste this one command. The absolute script path works from any current directory, with the accepted Python 3.12.10 available as `python`:
 

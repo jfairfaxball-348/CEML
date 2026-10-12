@@ -1,4 +1,5 @@
 # Local-only CEML state
+.codex-remote-attachments/
 local/*
 !local/README.md
 local_reports/*

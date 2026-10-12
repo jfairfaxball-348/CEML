@@ -1,22 +1,23 @@
 {
   "schema_version": 1,
   "state": "running",
-  "updated_at": "2026-10-12T18:58:45Z",
+  "updated_at": "2026-10-12T18:59:49Z",
   "message": "Local observations; checkpoints are provisional. Verified tally changes only after separate publication.",
-  "current_batch": {
-    "number": 107,
-    "start": "2392518188130440231600",
-    "end": "2392518188130440246000",
-    "width": 14400,
-    "processed": 14400,
-    "started_at": "2026-10-12T18:57:49Z"
-  },
+  "current_batch": null,
   "session": {
     "requested": 2000000,
     "completed": 288000,
     "started_at": "2026-10-12T17:50:18.0285850Z"
   },
   "recent_batches": [
+    {
+      "number": 107,
+      "start": "2392518188130440231600",
+      "end": "2392518188130440246000",
+      "width": 14400,
+      "status": "committed",
+      "finished_at": "2026-10-12T18:59:10Z"
+    },
     {
       "number": 106,
       "start": "2392518188130440217200",
@@ -168,14 +169,6 @@
       "width": 14400,
       "status": "committed",
       "finished_at": "2026-10-12T17:53:52Z"
-    },
-    {
-      "number": 87,
-      "start": "2392518188130439951600",
-      "end": "2392518188130439958000",
-      "width": 6400,
-      "status": "committed",
-      "finished_at": "2026-10-12T13:19:16Z"
     }
   ]
 }

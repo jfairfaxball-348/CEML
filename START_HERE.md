@@ -1,5 +1,7 @@
 # CEML — Start Here (post-P0)
 
+**Current PowerShell procedure:** `python C:\CEML\tools\operator\run_frontier.py X`. Change only the final number X. The command discovers and verifies the current committed endpoint and checks the next X integers, with the existing accepted chain assumption. The owner removed the separate-device backup requirement. See [current command](docs/RUN1_ONE_COMMAND.md); this procedure-edit request executes no batch.
+
 **Latest RUN1 handoff (2026-10-12):** the three pilots (144, 1440, 14400 integers) and the owner's subsequent 100000-integer continuation committed and passed verification, replay and chain audit. The finite conditional chain now covers 115984 integers in 10 batches on the accepted author-reported operational base. See [RUN1 progress](docs/RUN1_PROGRESS.md). The owner ran the [single CLI command](docs/RUN1_ONE_COMMAND.md) successfully; its original default pilot-3 anchor is now stale, and no additional run is authorised by this record. The later owner exception recorded in `AGENTS.md` supersedes the pilot owner-only wording below solely for those completed pilots.
 
 CEML's active purpose is **gap-free exhaustive Collatz frontier verification**, not the former isolated extreme-magnitude random ladder. The previous programme is preserved at [the 2026-10-11 entry commit](https://github.com/jfairfaxball-348/CEML/tree/63fc41610603782eefc709139e6dcbdcca97b78f).

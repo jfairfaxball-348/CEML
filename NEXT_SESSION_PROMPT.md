@@ -1,6 +1,10 @@
-# RUN1 is a separate, owner-authorised stage — this prompt does not authorise it
+# RUN1 is authorised on the operational base — assist the owner, never run it for them
 
-Work in `C:\CEML`. L1 is recorded as PASS, agent-assessed and accepted by the owner on 2026-10-12, in `PROGRAM_STATUS.md` and `docs/L1_V2_ACCEPTANCE.md`. RUN1, the first offline scientific pilot, is **not authorised**. Invoking this prompt authorises nothing. It tells a session what RUN1 needs and what the session may and may not do.
+**Later owner exception, 2026-10-12:** `AGENTS.md` and `docs/RUN1_PROGRESS.md` record the owner's explicit agent-execution request for pilot 1, and the next 1440/following 14400 pilot sequence. This overrides the owner-only wording below solely for those pilots and overrides the usual width schedule solely for their requested widths. The later 100000-integer continuation is launched by the owner. Preserve the accepted build and every batch record; verify each pilot before extension. The owner's supplied operational acknowledgement remains the accepted assumption for this chain. No general agent execution authority follows.
+
+**Current handoff:** all three pilots are committed and verified; latest digest `ab213f7ba9016bc54afe67873747e605dd88813480a695e8fb54b9b0821f46e6`, exclusive end `2392518188130438758000`. The next 100000 integers are prepared for owner launch with `docs/RUN1_ONE_COMMAND.md`, and have not run. Use the published progress record as the external anchor; inspect any changes before proposing continuation. The separate-device backup is still outstanding. Do not execute the live continuation for the owner.
+
+Work in `C:\CEML`. L1 is PASS, agent-assessed and owner-accepted on 2026-10-12. On the same day the owner authorised RUN1 on the operational base; `PROGRAM_STATUS.md` records the instruction, the base and what it means. This prompt adds no authority. Every batch still needs the owner's own authority record and acknowledgement, and the owner runs every batch command.
 
 Read `PROGRAM_STATUS.md`, `AGENTS.md`, `START_HERE.md`, `docs/L1_V2_ACCEPTANCE.md`, `docs/FRONTIER_PROTOCOL_V2.md` and `docs/RUN1_OPERATOR_RUNBOOK.md` before anything else. Current status controls every older phase string.
 
@@ -12,16 +16,16 @@ Read `PROGRAM_STATUS.md`, `AGENTS.md`, `START_HERE.md`, `docs/L1_V2_ACCEPTANCE.m
 
 ## What only the owner can do
 
-- Give a fresh, explicit instruction to start RUN1, naming the base kind (`published` or `operational`).
+- Decide whether to continue, pause or stop RUN1, and whether ever to start a separate chain on the other base. The current authorisation covers the operational base only.
 - Type the acknowledgement string of runbook section 4.2. No agent and no tool fills it in.
 - Decide the run identifier, the authority identifier and where backups and the external digest record are kept.
 
-Until the owner has given the RUN1 instruction in the current conversation, do nothing beyond reading and the read-only preflight. Do not prepare a status transition "in advance".
+In every session, start with reading and the read-only preflight, and ask the owner where the chain stands before anything else. Compare it with the owner's external record (runbook section 8).
 
-## What a session may do once the owner has instructed RUN1
+## What a session may do during RUN1
 
-- Make the status transition of runbook section 4.3 as a reviewed commit that quotes the owner's instruction, changing only the two status lines and the supporting text. Run the complete L1 suites one last time before that commit; they are L1-phase checks and are expected to refuse afterwards.
-- Follow `docs/RUN1_OPERATOR_RUNBOOK.md` exactly, one batch at a time, starting with the 144-start pilot at the chosen base, with the maximum finite budgets. Verify, replay and audit each batch (section 7) and have the owner update the external record (section 8) before the next.
+- Keep the status documents truthful. The status transition was made on 2026-10-12. Record a batch in `PROGRAM_STATUS.md` only after the owner has run runbook section 7 on it and shown the output.
+- Give the owner the exact next commands from `docs/RUN1_OPERATOR_RUNBOOK.md`, one batch at a time, with the maximum finite budgets, and read back what each prints. Explain every refusal from runbook section 10 before suggesting anything.
 - Report every result with the claim template of runbook section 13. A batch is a finite conditional result. It is never a proof, a reproduction of the base, or a world-first.
 
 ## What a session must never do

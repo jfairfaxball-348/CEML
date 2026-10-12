@@ -1,8 +1,10 @@
 # RUN1 operator runbook — CEML-FRONTIER-2
 
-**Prepared package. RUN1 is NOT authorised.** Nothing in this runbook has been executed on a frontier integer. Every scientific command in sections 6 to 10 refuses until the owner separately authorises RUN1 as described in section 4. The session preflight of section 5 works in any phase, and the read-only commands of section 7 also work on the engineering fixtures. The agent that prepared this package acknowledged nothing and authorised nothing on the owner's behalf.
+**Later owner-directed execution and width exception — 2026-10-12:** the owner explicitly requested agent execution of pilot 1 and then the next 1440/following 14400 pilot sequence. All three committed and passed section 7; see `RUN1_PROGRESS.md`. That instruction supersedes the owner-only and gradual-width wording below solely for those pilots. The owner requested a single CLI command for the later 100000 integers; `RUN1_ONE_COMMAND.md` and `tools/operator/run_frontier.py` implement that aggregate invocation with seven sequential batches, full checks between them, the owner's explicit acknowledgement argument, and no change to the frozen verifier or hard limits. The 100000-integer continuation is started by the owner, and is not yet run. During that invocation the verified latest digest is kept in memory; the owner retains the final external record and separate-device backup. The remainder is the original manual procedure and remains applicable to its checks, refusal diagnostics and claim tiers.
 
-Use this runbook only if `PROGRAM_STATUS.md` records L1 PASS and the owner has accepted that record. If it says L1 OPEN, or the owner has not accepted it, stop here.
+**RUN1 was authorised by the owner on 2026-10-12 on the operational base**; `PROGRAM_STATUS.md` records the instruction. This runbook is the procedure. The owner runs every command in sections 6 to 10 and types every acknowledgement. The agent that prepared this package acknowledged nothing and ran no batch. Every scientific command still refuses unless the status lines of section 4.3 are present and the batch has its own authority record. The session preflight of section 5 works in any phase, and the read-only commands of section 7 also work on the engineering fixtures.
+
+Use this runbook only while `PROGRAM_STATUS.md` records RUN1 as authorised by the owner. If it does not, stop here.
 
 All commands are PowerShell, run from the repository root, with Python 3.12.10 as `python`. Runtime needs no network and uses none.
 
@@ -249,7 +251,7 @@ Resume recovers the newest authenticated checkpoint generation, re-scans its pre
 | Message contains | Meaning | Action |
 |---|---|---|
 | `RUN1 not owner-authorised` | the phase is not RUN1, or scientific execution is not `AUTHORISED` | owner decision; do nothing else |
-| `missing/duplicate authoritative status field` | one of the two status lines of 4.3 is absent or appears more than once | the status file is malformed; the owner corrects it |
+| `missing/duplicate authoritative status field` | one of the two status lines of 4.3 is absent or appears more than once, or `PROGRAM_STATUS.md` has Windows (CRLF) line endings, which the driver's parser refuses | the status file is malformed; restore it from Git (`.gitattributes` keeps it LF) or have the owner correct it |
 | `L1 inspects and replays only predesignated fixtures`, `L1 verifies only predesignated fixtures`, `L1 ledger accepts only fixtures` | a read-only command was used on a scientific directory outside RUN1 status | owner decision; do nothing else |
 | `selected external B mismatch`, `snapshot identity mismatch`, `snapshot provenance does not match` | the manifest or the stored snapshot is not the pinned one | regenerate the manifest with `prepare-manifest`; never edit one by hand |
 | `RUN1 authority evidence shape`, `does not cover this batch`, `fresh RUN1 owner authority missing` | authority record absent, altered, or for another interval | re-run `prepare-authority` for this exact batch |

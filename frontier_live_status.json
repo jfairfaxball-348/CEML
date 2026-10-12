@@ -1,9 +1,16 @@
 {
   "schema_version": 1,
   "state": "running",
-  "updated_at": "2026-10-12T19:00:53Z",
+  "updated_at": "2026-10-12T19:01:58Z",
   "message": "Local observations; checkpoints are provisional. Verified tally changes only after separate publication.",
-  "current_batch": null,
+  "current_batch": {
+    "number": 108,
+    "start": "2392518188130440246000",
+    "end": "2392518188130440260400",
+    "width": 14400,
+    "processed": 0,
+    "started_at": "2026-10-12T19:01:39Z"
+  },
   "session": {
     "requested": 2000000,
     "completed": 288000,

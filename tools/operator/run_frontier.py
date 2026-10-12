@@ -8,10 +8,12 @@ import argparse
 from contextlib import contextmanager
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,6 +30,7 @@ GENESIS = 'a416bf0f89ebdb16911baf830b6c375d280829bd58587dd7787e36f5d3c53caf'
 PILOT3 = 'ab213f7ba9016bc54afe67873747e605dd88813480a695e8fb54b9b0821f46e6'
 ACK = SNAPSHOT + ':operational:' + BASE
 ACCEPTED_SOURCE = 'e74efd95c813e38f24aeff8f155825f87d3881a9'
+TIP = Path('local/frontier/operator_tip.json')
 
 
 class StopRun(Exception):
@@ -59,9 +62,10 @@ def driver(*arguments, status):
 
 
 def batch_plan(start, count, existing, width):
-    require(1 <= count <= 100000, 'Count must be from 1 to 100000')
+    require(count >= 1, 'Count must be positive')
     require(1 <= width <= 14400, 'Batch width must be from 1 to 14400')
     require(1 <= existing <= 256, 'Invalid existing batch count')
+    require(count <= (256 - existing) * width, 'Requested continuation exceeds the 256-batch limit')
     batches = []
     remaining = count
     while remaining:
@@ -74,10 +78,58 @@ def batch_plan(start, count, existing, width):
     return batches
 
 
+def published_anchor():
+    """Read data fields from the locally frozen, tracked aggregate record; never a URL."""
+    text = (ROOT / 'docs/RUN1_PROGRESS.md').read_text(encoding='utf-8')
+    patterns = {
+        'batches': r'^Batches: ([1-9][0-9]*)\b',
+        'end': r'^Verified conditional on that assumption: every integer in \[[0-9]+,([1-9][0-9]*)\) converges$',
+        'latest_certificate_digest': r'^Latest certificate digest: ([0-9a-f]{64})$',
+        'genesis_digest': r'^Genesis digest: ([0-9a-f]{64})$',
+    }
+    anchor = {}
+    for key, pattern in patterns.items():
+        values = re.findall(pattern, text, re.MULTILINE)
+        require(len(values) == 1, 'Published continuation anchor missing or ambiguous')
+        anchor[key] = values[0]
+    return anchor
+
+
+def check_anchor(anchor, ledger):
+    require(isinstance(anchor, dict) and set(anchor) == {'batches', 'end', 'latest_certificate_digest', 'genesis_digest'}
+            and all(isinstance(v, str) for v in anchor.values()), 'Continuation anchor shape mismatch')
+    require(re.fullmatch('[1-9][0-9]{0,2}', anchor['batches']) is not None and
+            re.fullmatch('[1-9][0-9]{0,8191}', anchor['end']) is not None and
+            re.fullmatch('[0-9a-f]{64}', anchor['latest_certificate_digest']) is not None,
+            'Continuation anchor encoding mismatch')
+    number = int(anchor['batches'])
+    require(1 <= number <= int(ledger['batches']) <= 256 and
+            int(anchor['end']) <= int(ledger['end']) and anchor['genesis_digest'] == GENESIS,
+            'Chain rolled back or differs from retained continuation anchor')
+    result = driver('verify-batch', '--certificate', CHAIN / f'batch-{number:04d}' / 'certificate.json',
+                    status='conditional_complete')
+    require(result.get('digest') == anchor['latest_certificate_digest'] and
+            result.get('batch_end') == anchor['end'], 'Retained continuation anchor differs from chain')
+
+
+def remember_tip(ledger):
+    """Atomic local receipt outside batch directories; mathematical authority stays in certificates."""
+    value = {key: ledger[key] for key in ('batches', 'end', 'latest_certificate_digest', 'genesis_digest')}
+    destination = ROOT / TIP
+    payload = json.dumps(value, sort_keys=True, separators=(',', ':')).encode('ascii')
+    with tempfile.NamedTemporaryFile(dir=destination.parent, prefix='operator-tip-', suffix='.tmp',
+                                     delete=False) as handle:
+        temporary = handle.name
+        handle.write(payload)
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(temporary, destination)
+
+
 def preflight(args):
     require(sys.version_info[:3] == (3, 12, 10), 'Use the accepted Python 3.12.10')
-    require(args.acknowledge == ACK, 'Acknowledgement differs from the accepted operational base')
-    require(re.fullmatch('[0-9a-f]{64}', args.expected_latest) is not None,
+    require(args.acknowledge in (None, ACK), 'Acknowledgement differs from the accepted operational base')
+    require(args.expected_latest is None or re.fullmatch('[0-9a-f]{64}', args.expected_latest) is not None,
             'Expected certificate must be a lowercase 64-hex digest')
     status = subprocess.run(['git', 'status', '--porcelain=v1'], cwd=ROOT,
                             capture_output=True, text=True)
@@ -97,15 +149,23 @@ def preflight(args):
     ledger = driver('ledger', '--dir', CHAIN, status='conditional_chain')
     require(ledger.get('start') == BASE and ledger.get('genesis_digest') == GENESIS,
             'Chain root differs from the published external record')
-    require(ledger.get('latest_certificate_digest') == args.expected_latest,
+    require(args.expected_latest is None or ledger.get('latest_certificate_digest') == args.expected_latest,
             'Chain differs from expected certificate; stop and compare the external record')
+    check_anchor(published_anchor(), ledger)
+    receipt = ROOT / TIP
+    if receipt.exists():
+        require(receipt.stat().st_size <= 131072, 'Local continuation receipt oversized')
+        check_anchor(json.loads(receipt.read_text(encoding='ascii')), ledger)
+    # The audited genesis already contains the owner's accepted acknowledgement.
+    # Continuation reuses it; this does not accept a new base, snapshot or trust tier.
+    args.acknowledge = ACK
     existing = int(ledger['batches'])
     expected_dirs = {f'batch-{i:04d}' for i in range(1, existing + 1)}
     actual_dirs = {p.name for p in (ROOT / CHAIN).iterdir() if p.is_dir()}
     require(actual_dirs == expected_dirs, 'Uncommitted or unexpected batch directory; inspect it first')
     prior = CHAIN / f'batch-{existing:04d}' / 'certificate.json'
     verified = driver('verify-batch', '--certificate', prior, status='conditional_complete')
-    require(verified.get('digest') == args.expected_latest and verified.get('batch_end') == ledger['end'],
+    require(verified.get('digest') == ledger['latest_certificate_digest'] and verified.get('batch_end') == ledger['end'],
             'Latest numbered batch differs from the ledger')
     plan = batch_plan(int(ledger['end']), args.count, existing, args.batch_width)
     for batch in plan:
@@ -143,8 +203,7 @@ def execute(args, ledger, plan):
     previous_digest = ledger['latest_certificate_digest']
     existing = int(ledger['batches'])
     prior = CHAIN / f'batch-{existing:04d}' / 'certificate.json'
-    instruction = (f'Owner CLI invocation: continue {RUN_ID} for {args.count} integers '
-                   f'from {original_start} on the accepted operational base, in sequential verified batches.')
+    instruction = f'check the next {args.count}'
     for batch in plan:
         number = batch['number']
         name = f'batch-{number:04d}'
@@ -191,6 +250,7 @@ def execute(args, ledger, plan):
                 'Inspection found an integrity warning; record it and stop before extension')
         previous_digest = digest
         prior = certificate
+        remember_tip(ledger)
         print(json.dumps(dict(status='VERIFIED_BATCH', **{key: ledger[key] for key in
               ('batches', 'end', 'genesis_digest', 'latest_certificate_digest')}), sort_keys=True), flush=True)
     print(json.dumps(dict(status='CONDITIONAL_RUN_COMPLETE', run_id=RUN_ID,
@@ -198,26 +258,51 @@ def execute(args, ledger, plan):
                          snapshot_digest=SNAPSHOT, native_build_digest=BUILD,
                          **{key: ledger[key] for key in ('batches', 'genesis_digest', 'latest_certificate_digest')}),
                      sort_keys=True), flush=True)
-    print('Save these final digests outside this machine and back up the chain/dependencies to a separate device.')
+    print('Continuation receipt saved. Retain the final digests with the aggregate progress record.')
     print('Conditional on the accepted author-reported base; no independent reproduction or world-frontier claim.')
 
 
-def main():
+def parse_arguments(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--count', type=int, required=True, help='Additional integers, at most 100000')
-    parser.add_argument('--acknowledge', required=True, help='Exact operational acknowledgement typed by the owner')
-    parser.add_argument('--expected-latest', default=PILOT3, help='Externally retained latest digest; defaults to pilot 3')
+    parser.add_argument('operation', nargs='?', help='Quantity, or optional check-next keyword')
+    parser.add_argument('quantity', nargs='?', type=int)
+    parser.add_argument('--count', type=int, help='Additional integers (legacy option)')
+    parser.add_argument('--acknowledge', help='Optional exact acknowledgement; otherwise reuse accepted chain acknowledgement')
+    parser.add_argument('--expected-latest', help='Optional explicit digest pin; otherwise audit and discover the current tip')
     parser.add_argument('--batch-width', type=int, default=14400, help='At most 14400 per batch')
     parser.add_argument('--plan', action='store_true', help='Read-only preflight and plan; execute no batch')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if args.operation == 'check-next':
+        if args.quantity is None or args.count is not None:
+            parser.error('use check-next X with one positive integer quantity')
+        args.count = args.quantity
+    elif args.operation is not None:
+        if re.fullmatch('[0-9]+', args.operation) is None or args.quantity is not None or args.count is not None:
+            parser.error('use one positive integer quantity')
+        try:
+            args.count = int(args.operation)
+        except ValueError:
+            parser.error('quantity is too large')
+    elif args.count is None or args.quantity is not None:
+        parser.error('supply the number of additional integers as the last argument')
+    if args.count < 1:
+        parser.error('X must be positive')
+    return args
+
+
+def main():
+    args = parse_arguments()
     try:
         if args.plan:
             ledger, plan = preflight(args)
             print(json.dumps(dict(status='PLAN_ONLY', run_id=RUN_ID, added_count=str(args.count),
-                                  start=ledger['end'], end=str(plan[-1]['end']), batches=plan), sort_keys=True))
+                                  start=ledger['end'], end=str(plan[-1]['end']),
+                                  batches=[{key: str(value) for key, value in batch.items()} for batch in plan]),
+                             sort_keys=True))
         else:
             with operator_lock():
                 ledger, plan = preflight(args)
+                remember_tip(ledger)
                 execute(args, ledger, plan)
         return 0
     except (StopRun, OSError, ValueError, KeyError) as error:

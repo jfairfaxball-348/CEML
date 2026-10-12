@@ -1,8 +1,10 @@
 # RUN1 operator runbook — CEML-FRONTIER-2
 
-**Later owner-directed execution and width exception — 2026-10-12:** the owner explicitly requested agent execution of pilot 1 and then the next 1440/following 14400 pilot sequence. All three committed and passed section 7; see `RUN1_PROGRESS.md`. That instruction supersedes the owner-only and gradual-width wording below solely for those pilots. The owner requested a single CLI command for the later 100000 integers; `RUN1_ONE_COMMAND.md` and `tools/operator/run_frontier.py` implement that aggregate invocation with seven sequential batches, full checks between them, the owner's explicit acknowledgement argument, and no change to the frozen verifier or hard limits. The 100000-integer continuation is started by the owner, and is not yet run. During that invocation the verified latest digest is kept in memory; the owner retains the final external record and separate-device backup. The remainder is the original manual procedure and remains applicable to its checks, refusal diagnostics and claim tiers.
+**Current quantity-only operator procedure — owner update, 2026-10-12:** use `python C:\CEML\tools\operator\run_frontier.py X`, changing only the final positive quantity X. The launcher verifies and discovers the latest committed end E, then covers exactly `[E,E+X)` in sequential batches within the unchanged 14400/256 limits. It reuses the already accepted acknowledgement only for the same verified chain, checks the tracked published anchor and any local receipt, and writes a receipt after each fully verified batch. An incomplete checkpoint never advances E. No fixed pilot digest or repeated acknowledgement entry is required for this continuation procedure. The owner removed the separate-device backup requirement; it is optional and is not a gate or an outstanding task. See `RUN1_ONE_COMMAND.md`. The owner runs the CLI unless explicitly asking the agent to execute a finite quantity. This operator amendment supersedes incompatible manual-procedure wording below; the frozen verifier contract and all historical records remain unchanged.
 
-**Subsequent completion, same day:** the owner ran that 100000-integer continuation and showed `CONDITIONAL_RUN_COMPLETE`. Read-only confirmation of the saved ten-batch ledger, accepted build, final certificate and reference replay passed. The chain now covers 115984 integers, exclusive end `2392518188130438858000`, latest certificate `5f46665571ef5e85ed629576cd1e7f231ba1c8abe7a7d7975d408d94c14be17a`. The prior "not yet run" wording above is the preparation record. The original launcher command's pilot-3 anchor is now stale; no further continuation is authorised by this completion record. The separate-device backup remains outstanding.
+**Later owner-directed execution and width exception — 2026-10-12:** the owner explicitly requested agent execution of pilot 1 and then the next 1440/following 14400 pilot sequence. All three committed and passed section 7; see `RUN1_PROGRESS.md`. That instruction supersedes the owner-only and gradual-width wording below solely for those pilots. The owner requested a single CLI command for the later 100000 integers; `RUN1_ONE_COMMAND.md` and `tools/operator/run_frontier.py` implement that aggregate invocation with seven sequential batches, full checks between them, the owner's explicit acknowledgement argument, and no change to the frozen verifier or hard limits. The 100000-integer continuation is started by the owner, and is not yet run. During that invocation the verified latest digest is kept in memory; the owner retains the final external aggregate record. The remainder is the original manual procedure and remains applicable to its checks, refusal diagnostics and claim tiers.
+
+**Subsequent completion, same day:** the owner ran that 100000-integer continuation and showed `CONDITIONAL_RUN_COMPLETE`. Read-only confirmation of the saved ten-batch ledger, accepted build, final certificate and reference replay passed. The chain now covers 115984 integers, exclusive end `2392518188130438858000`, latest certificate `5f46665571ef5e85ed629576cd1e7f231ba1c8abe7a7d7975d408d94c14be17a`. The prior "not yet run" wording above is the preparation record. The original launcher command's pilot-3 anchor is now stale; no further continuation is authorised by this completion record. The owner has since removed the separate-device backup requirement.
 
 **RUN1 was authorised by the owner on 2026-10-12 on the operational base**; `PROGRAM_STATUS.md` records the instruction. This runbook is the procedure. The owner runs every command in sections 6 to 10 and types every acknowledgement. The agent that prepared this package acknowledged nothing and ran no batch. Every scientific command still refuses unless the status lines of section 4.3 are present and the batch has its own authority record. The session preflight of section 5 works in any phase, and the read-only commands of section 7 also work on the engineering fixtures.
 
@@ -192,25 +194,13 @@ python tools/frontier/ceml_frontier.py inspect --batch-dir "$chain/batch-0001"
 - `ledger` audits the whole chain once from genesis: no gap, overlap, duplicate or fork. Expect `conditional_chain`, with `start` equal to `B`, and the `genesis_digest`, `latest_certificate_digest`, `batches` and `end` you record in section 8.
 - `inspect` is a read-only diagnosis of one batch directory: slot states, the recoverable generation, warnings and whether a certificate is present.
 
-## 8. External record and backup
+## 8. Continuation receipts and external aggregate record
 
-After every committed batch, write these four `ledger` values somewhere outside this machine (paper is fine): `genesis_digest`, `latest_certificate_digest`, `batches`, `end`. Also record the snapshot digest and build digest once. Before every new batch, run `ledger` and compare. A chain that is shorter than, or different from, your external record has been rolled back or altered: stop. Without this external record the software cannot detect a rollback.
+After every fully verified batch, the quantity-only launcher records `genesis_digest`, `latest_certificate_digest`, `batches` and `end` atomically in `local/frontier/operator_tip.json`, outside the batch directories. It checks that retained receipt and the locally frozen tracked aggregate record against the audited chain before continuation. The current verified end is discovered from `ledger`, not from a partial checkpoint, a receipt alone or a fixed prompt. The owner does not need to paste a changing digest. An explicit `--expected-latest` pin remains available when desired.
 
-Back up after every committed batch, to a different physical device:
+Keep the final printed values with the aggregate progress record; publishing that record provides an external comparison point without adding a network dependency to scientific execution. A local receipt is not independent reproduction, authentication or protection against replacement/rollback of all local files together. If the actual chain is shorter than a retained anchor or contains a different certificate at that anchor, stop. Full replay and chain audit remain required even when every receipt matches.
 
-```powershell
-robocopy "local/frontier/run1" "<backup root>/run1" /E /COPY:DAT /R:1 /W:1 /XF *.tmp
-```
-
-```powershell
-robocopy "local/frontier/build" "<backup root>/build" /E /COPY:DAT /R:1 /W:1
-```
-
-```powershell
-robocopy "local/c1" "<backup root>/c1" /E /COPY:DAT /R:1 /W:1
-```
-
-Rules: never use `/MIR` or `/PURGE`; never restore a backup over a chain that has more batches than the backup; after any restore, run `f1_build.py --verify` and `ledger`, and compare with the external record. A backup is a copy, not an independent reproduction. File flush and atomic rename are used throughout, but they are not a guarantee against sudden power loss; after a power failure, run section 7 on the whole chain before continuing.
+The owner explicitly removed the separate-device backup requirement on 2026-10-12. Backups are optional, and their absence is not an outstanding task or a reason to block continuation. After any restore or power failure, verify the accepted build and audit the whole chain before proceeding; never overwrite a more advanced chain with an older copy. No durability or rollback-detection capability is claimed beyond the retained evidence.
 
 ## 9. Contiguous extension
 

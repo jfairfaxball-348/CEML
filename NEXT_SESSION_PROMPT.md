@@ -1,46 +1,11 @@
-# RUN1 is authorised on the operational base — assist the owner, never run it for them
+# RUN1 handoff
 
-**Later owner exception, 2026-10-12:** `AGENTS.md` and `docs/RUN1_PROGRESS.md` record the owner's explicit agent-execution request for pilot 1, and the next 1440/following 14400 pilot sequence. This overrides the owner-only wording below solely for those pilots and overrides the usual width schedule solely for their requested widths. The later 100000-integer continuation is launched by the owner. Preserve the accepted build and every batch record; verify each pilot before extension. The owner's supplied operational acknowledgement remains the accepted assumption for this chain. No general agent execution authority follows.
+For owner-run continuation, provide this reusable PowerShell command and change only the final positive quantity:
 
-**Current handoff:** the three pilots and the owner's additional 100000 integers are committed and verified: 10 batches, 115984 integers total. Latest digest `5f46665571ef5e85ed629576cd1e7f231ba1c8abe7a7d7975d408d94c14be17a`, exclusive end `2392518188130438858000`. The owner executed the command in `docs/RUN1_ONE_COMMAND.md` and showed completion; read-only confirmation passed. Its original default pilot-3 anchor is now stale and deliberately refuses a repeat. Use the updated published progress record as the external anchor; inspect any changes before proposing continuation. The separate-device backup is still outstanding. No further batch is authorised by this record. Do not execute another live continuation for the owner.
+```powershell
+python C:\CEML\tools\operator\run_frontier.py X
+```
 
-Work in `C:\CEML`. L1 is PASS, agent-assessed and owner-accepted on 2026-10-12. On the same day the owner authorised RUN1 on the operational base; `PROGRAM_STATUS.md` records the instruction, the base and what it means. This prompt adds no authority. Every batch still needs the owner's own authority record and acknowledgement, and the owner runs every batch command.
+Use the current PROGRAM_STATUS.md, AGENTS.md and docs/RUN1_OPERATOR_RUNBOOK.md. The launcher audits the existing chain, verifies retained anchors and discovers the latest committed exclusive endpoint; no fixed end or digest belongs in this handoff. A partial checkpoint never authorises skipping an unresolved start. The existing accepted operational assumption is reused only for the same verified chain and software identity. Preserve all frozen contracts and batch records.
 
-Read `PROGRAM_STATUS.md`, `AGENTS.md`, `START_HERE.md`, `docs/L1_V2_ACCEPTANCE.md`, `docs/FRONTIER_PROTOCOL_V2.md` and `docs/RUN1_OPERATOR_RUNBOOK.md` before anything else. Current status controls every older phase string.
-
-## Before any RUN1 step
-
-1. Pin live `main` and inspect local status, the PR that carries L1, its head, mergeability, actual checks and Actions. Verify CI rather than invent it. A merge proves no acceptance obligation.
-2. Confirm the tree is clean and at, or a descendant of, the source commit named in `docs/L1_V2_ACCEPTANCE.md` section 7 with no identity-bound file changed. Run the runbook's session preflight (section 5) and require the pinned build digest, worker hash, table digest and snapshot digest. If any differs, stop: the accepted software is not what is in front of you.
-3. Do not edit any identity-bound file. A change to the worker, driver, reference, build tool, frontier tests, schemas, snapshots or protocol documents gives a new build identity. That needs the L1 acceptance evidence again, including a fresh OS-blocked run, before any chain is started.
-
-## What only the owner can do
-
-- Decide whether to continue, pause or stop RUN1, and whether ever to start a separate chain on the other base. The current authorisation covers the operational base only.
-- Type the acknowledgement string of runbook section 4.2. No agent and no tool fills it in.
-- Decide the run identifier, the authority identifier and where backups and the external digest record are kept.
-
-In every session, start with reading and the read-only preflight, and ask the owner where the chain stands before anything else. Compare it with the owner's external record (runbook section 8).
-
-## What a session may do during RUN1
-
-- Keep the status documents truthful. The status transition was made on 2026-10-12. Record a batch in `PROGRAM_STATUS.md` only after the owner has run runbook section 7 on it and shown the output.
-- Give the owner the exact next commands from `docs/RUN1_OPERATOR_RUNBOOK.md`, one batch at a time, with the maximum finite budgets, and read back what each prints. Explain every refusal from runbook section 10 before suggesting anything.
-- Report every result with the claim template of runbook section 13. A batch is a finite conditional result. It is never a proof, a reproduction of the base, or a world-first.
-
-## What a session must never do
-
-- Start, resume or extend any batch without the owner's instruction covering it, or type an acknowledgement or owner instruction on the owner's behalf.
-- Edit, delete, move or copy any record in a batch directory. Quarantine of an uncommitted attempt is the operator's act, described in runbook section 10.
-- Change base inside a chain, reuse a run identifier, run two batches at once, or describe an INCOMPLETE or checkpoint-only batch as verified.
-- Treat a pending start as divergence, or retry, skip or reorder it. Preserve it and report it.
-- Fetch, upload, refresh the snapshot, add a dependency, add an exclusion, use a GPU or parallel workers, or start an optimisation programme.
-- Run the elevated launcher. It is acceptance infrastructure, not part of RUN1.
-
-## Known first-execution risk
-
-L1 was not allowed to run a scientific batch. The first RUN1 pilot is the first end-to-end execution of the authorised path, and the first time the worker's gate accepts a status. If it refuses for a reason the runbook's section 10 does not explain, stop. A refusal promotes nothing. A fix needs review and a new L1 acceptance, which is harmless only while no chain exists.
-
-## Exit discipline
-
-Keep raw logs, run records and per-integer data out of Git. The runner never fetches, uploads, changes source or commits. Finish every session with the exact interval covered, the base and its tier, the chain digests, what was and was not independently reproduced, and any owner action needed.
+The owner runs the command unless explicitly asking the agent to execute a finite quantity. Editing this handoff with no numeric request runs nothing. Report a result only after complete certificate verification, replay and chain audit; keep raw records out of Git. See docs/RUN1_ONE_COMMAND.md for the operator procedure and docs/RUN1_PROGRESS.md for the current aggregate record. The owner removed the separate-device backup requirement; no backup request or outstanding backup task is appropriate.

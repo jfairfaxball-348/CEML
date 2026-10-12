@@ -81,7 +81,7 @@ class OperatorTests(unittest.TestCase):
         self.assertTrue(all(a['end'] == b['start'] for a, b in zip(plan, plan[1:])))
 
     def test_resource_bounds_refuse(self):
-        for count, existing, width in [(0, 3, 14400), (100001, 3, 14400), (100000, 250, 14400),
+        for count, existing, width in [(0, 3, 14400), (3643201, 3, 14400), (100000, 250, 14400),
                                        (1, 256, 1), (1, 3, 14401), (1, 3, 0)]:
             with self.subTest(count=count, existing=existing, width=width):
                 with self.assertRaises(operator.StopRun):
@@ -93,6 +93,7 @@ class OperatorTests(unittest.TestCase):
         plan = operator.batch_plan(int(simulation.end), count, 3, 14400)
         output = io.StringIO()
         with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / 'local/frontier').mkdir(parents=True)
             with patch.object(operator, 'ROOT', Path(directory)), \
                  patch.object(operator.subprocess, 'run', side_effect=simulation.run), redirect_stdout(output):
                 operator.execute(args, ledger, plan)
@@ -129,6 +130,10 @@ class OperatorTests(unittest.TestCase):
             (chain / f'batch-{i:04d}').mkdir(parents=True)
         ledger = dict(start=operator.BASE, end='2392518188130438758000', batches='3',
                       genesis_digest=operator.GENESIS, latest_certificate_digest=latest)
+        (root / 'docs').mkdir()
+        (root / 'docs/RUN1_PROGRESS.md').write_text(
+            f"Batches: 3\nVerified conditional on that assumption: every integer in [{operator.BASE},{ledger['end']}) converges\n"
+            f"Latest certificate digest: {latest}\nGenesis digest: {operator.GENESIS}\n", encoding='utf-8')
 
         def driver(name, *arguments, status):
             if name == 'rules':
@@ -187,6 +192,107 @@ class OperatorTests(unittest.TestCase):
             with self.assertRaisesRegex(operator.StopRun, 'Acknowledgement'):
                 operator.preflight(args)
             run.assert_not_called()
+
+    def test_quantity_only_command_and_legacy_options(self):
+        args = operator.parse_arguments(['1440'])
+        self.assertEqual(args.count, 1440)
+        self.assertIsNone(args.acknowledge)
+        self.assertIsNone(args.expected_latest)
+        self.assertEqual(operator.parse_arguments(['check-next', '1440']).count, 1440)
+        legacy = operator.parse_arguments(['--count', '1440', '--acknowledge', operator.ACK])
+        self.assertEqual(legacy.count, 1440)
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(operator.batch_plan(100, 100001, 3, 14400)[-1]['end'], 100101)
+
+    def test_dynamic_tip_continues_above_current_committed_end(self):
+        args = operator.parse_arguments(['check-next', '1440'])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            driver = self.preflight_fixture(root, args, latest='a' * 64)
+            ledger, plan = self.check_preflight(root, args, driver)
+            self.assertEqual(plan[0]['start'], int(ledger['end']))
+            self.assertEqual(plan[-1]['end'] - plan[0]['start'], 1440)
+            self.assertEqual(args.acknowledge, operator.ACK)
+            self.assertFalse((root / operator.TIP).exists())
+
+    def test_retained_tip_detects_shortened_chain(self):
+        args = operator.parse_arguments(['check-next', '1440'])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            driver = self.preflight_fixture(root, args)
+            receipt = dict(batches='4', end='2392518188130438772400',
+                           latest_certificate_digest='b' * 64, genesis_digest=operator.GENESIS)
+            (root / operator.TIP).write_text(json.dumps(receipt), encoding='ascii')
+            with self.assertRaisesRegex(operator.StopRun, 'rolled back'):
+                self.check_preflight(root, args, driver)
+
+    def test_advanced_chain_accepts_older_published_and_local_anchors(self):
+        args = operator.parse_arguments(['1000'])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = self.preflight_fixture(root, args)
+            for number in (4, 5):
+                (root / operator.CHAIN / f'batch-{number:04d}').mkdir()
+            tip = dict(batches='4', end='2392518188130438772400',
+                       latest_certificate_digest='4' * 64, genesis_digest=operator.GENESIS)
+            (root / operator.TIP).write_text(json.dumps(tip), encoding='ascii')
+            ledger = dict(batches='5', end='2392518188130438786800', start=operator.BASE,
+                          latest_certificate_digest='5' * 64, genesis_digest=operator.GENESIS)
+
+            def driver(name, *arguments, status):
+                if name == 'ledger':
+                    return ledger
+                if name == 'verify-batch' and 'batch-0004' in str(arguments[-1]):
+                    return dict(digest=tip['latest_certificate_digest'], batch_end=tip['end'])
+                if name == 'verify-batch' and 'batch-0005' in str(arguments[-1]):
+                    return dict(digest=ledger['latest_certificate_digest'], batch_end=ledger['end'])
+                return original(name, *arguments, status=status)
+
+            actual, plan = self.check_preflight(root, args, driver)
+            self.assertEqual(actual['batches'], '5')
+            self.assertEqual(plan[0]['number'], 6)
+            self.assertEqual(plan[0]['start'], int(ledger['end']))
+
+    def test_atomic_receipt_matches_verified_ledger(self):
+        simulation = SimulatedCLI()
+        ledger = dict(batches='10', end=simulation.end,
+                      latest_certificate_digest=simulation.digest, genesis_digest=operator.GENESIS)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'local/frontier').mkdir(parents=True)
+            with patch.object(operator, 'ROOT', root):
+                operator.remember_tip(ledger)
+            self.assertEqual(json.loads((root / operator.TIP).read_text()), ledger)
+            self.assertEqual(list((root / 'local/frontier').glob('operator-tip-*.tmp')), [])
+
+    def test_receipt_replace_failure_preserves_previous_anchor(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'local/frontier').mkdir(parents=True)
+            old = dict(batches='3', end='2392518188130438758000',
+                       latest_certificate_digest=operator.PILOT3, genesis_digest=operator.GENESIS)
+            (root / operator.TIP).write_text(json.dumps(old), encoding='ascii')
+            new = dict(old, batches='4', end='2392518188130438772400', latest_certificate_digest='4' * 64)
+            with patch.object(operator, 'ROOT', root), patch.object(operator.os, 'replace', side_effect=OSError('locked')):
+                with self.assertRaises(OSError):
+                    operator.remember_tip(new)
+            self.assertEqual(json.loads((root / operator.TIP).read_text()), old)
+
+    def test_ambiguous_published_anchor_refuses(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.preflight_fixture(root, self.args())
+            path = root / 'docs/RUN1_PROGRESS.md'
+            path.write_text(path.read_text() + '\nBatches: 4\n')
+            with patch.object(operator, 'ROOT', root):
+                with self.assertRaisesRegex(operator.StopRun, 'ambiguous'):
+                    operator.published_anchor()
+
+    def test_malformed_local_receipt_refuses_clearly(self):
+        for value in (None, [], 12, 'not a receipt', {'batches': 3}):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(operator.StopRun, 'shape mismatch'):
+                    operator.check_anchor(value, {'batches': '10'})
 
     def test_concurrent_operator_invocation_refuses(self):
         with tempfile.TemporaryDirectory() as directory:

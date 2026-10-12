@@ -7,7 +7,7 @@ No transition is automatic; status must match actual evidence. P0–P2 are CLOUD
 | **P0** — pivot, published/live frontier, candidate reductions, architecture and history | **PASS (this committed P0 decision)** | Verified baseline reconciliation, accurately qualified primary sources, coherent additive governance and a concrete P1 prompt |
 | **P1** — exclusion mathematics and acceptance-ready proofs | **PASS — 2026-10-11** | Theorems, domains, precedence, proofs, code predicates and independent test oracle plan for the minimal sieve; explicit open claims for deferred optimisations |
 | **P2** — exact offline coverage protocol + single local handoff | **PASS — cloud spec only, 2026-10-11** | Frozen new protocol/versioned snapshot and claims, atomic ledger and crash invariants, CLI contract, build validation and narrow unambiguous L1 implementation instructions |
-| **L1** — one local Codex implementation and acceptance | **OPEN — owner-invoked attempt executed 2026-10-11** | Separate pinned candidate compiled/tested; resolve recovery contract and observe OS-level network-isolated acceptance; see docs/L1_ACCEPTANCE.md |
+| **L1** — one local Codex implementation and acceptance | **OPEN — version-2 engineering complete 2026-10-12; one gate left** | CEML-FRONTIER-2 frozen, implemented, tested and independently reviewed; operator package prepared; the OS-enforced network-blocked acceptance run awaits the owner's administrator command; see docs/L1_V2_ACCEPTANCE.md |
 | **RUN1** — independent local offline pilot and batches | **NOT AUTHORISED** | Separate owner instruction, validated exact offline verifier, explicit starting snapshot; no automatic Git pushes |
 
 ## Historical milestones retained, not reopened or transferable
@@ -18,6 +18,12 @@ Do not launch L1 prematurely. Frontiers may move during research; P2 must define
 ## P1 PASS evidence (2026-10-11)
 
 [docs/P1_EXCLUSION_PROOFS.md](docs/P1_EXCLUSION_PROOFS.md): conditional prefix induction, E2/Q4/P3/M9 proofs, minimum nonredundant forward descent sieve k=4 residue 3, exact 144-class counts, bounded mathematical oracle fixture checks, source-timestamp audit and Tao's non-exclusion. This is a cloud mathematics result only; **CEML-FRONTIER-1, the production verifier, offline batch protocol, acceptance suite and one Codex handoff remain unimplemented/unfrozen**. P2 requires separate explicit invocation.
+
+## L1 version-2 continuation (2026-10-11 to 2026-10-12)
+
+The owner invoked the focused continuation. It froze [CEML-FRONTIER-2](docs/FRONTIER_PROTOCOL_V2.md) with four new schemas and a carried-forward snapshot, implemented three-slot recovery with an empty-prefix root generation, added the recovery, gate and operator tests, had the result reviewed by an independent sub-agent and resolved its findings, and prepared the [RUN1 operator runbook](docs/RUN1_OPERATOR_RUNBOOK.md). Evidence, identities, review provenance and limits are in the [version-2 acceptance record](docs/L1_V2_ACCEPTANCE.md). The native worker and every frozen version-1 file are unchanged.
+
+**One gate is left:** the OS-enforced network-blocked acceptance run, started by the owner from an administrator terminal. Its sole successor is the [fresh-session prompt](NEXT_SESSION_PROMPT.md), which records that evidence and the verdict. L1 stays OPEN until then. RUN1 remains denied and is never started by an agent. The two sections below are retained history.
 
 ## L1 measured exit and singular successor
 

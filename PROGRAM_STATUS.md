@@ -1,13 +1,23 @@
 # CEML Programme Status
 
-**Authoritative current phase:** L1 — OPEN; OWNER-INVOKED IMPLEMENTATION/TESTING SESSION EXECUTED
+**Authoritative current phase:** L1 — OPEN; VERSION-2 ENGINEERING COMPLETE AND INDEPENDENTLY REVIEWED; OS-BLOCKED ACCEPTANCE AWAITS ONE OWNER-RUN ADMINISTRATOR COMMAND
 **Scientific execution authorization:** DENIED (including any L1 science pilot; RUN1 remains separately gated)
-**Local Codex / local machine access authorization:** OWNER-AUTHORISED FOCUSED L1 CONTINUATION PREPARED; INVOKE CURRENT NEXT_SESSION_PROMPT
-**New frontier scientific protocol:** CEML-FRONTIER-1 FROZEN; ENGINEERING IMPLEMENTATION EXISTS; ACCEPTANCE OPEN
-**New batch-verifier implementation:** SEPARATE GMP/PYTHON CANDIDATE BUILT AND TESTED; NOT ACCEPTED FOR RUN1
+**Local Codex / local machine access authorization:** OWNER-AUTHORISED FOCUSED L1 CONTINUATION EXECUTED 2026-10-11 TO 2026-10-12; ONE OWNER ACTION OUTSTANDING; THEN INVOKE CURRENT NEXT_SESSION_PROMPT
+**New frontier scientific protocol:** CEML-FRONTIER-2 FROZEN (THREE-SLOT RECOVERY); CEML-FRONTIER-1 FROZEN, UNCHANGED, RETAINED AS HISTORY, NEVER RUNNABLE
+**New batch-verifier implementation:** VERSION-2 GMP/PYTHON CANDIDATE BUILT, TESTED AND INDEPENDENTLY REVIEWED; NOT ACCEPTED FOR RUN1
 **Old ladder status:** SUPERSEDED AS ACTIVE TARGET; HISTORICAL EVIDENCE RETAINED
 **Old scientific master-seed generation:** DENIED
 **Last P0 decision:** 2026-10-11 — owner-directed soft pivot
+
+## L1 version-2 continuation — 2026-10-11 to 2026-10-12
+
+The owner invoked the focused continuation on `codex/l1-offline-frontier` and authorised the three-slot amendment, an independent review sub-agent and temporary elevated network blocking for acceptance. The full record is [docs/L1_V2_ACCEPTANCE.md](docs/L1_V2_ACCEPTANCE.md). Nothing scientific was executed.
+
+**Done and committed.** [CEML-FRONTIER-2](docs/FRONTIER_PROTOCOL_V2.md) is frozen with four new schemas, the `CEML-FRONTIER-2/` digest domain and a carried-forward snapshot that records its provenance from the frozen version-1 snapshot. The driver implements three rotating checkpoint slots with an empty-prefix root generation, strict recovery, cross-version refusal and operator commands. The native worker and every frozen version-1 file are byte-identical to before. The frontier suite has 171 tests and the launcher suite 18, all passing with zero skips; 55 of 56 deliberate defects were detected by the tests and the remaining one is a duplicated check; release and checked workers rebuild from the retained pins and reproduce exactly. An independent review sub-agent reviewed the pinned candidate and reported one blocker, three major and eight minor findings; all were resolved, and its confirmation pass on the fixes found them resolved. That pass raised two further minor findings and five notes, resolved in the final source commit and verified by the author's tests only. The reviewer is a sub-agent of the same model family as the author, not a human or a different tool. The offline operator package is [docs/RUN1_OPERATOR_RUNBOOK.md](docs/RUN1_OPERATOR_RUNBOOK.md).
+
+**L1 OPEN — one gate left.** The OS-enforced network-blocked build and acceptance run is NOT_RUN. It changes Windows Firewall rules and registers a SYSTEM task, so the owner starts it from an administrator terminal with the exact command in the acceptance record, section 6. An unisolated rehearsal of the same plan passed and is not a substitute. Until matching isolation and check records exist with verified restoration, L1 is not PASS and no RUN1 handoff is active.
+
+**One next gate.** The owner runs that command; then the [fresh-session prompt](NEXT_SESSION_PROMPT.md) records the evidence and the verdict. No scientific interval, accepted external base, frontier claim or V1/E1 execution exists. The sections below are retained history; where they name a next gate, this section supersedes them.
 
 ## Owner-authorised completion preparation — 2026-10-11
 

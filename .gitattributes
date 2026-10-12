@@ -1,0 +1,2 @@
+# The verifier's status parser refuses CRLF line endings in this file; keep it LF on every checkout.
+PROGRAM_STATUS.md text eol=lf

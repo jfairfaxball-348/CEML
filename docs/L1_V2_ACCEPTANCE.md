@@ -19,7 +19,7 @@ Before any edit, on that entry tree: `f1_build.py --verify` PASS with version-1 
 | Carried-forward research snapshot with provenance | `config/frontier_snapshot_v2.json` |
 | Three-slot store, root generation, recovery, version-2 domains | `tools/frontier/ceml_frontier.py`, `reference.py`, `f1_build.py` |
 | Recovery, gate, fault, cross-version and operator tests | `tests/frontier/test_recovery.py`, `test_gates.py`, `test_operator.py`, and the updated suites |
-| Hardened OS-isolation launcher and helper | `tools/l1/` and `tests/l1/` |
+| Hardened OS-isolation launcher and helper, and a simulation of its elevated path | `tools/l1/` and `tests/l1/` |
 | Offline operator package | `docs/RUN1_OPERATOR_RUNBOOK.md` |
 | Bounded review prompt | `docs/L1_REVIEW_PROMPT.md` |
 
@@ -51,18 +51,19 @@ Every row was executed in this session on the final committed sources unless it 
 | `… snapshot --file config/frontier_snapshot_v2.json` | PASS | 956 canonical bytes; `research_only_unaccepted`; provenance verified against the frozen version-1 file |
 | `… snapshot --file config/frontier_snapshot_v1.json` | PASS | `frozen_version_1_research_only_not_runnable`; 632 bytes; digest `a511d6b8…5a2d66` unchanged |
 | `python -m unittest discover -s tests/frontier` | PASS | 171 tests, no failures, errors or skips, about 60 s |
-| `python -m unittest discover -s tests/l1` | PASS | 18 tests, no skips; includes a real launcher preflight and four real refused `-Mode Run` invocations |
+| `python -m unittest discover -s tests/l1` | PASS | 27 tests, no skips: a real launcher preflight, four real refused `-Mode Run` invocations, and nine simulated runs of the whole elevated path against stand-ins |
 | `python tools/frontier/ceml_frontier.py selftest` | PASS | five fixtures committed; two-batch ledger audited |
 | Complete acceptance plan, unisolated rehearsal (`tools/l1/offline_acceptance.py --run`) | PASS, **not acceptance evidence** | all ten checks; three equal build digests; both suites with zero skips |
 | `run_offline_acceptance.ps1 -Mode Preflight` | PASS | read-only; firewall prerequisites PASS; elevation required |
 | `run_offline_acceptance.ps1 -Mode Run`, unelevated | REFUSED, as designed | stops at the administrator check; nothing changed |
 | Mutation check, 56 deliberate defects, final tree | 55 detected, 1 equivalent | section 4 |
-| OS-enforced network-blocked build and acceptance | **NOT_RUN** | awaits the owner; section 6 |
+| Owner's elevated attempts 1 and 2, 2026-10-12 | **FAIL, safely** | attempt 1 refused at the baseline probe; attempt 2 stopped at watchdog registration on a launcher defect; neither created a rule or a task; section 6 |
+| OS-enforced network-blocked build and acceptance | **NOT_RUN to completion** | awaits the owner's re-run on the fixed launcher; section 6 |
 | `tools/c1/gmp_setup.py build` and `offline-smoke` | not re-run | the legacy tool is unchanged; its refusal outside C1 is recorded in `docs/L1_ACCEPTANCE.md` |
 | GitHub Actions | none exist | zero runs is not green CI |
 | Scientific interval, RUN1, old V1/E1 | NOT_RUN | not authorised |
 
-Failures met on the way are part of the record. The first version of the batch tests took five minutes because each build check re-located the compiler; that led to decision 3. A class attribute named `run` shadowed the test runner's method and was renamed. Three shell patch attempts were rejected by the shell's quoting and redone as files. The first mutation round left one survivor and the second left one weak test; both are described in section 4. The independent review found one blocker and three major defects in the first candidate commit, and its confirmation pass, interrupted once by a usage limit and resumed, found two further minor ones; section 5.
+Failures met on the way are part of the record. The first version of the batch tests took five minutes because each build check re-located the compiler; that led to decision 3. A class attribute named `run` shadowed the test runner's method and was renamed. Three shell patch attempts were rejected by the shell's quoting and redone as files. The first mutation round left one survivor and the second left one weak test; both are described in section 4. The independent review found one blocker and three major defects in the first candidate commit, and its confirmation pass, interrupted once by a usage limit and resumed, found two further minor ones; section 5. The owner's first two elevated attempts failed safely, the second on a launcher defect that nothing unelevated had been able to reach; section 6.
 
 ## 4. Recovery acceptance
 
@@ -146,14 +147,25 @@ Its section verdicts at `71ad8a9`: recovery, chain integrity, native worker and 
 
 ## 6. OS-blocked acceptance: the one open gate
 
-**Status: NOT_RUN.** The run adds two machine-wide Windows Firewall block rules and registers a SYSTEM scheduled task. Those are system security settings, so the authoring agent did not start it. The owner authorised the run and starts it personally.
+**Status: NOT_RUN to completion. Two attempts failed safely; the launcher is fixed and awaits a third.** The run adds two machine-wide Windows Firewall block rules and registers a SYSTEM scheduled task. Those are system security settings, so the authoring agent did not start it. The owner authorised the run and starts it personally.
+
+**Attempt history, 2026-10-12, both started by the owner from an administrator PowerShell on the reviewed identities of the time (source `00a7477daf68…`, launcher `97ccd27cf564…`).**
+
+1. *Refused before any change.* The launcher's connected-baseline probe did not connect, so it stopped with "Connected baseline probe unavailable". No rule, task or evidence folder was created. The same probe then connected three times in the same elevated window (a read-only diagnostic) and in attempt 2. The cause of the single failure is unknown; a transient is the likeliest explanation and is not proven.
+2. *Failed safely at watchdog registration.* `isolation.json` in run `911aabd3…`: status `FAIL`, `last_stage` `watchdog-registration`, `failure_kind` `IndexOutOfRangeException`, `connected_baseline` true, `os_rules_verified` false, `rules_removed` true, `connected_after_restore` true, started `07:43:13Z`, finished `07:43:15Z`. No firewall rule and no task had been created; a read-only check afterwards found none.
+
+*Cause.* The launcher built its two rule names as `@($group + '-Inbound', $group + '-Outbound')`. In PowerShell the comma binds tighter than `+`, so that is one joined string, not two names, and indexing the second name threw under strict mode. The line dates from the first candidate. It sits behind the administrator check, so no unelevated test, rehearsal or review had executed it; the author's and the reviewer's reading both missed it. Its `watchdog_removed` false in that record meant "not confirmed removed": the task had never been registered.
+
+*Fix, in the commit named in section 7.* The names are parenthesised and asserted to be two distinct names; an absent watchdog is reported as absent; the failing line number is recorded. More importantly the gap that hid the defect is closed as far as it can be without elevation: `tests/l1/test_launcher_simulation.py` runs the launcher text unchanged, with only the administrator check forced true, against stand-ins for every firewall and scheduler command. It covers the complete run, ineffective blocking, a failing child, incomplete evidence, removal failure, enumeration failure, no reconnection, a failed baseline, leftover rules, wrong hashes, and it decodes and runs the registered watchdog script. It detects the original defect. The first version of the simulation itself called the real `Register-ScheduledTask`, because the scheduler module auto-loaded and replaced the stand-ins; that was harmless unelevated (access denied) and is now prevented by importing both modules first and proving, at every isolation check, that each stand-in is what its name resolves to. The simulation also reads the real rule and task stores before and after and requires them unchanged.
+
+A simulation shows the script's own logic, names, ordering and failure handling. It does not show how Windows behaves; only the real run does. The launcher fix and the simulation were written after the independent review and have **not** been reviewed.
 
 What the launcher does, in order: checks firewall and scheduler prerequisites; refuses unless both reviewed hashes match; takes a lock; proves a zero-payload TCP connection works; registers the SYSTEM watchdog (25 minutes, repeating, and at boot); adds one inbound and one outbound block-all rule named `CEML-L1Offline-<random id>-…`; verifies the rules and that the same probe now fails; runs the whole acceptance plan in a child process with a 20-minute limit while re-checking the rules; re-checks blocking; removes its two rules and verifies their absence; observes the probe connect again; removes the watchdog; writes `isolation.json`. The whole machine has no network while the rules exist. On this machine the unisolated plan took about 90 seconds.
 
 Run from an **administrator** PowerShell window, with the absolute path of the Python 3.12.10 interpreter:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\l1\run_offline_acceptance.ps1 -Mode Run -PythonPath "<absolute path of python.exe 3.12.10>" -ExpectedSourceSha256 00a7477daf68576a39570d62bb6d2d2242154391672c2143e9552b25258c5985 -ExpectedLauncherSha256 97ccd27cf564fca0bc4e52da829b4bd71cce47d1aa1d41293e258315503b3669
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\l1\run_offline_acceptance.ps1 -Mode Run -PythonPath "<absolute path of python.exe 3.12.10>" -ExpectedSourceSha256 25e15ce0542e4a14899ff0caf204e3abee208080f65d099bb04f6119c3504d3e -ExpectedLauncherSha256 7d572dd7f967e3ea02a6b1e1a75da2cb460356ab1b9b93acf16c017784ff7f12
 ```
 
 The two hashes are the reviewed identities of section 7. If `-Mode Preflight` reports a different `source_sha256`, something changed: stop and find out what. The launcher hash is of the file's bytes as checked out here and changes if Git rewrites its line endings; take it from a fresh preflight in that case, after confirming the source hash is still the reviewed one.
@@ -168,16 +180,17 @@ Then confirm no such rule is left and leave any `CEML-L1Offline-*-Restore` task 
 
 **What will count as PASS.** In the newest `local/frontier/os-offline/<id>/`: an `isolation.json` with status `OS-BLOCKED-ENGINEERING-CHECKS-PASS`; `connected_baseline`, `os_rules_verified`, `rules_removed`, `watchdog_removed`, `connected_after_restore` and `checks_passed` all true; `child_exit_code` `"0"`; `last_stage` `completed`; both hashes equal to section 7. And a `checks.json` with status `ENGINEERING-CHECKS-PASS`, the same source hash, both suites PASS with zero skips at the totals of section 3, three equal build digests equal to section 7, and calibration `fixtures_pass`. Plus a read-only confirmation afterwards that no `CEML-L1Offline-*` rule or task remains. Anything less is a FAIL and leaves L1 OPEN. The unisolated rehearsal and the Python socket-denial tests are weaker observations and do not substitute.
 
-The elevated path itself has never been executed. Its unelevated refusals, its read-only preflight, its parse and the in-memory construction of its scheduled-task objects were observed; its rule creation, watchdog and restoration were reviewed by reading only.
+The elevated path has been executed for real only as far as watchdog registration (attempt 2). Everything after that point, rule creation, the blocked run, restoration and watchdog removal, has run only in the simulation and been reviewed by reading.
 
 ## 7. Final identities
 
 | Identity | Value |
 |---|---|
-| Source commit (code, tests, contract, launcher) | `47240126d4da01e4be0cca89d632a01bc25a6b70` |
+| Source commit (launcher fix and simulation; contract, driver, worker and frontier tests unchanged since `4724012`) | `e74efd95c813e38f24aeff8f155825f87d3881a9` |
+| Commit of the final frontier sources, as reviewed in the confirmation pass plus its fixes | `47240126d4da01e4be0cca89d632a01bc25a6b70` |
 | First candidate commit, as independently reviewed | `638e3329b37e9de66b76173280f111771d7cb65e` |
-| Reviewed acceptance source identity (`source_sha256`) | `00a7477daf68576a39570d62bb6d2d2242154391672c2143e9552b25258c5985` |
-| Launcher SHA-256, as checked out on this machine | `97ccd27cf564fca0bc4e52da829b4bd71cce47d1aa1d41293e258315503b3669` |
+| Reviewed acceptance source identity (`source_sha256`) | `25e15ce0542e4a14899ff0caf204e3abee208080f65d099bb04f6119c3504d3e` |
+| Launcher SHA-256, as checked out on this machine | `7d572dd7f967e3ea02a6b1e1a75da2cb460356ab1b9b93acf16c017784ff7f12` |
 | Native build digest | `c0263b353e05b9f3d09730e67d321254952c7dbdc2a6d892f7ffe2b14b89c032` |
 | Release worker SHA3-256 | `8d3a72aa077fed414ad36e8008900f95a2a0630933e5dea5e66363fd34c19b6b` |
 | Checked worker SHA3-256 | `b562e74ba06d7a4f936f3e0010f36142fe7025f8059e60793aea5388820bc525` |
@@ -186,7 +199,7 @@ The elevated path itself has never been executed. Its unelevated refusals, its r
 | Parity table digest (version-2 domain) | `d368ec417e3170729f67737c414b02ced2d2f6cab349f9cd534404985058391c` |
 | Version-2 snapshot digest | `538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729` |
 | Frozen version-1 snapshot digest | `a511d6b80fc0ea6c85f3926b065e27acc696449af49cfa675d7c1315e85a2d66` |
-| Tests | 171 frontier, 18 launcher, zero skips |
+| Tests | 171 frontier, 27 launcher, zero skips |
 | Toolchain and pins | MSVC 14.44.35207, SDK 10.0.26100.0, Python 3.12.10, GMP 6.3.0 release 6.3.0-2; unchanged from `config/c1_gmp_pin.toml` |
 
 The two worker hashes equal those recorded for the first candidate in `docs/L1_ACCEPTANCE.md`, because the worker sources and the pinned toolchain are unchanged. The build digest differs from the first candidate's because it now also covers the version-2 contract, snapshot, schemas and tests, and uses the version-2 domain.
@@ -213,6 +226,7 @@ None is a private identifier. No user name, home path, host name, account, adapt
 - The snapshot's operational figures were observed on 2026-10-11 and were not refreshed.
 - The mathematics is the unchanged P1 material, which is not formally verified or externally peer reviewed.
 - The independent reviewer is a sub-agent of the same model family as the author (section 5).
+- The build identity did not change with the launcher fix, because `tools/l1` and `tests/l1` are not build inputs. The acceptance source identity and the launcher hash did change, and the command in section 6 carries the new values.
 
 ## 10. Verdict
 
@@ -224,8 +238,8 @@ L1 PASS requires all of the following. The first six are met; the seventh is not
 2. The amendment implemented, with every protocol section 5 obligation from 8 to 13 tested. **Met.**
 3. Complete suites with zero skips; release and checked workers built from the retained pins; clean reproduction. **Met.**
 4. Independent review with provenance recorded, findings resolved and re-tested. **Met**, within the limits stated in section 5.
-5. Launcher and harness reviewed and adapted for version 2, with all recovery tests in the plan. **Met**; the elevated path itself is unexecuted.
+5. Launcher and harness reviewed and adapted for version 2, with all recovery tests in the plan. **Met**, with one defect found by the first real attempts and fixed; the fix and the simulation are unreviewed, and the path beyond watchdog registration is unexecuted for real.
 6. Offline operator package and runbook, tested with synthetic fixtures only. **Met.**
-7. Actual OS-enforced network-blocked build and acceptance with verified restoration, on these exact identities. **NOT MET: NOT_RUN.**
+7. Actual OS-enforced network-blocked build and acceptance with verified restoration, on these exact identities. **NOT MET: two attempts failed safely; not yet run to completion.**
 
 Engineering is complete except for that observation. The remaining action is the owner's: run the command in section 6. A later step then records the evidence here and, only if every item in section 6 is satisfied, changes this verdict. RUN1 is not authorised, and nothing in this record authorises it.

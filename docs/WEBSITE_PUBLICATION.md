@@ -28,21 +28,21 @@ Complete browser authorization and let the terminal finish. Credentials remain i
 
 ## Optional live progress
 
-The owner authorised the separate observer on 2026-10-12. Start it once per Windows session:
+The owner authorised the separate observer on 2026-10-12. Start or re-enable it with:
 
 ```powershell
 python C:/CEML/tools/publication/live.py start
 ```
 
-It runs hidden in the background, reads the launcher process and local immutable certificates/checkpoints, and uploads an allowlist matching the website's strict status schema about once a minute. No process command line, PID, host/device name, address, path, credential or per-integer data is published. Private logs and control files are under ignored `local/frontier/live-publisher/`. Read-only process observation is used only to infer the requested quantity and session start.
+It registers the dedicated Windows task `CEML Live Publisher` for the signed-in user, with limited privileges and no stored password. It runs hidden through `pythonw`, starts at logon, restarts on failure and has a one-minute recovery trigger with duplicate instances ignored. This avoids tying the observer to a terminal or Codex tool lifetime. It reads the launcher process and local immutable certificates/checkpoints, and uploads an allowlist matching the website's strict status schema about once a minute. No process command line, PID, host/device name, address, path, credential or per-integer data is published. Private logs and control files are under ignored `local/frontier/live-publisher/`. Read-only process observation is used only to infer the requested quantity and session start.
 
 ```powershell
 python C:/CEML/tools/publication/live.py stop
 ```
 
-Stopping it publishes paused status and ends only uploads. Network errors retry on the next minute; the scientific runner is unaffected. `preview` prints allowlisted status locally without uploading; `once` performs one upload. No Windows service or logon task is installed; after reboot run `start` again.
+Stopping it disables the recovery/logon task and asks the current observer to publish paused status and end uploads. Network errors retry on the next minute; the scientific runner is unaffected. `start` re-enables the task. `preview` prints allowlisted status locally without uploading; `once` performs one upload. No Windows service is installed; the task runs only while this user is signed in.
 
-The public source is `https://raw.githubusercontent.com/jfairfaxball-348/CEML/live-status/frontier_live_status.json`, on a dedicated branch containing only informational status. Heartbeats create small ordinary commits on that branch and never merge into main or trigger website deployments. The website reads it by default, adds a freshness query and polls every 15 seconds. Its existing five-minute stale limit shows Working offline when the observer is unavailable. `FRONTIER_LIVE_STATUS_URL` can override the source; an explicitly empty setting disables live status. No Vercel secret, tunnel or inbound PC port is required.
+The public source is `https://raw.githubusercontent.com/jfairfaxball-348/CEML/live-status/frontier_live_status.json`, on a dedicated branch containing only informational status. Heartbeats create small ordinary commits on that branch and never merge into main or trigger website deployments. The website reads it by default, adds a freshness query and polls every 15 seconds. It keeps the last batch checked and This session visible through delayed updates; a five-minute-old heartbeat is labelled Updates delayed rather than implying that the PC is offline. A transient fetch failure cannot erase or roll back a still-fresh report or extend its actual freshness. `FRONTIER_LIVE_STATUS_URL` can override the source; an explicitly empty setting disables live status. No Vercel secret, tunnel or inbound PC port is required.
 
 Live checkpoint cursors are provisional. Recent `committed` entries are local file observations with canonical digest/identity checks; the observer performs no full ledger/replay verification and makes no independent verification claim. The authoritative tally changes only after separate verified publication. All claims remain conditional on the accepted author-reported base, with no conjecture proof, base reproduction or world-frontier claim.
 

@@ -34,7 +34,10 @@ class WebsiteProgressTests(unittest.TestCase):
             publication.build(tampered)
 
     def test_latest_digest_mismatch_is_refused(self):
-        tampered = self.text.replace('Latest certificate digest: c', 'Latest certificate digest: d', 1)
+        latest = publication.build(self.text)['latest_certificate_digest']
+        changed = ('0' if latest[0] != '0' else '1') + latest[1:]
+        tampered = self.text.replace(f'Latest certificate digest: {latest}',
+                                    f'Latest certificate digest: {changed}', 1)
         self.assertNotEqual(tampered, self.text)
         with self.assertRaises(publication.PublicationError):
             publication.build(tampered)

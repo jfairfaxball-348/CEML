@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "title": "Collatz frontier verification",
+  "protocol": "CEML-FRONTIER-2",
+  "run_id": "RUN1-operational-0001",
+  "updated": "2026-10-12",
+  "repository_url": "https://github.com/jfairfaxball-348/CEML",
+  "record_url": "https://github.com/jfairfaxball-348/CEML/blob/main/docs/RUN1_PROGRESS.md",
+  "base": {
+    "value": "2392518188130438742016",
+    "kind": "operational",
+    "description": "Author-reported operational bound of the distributed Collatz verification project; assumed by CEML, not replicated.",
+    "source_url": "https://pcbarina.fit.vut.cz/",
+    "source_generated_at": "2026-10-11T11:29:26Z",
+    "observed_at": "2026-10-11T12:38:06Z"
+  },
+  "peer_reviewed_bound": {
+    "value": "2361183241434822606848",
+    "label": "2^71",
+    "citation": "Bařina (2025)"
+  },
+  "coverage": {
+    "start": "2392518188130438742016",
+    "end": "2392518188130438958000",
+    "integers": "215984"
+  },
+  "unresolved": 0,
+  "genesis_digest": "a416bf0f89ebdb16911baf830b6c375d280829bd58587dd7787e36f5d3c53caf",
+  "latest_certificate_digest": "c02b25bf00b1dfd64d9eb7a33f054038c333655043ac495a2e5e2a185137278d",
+  "rule_counts": {
+    "E2": 107992,
+    "Q4": 53996,
+    "P3": 17999,
+    "M9": 5999,
+    "S2K4-03": 7499,
+    "EXPLICIT": 22499
+  },
+  "batches": [
+    {
+      "number": 1,
+      "start": "2392518188130438742016",
+      "end": "2392518188130438742160",
+      "width": 144,
+      "certificate_digest": "99d6907248aa02a517d638469d60ab0f659af0a045b0444531e93fde1380f8a2"
+    },
+    {
+      "number": 2,
+      "start": "2392518188130438742160",
+      "end": "2392518188130438743600",
+      "width": 1440,
+      "certificate_digest": "cebd2cf5d6e0ae327c3e54a6bc6dfef5e89358bf6a9aecbb2f5220b5431eb77e"
+    },
+    {
+      "number": 3,
+      "start": "2392518188130438743600",
+      "end": "2392518188130438758000",
+      "width": 14400,
+      "certificate_digest": "ab213f7ba9016bc54afe67873747e605dd88813480a695e8fb54b9b0821f46e6"
+    },
+    {
+      "number": 4,
+      "start": "2392518188130438758000",
+      "end": "2392518188130438772400",
+      "width": 14400,
+      "certificate_digest": "8a879d23f28934c9b93e4970ef4813a01b00e507ffeeba146bf9be8e5976b83f"
+    },
+    {
+      "number": 5,
+      "start": "2392518188130438772400",
+      "end": "2392518188130438786800",
+      "width": 14400,
+      "certificate_digest": "5e68013a6ac6291b1502442ef2912788ad150fecfe78e4413099c4cab96b0ed3"
+    },
+    {
+      "number": 6,
+      "start": "2392518188130438786800",
+      "end": "2392518188130438801200",
+      "width": 14400,
+      "certificate_digest": "e8fbc86a04897105a4227da3ed8ab560e7a745d9c2a1b44e70ca18cf4fe4ba16"
+    },
+    {
+      "number": 7,
+      "start": "2392518188130438801200",
+      "end": "2392518188130438815600",
+      "width": 14400,
+      "certificate_digest": "d1d7e3a0f27b318efd9f5b69296a143eb43d0f96c71cdb5bbdeab872b3743063"
+    },
+    {
+      "number": 8,
+      "start": "2392518188130438815600",
+      "end": "2392518188130438830000",
+      "width": 14400,
+      "certificate_digest": "e9d4ccb4837bb257a77430dc15361c3ed2205b7beb3a5d2a50701ceabc5d6e20"
+    },
+    {
+      "number": 9,
+      "start": "2392518188130438830000",
+      "end": "2392518188130438844400",
+      "width": 14400,
+      "certificate_digest": "f936d6262777af7933143e7576b8e776c4a936eadc6091f16479005c694868f7"
+    },
+    {
+      "number": 10,
+      "start": "2392518188130438844400",
+      "end": "2392518188130438858000",
+      "width": 13600,
+      "certificate_digest": "5f46665571ef5e85ed629576cd1e7f231ba1c8abe7a7d7975d408d94c14be17a"
+    },
+    {
+      "number": 11,
+      "start": "2392518188130438858000",
+      "end": "2392518188130438872400",
+      "width": 14400,
+      "certificate_digest": "bf87af5c756ad390d47e9fb33153cce81d29cda1e430ed0bdf895dfac4f65d74"
+    },
+    {
+      "number": 12,
+      "start": "2392518188130438872400",
+      "end": "2392518188130438886800",
+      "width": 14400,
+      "certificate_digest": "57cb4c724b07252d76642b69b9267c7bf3450bd47b88585d50105ca1beaccc27"
+    },
+    {
+      "number": 13,
+      "start": "2392518188130438886800",
+      "end": "2392518188130438901200",
+      "width": 14400,
+      "certificate_digest": "7ba5446572317e0bb372bce29086ac3bff2a7161db40b3f9706dcbc64937424d"
+    },
+    {
+      "number": 14,
+      "start": "2392518188130438901200",
+      "end": "2392518188130438915600",
+      "width": 14400,
+      "certificate_digest": "e6bd0fd0d07f39e244cad25f55f34d776bc08a256407f54eadd916c0c6da8f47"
+    },
+    {
+      "number": 15,
+      "start": "2392518188130438915600",
+      "end": "2392518188130438930000",
+      "width": 14400,
+      "certificate_digest": "8bb0a9f5d5a1da975e27f5792e8d5c1a6331eb3afa85e561e9e0b3dd4bfda712"
+    },
+    {
+      "number": 16,
+      "start": "2392518188130438930000",
+      "end": "2392518188130438944400",
+      "width": 14400,
+      "certificate_digest": "6d6d2cca47253ebadfdf62eb0823f01a142b4fdc956d9880022aded9a84b535a"
+    },
+    {
+      "number": 17,
+      "start": "2392518188130438944400",
+      "end": "2392518188130438958000",
+      "width": 13600,
+      "certificate_digest": "c02b25bf00b1dfd64d9eb7a33f054038c333655043ac495a2e5e2a185137278d"
+    }
+  ],
+  "claim": "Every integer in the covered interval reaches 1, conditional on the author-reported base. This is a finite, conditional computational result: not a proof of the Collatz conjecture, not a reproduction of the base, and not a claim of a world first or of global frontier extension."
+}

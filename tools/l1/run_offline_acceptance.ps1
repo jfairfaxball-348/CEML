@@ -72,7 +72,13 @@ if ($LASTEXITCODE -ne 0 -or !($baseline | ConvertFrom-Json).connected) {
 }
 $runId = [Guid]::NewGuid().ToString('N')
 $group = 'CEML-L1Offline-' + $runId
-$ruleNames = @($group + '-Inbound', $group + '-Outbound')
+# Each name is parenthesised: the comma operator binds tighter than +, so without the
+# parentheses this is ONE string, not two names (the failure of the first elevated attempt).
+$ruleNames = @(($group + '-Inbound'), ($group + '-Outbound'))
+if ($ruleNames.Count -ne 2 -or $ruleNames[0] -eq $ruleNames[1] -or
+    $ruleNames[0] -ne ($group + '-Inbound') -or $ruleNames[1] -ne ($group + '-Outbound')) {
+    throw 'Internal error: isolation rule names are not two distinct names'
+}
 $taskName = $group + '-Restore'
 $outputDir = Join-Path $root ('local/frontier/os-offline/' + $runId)
 New-Item -ItemType Directory -Path $outputDir -ErrorAction Stop | Out-Null
@@ -86,6 +92,7 @@ $watchdogRemoved = $false
 $reconnected = $false
 $passed = $false
 $failureKind = ''
+$failureLine = ''
 $stage = 'watchdog-registration'
 $startedUtc = [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')
 
@@ -192,6 +199,8 @@ try {
     $stage = 'completed'
 } catch {
     $failureKind = $_.Exception.GetType().Name
+    # A line number of this script: path-free, and enough to locate a failure from the record.
+    try { $failureLine = [string]$_.InvocationInfo.ScriptLineNumber } catch { }
 } finally {
     # Nothing in this block may prevent the rule removal that follows it.
     try {
@@ -235,7 +244,11 @@ try {
     # Otherwise it stays, repeats, and removes itself once its own check succeeds.
     if ($restored -and $reconnected) {
         try {
-            Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+            # A run that failed before registration has no watchdog; that is absence, not an error.
+            $registered = @(Get-ScheduledTask -ErrorAction Stop | Where-Object { $_.TaskName -eq $taskName })
+            if ($registered.Count -gt 0) {
+                Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
+            }
             $watchdogRemoved = (@(Get-ScheduledTask -ErrorAction Stop |
                 Where-Object { $_.TaskName -eq $taskName }).Count -eq 0)
         } catch { $watchdogRemoved = $false }
@@ -248,7 +261,7 @@ try {
         connected_baseline=$true; os_rules_verified=$isolated; rules_removed=$restored;
         watchdog_removed=$watchdogRemoved; connected_after_restore=$reconnected;
         checks_passed=$checksPassed; child_exit_code=$childExitCode; last_stage=$stage;
-        failure_kind=$failureKind; scientific_execution='NOT_RUN';
+        failure_kind=$failureKind; failure_line=$failureLine; scientific_execution='NOT_RUN';
         limitations='No power-loss guarantee; OS rules are observed, not a hardware network air gap'}
     $json = $record | ConvertTo-Json -Compress
     [IO.File]::WriteAllText((Join-Path $outputDir 'isolation.json'), $json, [Text.Encoding]::ASCII)

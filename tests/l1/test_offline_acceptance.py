@@ -279,7 +279,11 @@ class LauncherStaticTests(unittest.TestCase):
                       "            Where-Object { $ruleNames -contains $_.Name })", self.text)
         self.assertIn("`$names = @('$($ruleNames[0])', '$($ruleNames[1])')", self.text)
         self.assertIn("$group = 'CEML-L1Offline-' + $runId", self.text)
-        self.assertIn("$ruleNames = @($group + '-Inbound', $group + '-Outbound')", self.text)
+        # Parenthesised on purpose: without the inner parentheses the comma binds tighter than +
+        # and the "list" is one joined string. That was the failure of the first elevated attempt.
+        self.assertIn("$ruleNames = @(($group + '-Inbound'), ($group + '-Outbound'))", self.text)
+        self.assertNotIn("@($group + '-Inbound', $group + '-Outbound')", self.text)
+        self.assertIn("throw 'Internal error: isolation rule names are not two distinct names'", self.text)
         self.assertEqual(1, self.text.count("Register-ScheduledTask "))
 
     def test_watchdog_precedes_blocking_and_cleanup_cannot_be_skipped(self):

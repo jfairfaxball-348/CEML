@@ -1,23 +1,43 @@
-# Close CEML-L1 on the OS-blocked acceptance evidence — not RUN1
+# RUN1 is a separate, owner-authorised stage — this prompt does not authorise it
 
-Work in `C:\CEML` on branch `codex/l1-offline-frontier` (draft PR #5). The CEML-FRONTIER-2 contract, implementation, tests, independent review and offline operator package are complete and committed. Read `docs/L1_V2_ACCEPTANCE.md` first; it is the record this prompt continues. Exactly one gate is open: the OS-enforced network-blocked acceptance run. Only the owner can start it, because it changes Windows Firewall rules and registers a SYSTEM task.
+Work in `C:\CEML`. L1 is recorded as PASS, agent-assessed, in `PROGRAM_STATUS.md` and `docs/L1_V2_ACCEPTANCE.md`. The owner's acceptance of that record is outstanding. RUN1, the first offline scientific pilot, is **not authorised**. Invoking this prompt authorises nothing. It tells a session what RUN1 needs and what the session may and may not do.
 
-Only engineering fixtures are authorised. RUN1, any scientific or frontier scan, external-base acceptance, old V1/E1, legacy ungating, new exclusions or dependencies, GPU or parallel work and optimisation programmes remain denied. Preserve all historical evidence, the frozen version-1 and version-2 contract bytes, the dependency pins and every guard.
+Read `PROGRAM_STATUS.md`, `AGENTS.md`, `START_HERE.md`, `docs/L1_V2_ACCEPTANCE.md`, `docs/FRONTIER_PROTOCOL_V2.md` and `docs/RUN1_OPERATOR_RUNBOOK.md` before anything else. Current status controls every older phase string.
 
-The reviewed source identity binds `src/frontier_*`, `src/ceml_oracle.*`, `tools/frontier/`, `tests/frontier/`, `tools/l1/`, `tests/l1/`, `schemas/frontier_*`, `config/frontier_snapshot_*`, both dependency pins, `docs/FRONTIER_PROTOCOL_V*.md`, `docs/P1_EXCLUSION_PROOFS.md`, `docs/P2_PROTOCOL_AUDIT.md` and `tools/c1/gmp_smoke.c`. Do not edit any of them unless a recorded failure requires it. Any such edit needs fresh hashes and a fresh run, and anything beyond a trivial fix needs the bounded review of `docs/L1_REVIEW_PROMPT.md` again.
+## Before any RUN1 step
 
-## Steps
+1. Pin live `main` and inspect local status, the PR that carries L1, its head, mergeability, actual checks and Actions. Verify CI rather than invent it. A merge proves no acceptance obligation.
+2. Confirm the tree is clean and at, or a descendant of, the source commit named in `docs/L1_V2_ACCEPTANCE.md` section 7 with no identity-bound file changed. Run the runbook's session preflight (section 5) and require the pinned build digest, worker hash, table digest and snapshot digest. If any differs, stop: the accepted software is not what is in front of you.
+3. Do not edit any identity-bound file. A change to the worker, driver, reference, build tool, frontier tests, schemas, snapshots or protocol documents gives a new build identity. That needs the L1 acceptance evidence again, including a fresh OS-blocked run, before any chain is started.
 
-1. Pin live `main`. Inspect local status, PR #5 head, commits, mergeability, actual checks and Actions before any edit. Confirm `HEAD` is the source commit named in `docs/L1_V2_ACCEPTANCE.md` section 7 or a descendant that changes no identity-bound file, and that the tree is clean. Verify CI rather than invent it; the repository had no workflows and zero runs.
-2. If the owner has not run the acceptance yet: run `-Mode Preflight`, require its `source_sha256` to equal the reviewed value in section 7, and give the owner the exact command of section 6 with those hashes. Do not start the elevated process yourself. Say plainly that the whole machine, this chat included, loses network for up to about 25 minutes, and give the emergency restore line.
-3. After the owner has run it: take the newest `local/frontier/os-offline/<id>/` that contains both `isolation.json` and `checks.json`. Require all of:
-   - `isolation.json`: `status` is `OS-BLOCKED-ENGINEERING-CHECKS-PASS`; `connected_baseline`, `os_rules_verified`, `rules_removed`, `watchdog_removed`, `connected_after_restore` and `checks_passed` are true; `child_exit_code` is `"0"`; `last_stage` is `completed`; the source and launcher hashes equal the reviewed ones.
-   - `checks.json`: `status` is `ENGINEERING-CHECKS-PASS` with the same source hash; both suites `PASS` with zero skips and zero expected failures and the test totals of section 3; three equal build digests equal to section 7; calibration `fixtures_pass`.
-   - A read-only check that no `CEML-L1Offline-*` firewall rule or scheduled task remains.
-   A miss on any item is a FAIL. Keep the evidence, record the failure honestly, fix only what is justified, obtain fresh hashes and ask for another run. A Python hook or the unisolated rehearsal never substitutes.
-4. Record the outcome. Fill sections 6 and 10 of `docs/L1_V2_ACCEPTANCE.md` with the observed path-free values. Replace the calibration table in `docs/RUN1_OPERATOR_RUNBOOK.md` section 12 with the OS-blocked figures. Update `PROGRAM_STATUS.md`, `START_HERE.md`, `ROADMAP.md` and this prompt only to the supported outcome. L1 PASS requires every obligation listed in section 10. Keep raw and path-bearing logs ignored. Commit the evidence, push, update PR #5 and inspect the actual checks. A merge proves none of this. Do not auto-merge a draft.
-5. Only after an accepted L1 PASS may the next prompt describe RUN1 as a separately owner-authorised stage that follows `docs/RUN1_OPERATOR_RUNBOOK.md`. It must not authorise RUN1, acknowledge any base or start any scan.
+## What only the owner can do
+
+- Accept or reject the L1 record. Until the owner has accepted it, L1 is an agent-assessed pass and nothing follows from it.
+- Give a fresh, explicit instruction to start RUN1, naming the base kind (`published` or `operational`).
+- Type the acknowledgement string of runbook section 4.2. No agent and no tool fills it in.
+- Decide the run identifier, the authority identifier and where backups and the external digest record are kept.
+
+Until the owner has accepted L1 and given the RUN1 instruction in the current conversation, do nothing beyond reading and the read-only preflight. Do not prepare a status transition "in advance".
+
+## What a session may do once the owner has instructed RUN1
+
+- Make the status transition of runbook section 4.3 as a reviewed commit that quotes the owner's instruction, changing only the two status lines and the supporting text. Run the complete L1 suites one last time before that commit; they are L1-phase checks and are expected to refuse afterwards.
+- Follow `docs/RUN1_OPERATOR_RUNBOOK.md` exactly, one batch at a time, starting with the 144-start pilot at the chosen base, with the maximum finite budgets. Verify, replay and audit each batch (section 7) and have the owner update the external record (section 8) before the next.
+- Report every result with the claim template of runbook section 13. A batch is a finite conditional result. It is never a proof, a reproduction of the base, or a world-first.
+
+## What a session must never do
+
+- Start, resume or extend any batch without the owner's instruction covering it, or type an acknowledgement or owner instruction on the owner's behalf.
+- Edit, delete, move or copy any record in a batch directory. Quarantine of an uncommitted attempt is the operator's act, described in runbook section 10.
+- Change base inside a chain, reuse a run identifier, run two batches at once, or describe an INCOMPLETE or checkpoint-only batch as verified.
+- Treat a pending start as divergence, or retry, skip or reorder it. Preserve it and report it.
+- Fetch, upload, refresh the snapshot, add a dependency, add an exclusion, use a GPU or parallel workers, or start an optimisation programme.
+- Run the elevated launcher. It is acceptance infrastructure, not part of RUN1.
+
+## Known first-execution risk
+
+L1 was not allowed to run a scientific batch. The first RUN1 pilot is the first end-to-end execution of the authorised path, and the first time the worker's gate accepts a status. If it refuses for a reason the runbook's section 10 does not explain, stop. A refusal promotes nothing. A fix needs review and a new L1 acceptance, which is harmless only while no chain exists.
 
 ## Exit discipline
 
-Finish with the verdict, the exact evidence identifiers, and any owner action still needed. If the run cannot be supplied, leave that one gate accurately OPEN. No science is preauthorised or executed here.
+Keep raw logs, run records and per-integer data out of Git. The runner never fetches, uploads, changes source or commits. Finish every session with the exact interval covered, the base and its tier, the chain digests, what was and was not independently reproduced, and any owner action needed.

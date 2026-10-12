@@ -2,7 +2,7 @@
 
 **Prepared package. RUN1 is NOT authorised.** Nothing in this runbook has been executed on a frontier integer. Every scientific command in sections 6 to 10 refuses until the owner separately authorises RUN1 as described in section 4. The session preflight of section 5 works in any phase, and the read-only commands of section 7 also work on the engineering fixtures. The agent that prepared this package acknowledged nothing and authorised nothing on the owner's behalf.
 
-Use this runbook only if `PROGRAM_STATUS.md` records L1 as accepted. If it still says L1 OPEN, stop here.
+Use this runbook only if `PROGRAM_STATUS.md` records L1 PASS and the owner has accepted that record. If it says L1 OPEN, or the owner has not accepted it, stop here.
 
 All commands are PowerShell, run from the repository root, with Python 3.12.10 as `python`. Runtime needs no network and uses none.
 
@@ -305,17 +305,17 @@ Only a result obtained this way, by different code and a different build, may be
 
 Measured on this machine by the L1 self-test on small-integer engineering fixtures. Times include the build check, the native scan, the per-frame check, both Python replays, the checkpoint writes and the certificate commit. They are overhead measurements on integers below 10000. They are not throughput at 2^71, and no speed at that magnitude has been measured.
 
-Source: the unisolated rehearsal of the acceptance plan on 2026-10-12; to be replaced by the OS-blocked run.
+Source: the OS-blocked acceptance run of 2026-10-12 (evidence run 387ae837, network blocked by Windows Firewall for the whole measurement).
 
 | Fixture | Interval width | Explicit starts | Explicit steps | Scan and per-frame check (s) | Whole batch (s) |
 |---|---:|---:|---:|---:|---:|
-| `L1-fixture-a` | 144 | 15 | 269 | 0.092 | 0.441 |
-| `L1-fixture-successor` | 144 | 15 | 150 | 0.093 | 0.794 |
-| `L1-fixture-b` | 144 | 15 | 150 | 0.100 | 0.446 |
-| `L1-fixture-c` | 96 | 10 | 225 | 0.094 | 0.464 |
-| `L1-fixture-wide` | 9600 | 1001 | 11840 | 0.281 | 0.798 |
+| `L1-fixture-a` | 144 | 15 | 269 | 0.084 | 0.418 |
+| `L1-fixture-successor` | 144 | 15 | 150 | 0.085 | 0.734 |
+| `L1-fixture-b` | 144 | 15 | 150 | 0.084 | 0.406 |
+| `L1-fixture-c` | 96 | 10 | 225 | 0.084 | 0.406 |
+| `L1-fixture-wide` | 9600 | 1001 | 11840 | 0.269 | 0.928 |
 
-`L1-fixture-successor` is the second batch of a two-batch chain, so its whole-batch time includes re-verifying its predecessor. The two-batch ledger audit took 0.165 s. Directory flush was reported `yes` on this volume.
+`L1-fixture-successor` is the second batch of a two-batch chain, so its whole-batch time includes re-verifying its predecessor. The two-batch ledger audit took 0.370 s. Directory flush was reported `yes` on this volume.
 
 ## 13. Truthful claim template
 

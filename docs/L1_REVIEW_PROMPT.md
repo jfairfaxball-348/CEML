@@ -1,6 +1,6 @@
 # Bounded independent review prompt — CEML-L1 / CEML-FRONTIER-2
 
-Give this whole file to a reviewer that did not write the code: a separate Claude Code session, another tool or a person. It was first used on 2026-10-11 by a review sub-agent against commit `638e332`; that run, its findings, their resolutions and its limits are recorded in `docs/L1_V2_ACCEPTANCE.md` section 5. Re-running it against the final pinned commit named there is the way to obtain a further independent opinion. A reviewer that only restates the author's notes has not reviewed anything.
+Give this whole file to a reviewer that did not write the code: a separate Claude Code session, another tool or a person. A review sub-agent used it on 2026-10-11 against commit `638e332`, and was then resumed for a confirmation pass on `71ad8a9` and a final bounded pass on the final sources at `e74efd9`. Those runs, their findings, the resolutions and their limits are recorded in `docs/L1_V2_ACCEPTANCE.md` section 5. Running this prompt in a separate session against the source commit named in section 7 of that record is the way to obtain a further independent opinion. A reviewer that only restates the author's notes has not reviewed anything.
 
 ## Your role and limits
 

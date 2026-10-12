@@ -1,6 +1,6 @@
 # RUN1 is a separate, owner-authorised stage — this prompt does not authorise it
 
-Work in `C:\CEML`. L1 is recorded as PASS, agent-assessed, in `PROGRAM_STATUS.md` and `docs/L1_V2_ACCEPTANCE.md`. The owner's acceptance of that record is outstanding. RUN1, the first offline scientific pilot, is **not authorised**. Invoking this prompt authorises nothing. It tells a session what RUN1 needs and what the session may and may not do.
+Work in `C:\CEML`. L1 is recorded as PASS, agent-assessed and accepted by the owner on 2026-10-12, in `PROGRAM_STATUS.md` and `docs/L1_V2_ACCEPTANCE.md`. RUN1, the first offline scientific pilot, is **not authorised**. Invoking this prompt authorises nothing. It tells a session what RUN1 needs and what the session may and may not do.
 
 Read `PROGRAM_STATUS.md`, `AGENTS.md`, `START_HERE.md`, `docs/L1_V2_ACCEPTANCE.md`, `docs/FRONTIER_PROTOCOL_V2.md` and `docs/RUN1_OPERATOR_RUNBOOK.md` before anything else. Current status controls every older phase string.
 
@@ -12,12 +12,11 @@ Read `PROGRAM_STATUS.md`, `AGENTS.md`, `START_HERE.md`, `docs/L1_V2_ACCEPTANCE.m
 
 ## What only the owner can do
 
-- Accept or reject the L1 record. Until the owner has accepted it, L1 is an agent-assessed pass and nothing follows from it.
 - Give a fresh, explicit instruction to start RUN1, naming the base kind (`published` or `operational`).
 - Type the acknowledgement string of runbook section 4.2. No agent and no tool fills it in.
 - Decide the run identifier, the authority identifier and where backups and the external digest record are kept.
 
-Until the owner has accepted L1 and given the RUN1 instruction in the current conversation, do nothing beyond reading and the read-only preflight. Do not prepare a status transition "in advance".
+Until the owner has given the RUN1 instruction in the current conversation, do nothing beyond reading and the read-only preflight. Do not prepare a status transition "in advance".
 
 ## What a session may do once the owner has instructed RUN1
 

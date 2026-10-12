@@ -1,6 +1,6 @@
 # CEML-L1 version-2 acceptance record
 
-Dates: work 2026-10-11 to 2026-10-12; recorded 2026-10-12. **Decision: CEML-L1 PASS, agent-assessed on the recorded evidence and cross-checked by the review sub-agent. The owner's acceptance of this record is outstanding. RUN1 is not authorised.**
+Dates: work 2026-10-11 to 2026-10-12; recorded 2026-10-12. **Decision: CEML-L1 PASS, agent-assessed on the recorded evidence, cross-checked by the review sub-agent, and accepted by the owner on 2026-10-12. RUN1 is not authorised.**
 
 This record covers the owner-authorised focused continuation of the single L1 attempt. It replaces nothing in `docs/L1_ACCEPTANCE.md`, which remains the record of the first candidate. No scientific interval, frontier integer, accepted base or RUN1 step was executed.
 
@@ -260,7 +260,7 @@ None is a private identifier. No user name, home path, host name, account, adapt
 
 ## 10. Verdict
 
-**CEML-L1 PASS, agent-assessed on the recorded evidence.** The owner's acceptance of this record is outstanding, and it is the owner's decision. RUN1 is not authorised.
+**CEML-L1 PASS, agent-assessed on the recorded evidence and accepted by the owner on 2026-10-12.** RUN1 is not authorised.
 
 L1 PASS requires all of the following. All seven are met.
 
@@ -272,6 +272,8 @@ L1 PASS requires all of the following. All seven are met.
 6. Offline operator package and runbook, tested with synthetic fixtures only. **Met.**
 7. Actual OS-enforced network-blocked build and acceptance with verified restoration, on these exact identities. **Met** by attempt 3, within the limits stated in section 6.
 
-What "agent-assessed" means: the agent that wrote the software also assembled this record and reached this verdict. The review sub-agent cross-checked the evidence and judged that it supports recording a pass. No human has reviewed the code, and no hosted CI exists. The owner may accept this record, ask for a further opinion with `docs/L1_REVIEW_PROMPT.md`, or reject it.
+What "agent-assessed" means: the agent that wrote the software also assembled this record and reached this verdict. The review sub-agent cross-checked the evidence and judged that it supports recording a pass. No human has reviewed the code, and no hosted CI exists. `docs/L1_REVIEW_PROMPT.md` remains available for a further opinion at any time.
 
 What this pass does not do: it does not authorise RUN1, accept any external base, acknowledge any assumption, or claim any scientific result. RUN1 needs the owner's separate explicit instruction and follows `docs/RUN1_OPERATOR_RUNBOOK.md`. Any change to an identity-bound file ends the validity of this evidence for the changed software.
+
+**Owner acceptance.** On 2026-10-12, after the verdict, its meaning, the limits of the evidence, the unfixed notes and the withdrawn handshake test had been set out to the owner in the session, the owner wrote: "I'm happy with all that. Can you accept L1, commit, merge, push etc everything so we are ready to go." That is recorded as the owner's acceptance of this record and of L1 as passed, and as the instruction to merge the work. The owner raised no objection to the disclosed handshake test, which stays removed, or to the five notes left unfixed. In the same message the owner asked whether RUN1 needs the owner to run it. That is a question, not an instruction: RUN1 remains unauthorised until the owner gives a separate explicit instruction, chooses a base and personally types the acknowledgement.

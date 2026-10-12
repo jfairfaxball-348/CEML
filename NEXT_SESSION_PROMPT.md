@@ -1,11 +1,19 @@
 # RUN1 handoff
 
-For owner-run continuation, provide this reusable PowerShell command and change only the final positive quantity:
+For owner-run continuous continuation:
 
 ```powershell
-python C:\CEML\tools\operator\run_frontier.py X
+python C:\CEML\tools\operator\run_frontier.py start
 ```
 
-Use the current PROGRAM_STATUS.md, AGENTS.md and docs/RUN1_OPERATOR_RUNBOOK.md. The launcher audits the existing chain, verifies retained anchors and discovers the latest committed exclusive endpoint; no fixed end or digest belongs in this handoff. A partial checkpoint never authorises skipping an unresolved start. The existing accepted operational assumption is reused only for the same verified chain and software identity. Preserve all frozen contracts and batch records.
+No quantity is required. The launcher audits the same accepted chain, discovers its verified exclusive endpoint, and checks sequential batches of exactly 9999. The owner chose to preserve the frozen 256-batch limit; it stops cleanly there with `CHAIN_LIMIT_REACHED`.
 
-The owner runs the command unless explicitly asking the agent to execute a finite quantity. Editing this handoff with no numeric request runs nothing. Report a result only after complete certificate verification, replay and chain audit; keep raw records out of Git. See docs/RUN1_ONE_COMMAND.md for the operator procedure and docs/RUN1_PROGRESS.md for the current aggregate record. The owner removed the separate-device backup requirement; no backup request or outstanding backup task is appropriate.
+In a second PowerShell window, request a clean stop with:
+
+```powershell
+python C:\CEML\tools\operator\run_frontier.py stop
+```
+
+Wait for `CLEAN_STOPPED` and the run terminal prompt, then invoke `python C:\CEML\tools\publication\publish.py`. The active batch must finish every check and save the receipt; stop requests do not terminate the worker or promote unresolved work. No successor is admitted after the request. The operator lock is released before the final ready status.
+
+Use PROGRAM_STATUS.md, AGENTS.md, docs/RUN1_OPERATOR_RUNBOOK.md and docs/RUN1_ONE_COMMAND.md. Preserve every frozen contract and batch record. The owner starts scientific execution; this procedure-edit request executes no quantity. Agents check and record only unless separately authorised for a finite scientific run. Keep raw records out of Git, distinguish conditional results from independent reproduction, and never skip a partial checkpoint. Backups are optional and not an outstanding task. Legacy finite quantity commands remain supported but are no longer the default handoff.

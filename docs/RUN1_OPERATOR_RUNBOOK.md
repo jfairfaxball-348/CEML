@@ -226,6 +226,8 @@ python tools/frontier/ceml_frontier.py pilot --manifest "$manifests/batch-0002.j
 
 ## 10. Stop, resume and refusal diagnostics
 
+**Current owner procedure — continuous with a clean stop (2026-10-12).** Use `python C:\CEML\tools\operator\run_frontier.py start` without a quantity. Each newly admitted batch is exactly 9999 wide. In another terminal, the same command with `stop` requests finishing the active batch, all verification and its receipt before releasing the operator lock. Wait for `CLEAN_STOPPED` and the terminal prompt, then invoke `python C:\CEML\tools\publication\publish.py`. The owner chose to retain the frozen 256-batch limit; continuous mode ends cleanly there with `CHAIN_LIMIT_REACHED`. No batch is skipped or promoted from a checkpoint, and failures still stop with their evidence intact. Details: `RUN1_ONE_COMMAND.md`. The direct-driver interruption/recovery instructions below remain for unexpected interruption or legacy manual commands; the controlled launcher interprets Ctrl+C as a clean-stop request and isolates child process signals.
+
 **Stopping.** Let the current command finish, or press Ctrl+C. Interrupting is always safe: a batch is committed only if `certificate.json` exists and verifies. Never delete or edit anything in a batch directory.
 
 **Resuming an uncommitted batch.** The authority record must still be the one for that batch (re-run `prepare-authority` for its interval if you have since recorded another).

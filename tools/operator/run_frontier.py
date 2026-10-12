@@ -5,15 +5,18 @@ It never imports or modifies verifier code or writes batch records itself.
 """
 
 import argparse
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
 import re
+import signal
 import subprocess
 import sys
 import tempfile
+import time
+import uuid
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,6 +34,9 @@ PILOT3 = 'ab213f7ba9016bc54afe67873747e605dd88813480a695e8fb54b9b0821f46e6'
 ACK = SNAPSHOT + ':operational:' + BASE
 ACCEPTED_SOURCE = 'e74efd95c813e38f24aeff8f155825f87d3881a9'
 TIP = Path('local/frontier/operator_tip.json')
+CONTROL = Path('local/frontier/operator-session.json')
+DEFAULT_WIDTH = 9999
+ISOLATE_CHILD_SIGNALS = False
 
 
 class StopRun(Exception):
@@ -44,8 +50,11 @@ def require(condition, message):
 
 def command(arguments, status):
     """No shell interpolation; a nonzero exit or unexpected status stops the run."""
+    isolation = {}
+    if ISOLATE_CHILD_SIGNALS:
+        isolation = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == 'nt' else {'start_new_session': True}
     result = subprocess.run([sys.executable, *arguments], cwd=ROOT,
-                            capture_output=True, text=True, encoding='utf-8')
+                            capture_output=True, text=True, encoding='utf-8', **isolation)
     require(result.returncode == 0,
             result.stdout.strip() or result.stderr.strip() or 'Command failed')
     try:
@@ -167,13 +176,154 @@ def preflight(args):
     verified = driver('verify-batch', '--certificate', prior, status='conditional_complete')
     require(verified.get('digest') == ledger['latest_certificate_digest'] and verified.get('batch_end') == ledger['end'],
             'Latest numbered batch differs from the ledger')
-    plan = batch_plan(int(ledger['end']), args.count, existing, args.batch_width)
+    count = (256 - existing) * DEFAULT_WIDTH if getattr(args, 'mode', 'finite') == 'continuous' else args.count
+    plan = batch_plan(int(ledger['end']), count, existing, args.batch_width) if count else []
     for batch in plan:
         name = f"batch-{batch['number']:04d}"
         require(not (ROOT / CHAIN / name).exists() and
                 not (ROOT / MANIFESTS / (name + '.json')).exists(),
                 'Output or manifest already exists; do not overwrite or automatically retry')
     return ledger, plan
+
+
+@contextmanager
+def control_lock():
+    """Short control transaction; never wait for the scientific operator lock."""
+    import msvcrt
+    with (ROOT / 'local/frontier/operator-control.lock').open('a+b') as handle:
+        handle.seek(0, 2)
+        if not handle.tell():
+            handle.write(b'0'); handle.flush()
+        for attempt in range(50):
+            handle.seek(0)
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+                break
+            except OSError:
+                if attempt == 49:
+                    raise StopRun('Control state is busy; retry the stop command')
+                time.sleep(0.02)
+        try:
+            yield
+        finally:
+            handle.seek(0)
+            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+
+
+def save_control(value):
+    destination = ROOT / CONTROL
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=destination.parent, prefix='operator-session-', suffix='.tmp', delete=False) as handle:
+            temporary = Path(handle.name)
+            handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')).encode('ascii'))
+            handle.flush(); os.fsync(handle.fileno())
+        os.replace(temporary, destination)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def read_control():
+    path = ROOT / CONTROL
+    require(path.stat().st_size <= 131072, 'Operator control state oversized')
+    value = json.loads(path.read_text(encoding='ascii'))
+    require(isinstance(value, dict) and isinstance(value.get('token'), str) and
+            isinstance(value.get('active'), bool) and isinstance(value.get('stop_requested'), bool),
+            'Operator control state invalid')
+    return value
+
+
+def operator_running():
+    import msvcrt
+    path = ROOT / 'local/frontier/operator.lock'
+    if not path.exists():
+        return False
+    with path.open('r+b') as handle:
+        try:
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        except OSError:
+            return True
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    return False
+
+
+def request_stop():
+    with control_lock():
+        if not operator_running():
+            return dict(status='NO_ACTIVE_RUN')
+        require((ROOT / CONTROL).exists(), 'Active launcher has no clean-stop control; inspect its version')
+        value = read_control()
+        if not value['active']:
+            return dict(status='NO_ACTIVE_RUN')
+        value['stop_requested'] = True
+        save_control(value)
+        return dict(status='STOP_REQUESTED', message='The current batch will finish and verify before exit. Wait for CLEAN_STOPPED and the run terminal prompt before publishing.')
+
+
+def update_session(args, **fields):
+    token = getattr(args, 'session_token', None)
+    if token is None:
+        return
+    with control_lock():
+        value = read_control()
+        require(value['token'] == token, 'Operator control session changed')
+        value.update(fields)
+        save_control(value)
+
+
+def stop_requested(args):
+    if getattr(args, 'stop_local', False):
+        return True
+    token = getattr(args, 'session_token', None)
+    if token is None:
+        return False
+    with control_lock():
+        value = read_control()
+        require(value['token'] == token, 'Operator control session changed')
+        return value['stop_requested']
+
+
+def admit_batch(args, number):
+    """A stop before admission creates no records; a stop after it finishes this batch."""
+    if getattr(args, 'stop_local', False):
+        return False
+    if getattr(args, 'session_token', None) is None:
+        return True
+    with control_lock():
+        value = read_control()
+        require(value['token'] == args.session_token, 'Operator control session changed')
+        if value['stop_requested']:
+            return False
+        value.update(phase='batch', batch=number)
+        save_control(value)
+        return True
+
+
+@contextmanager
+def managed_run(args):
+    global ISOLATE_CHILD_SIGNALS
+    with ExitStack() as stack:
+        # Same ordering as stop: control first, then a nonblocking operator-lock attempt.
+        with control_lock():
+            stack.enter_context(operator_lock())
+            args.session_token = uuid.uuid4().hex
+            args.stop_local = False
+            args.session_outcome = 'STOPPED'
+            save_control(dict(token=args.session_token, active=True, stop_requested=False,
+                              mode=args.mode, requested=str(args.count) if args.count is not None else None,
+                              started_at=datetime.now(timezone.utc).isoformat(), phase='preflight', batch=None))
+        previous_handler = signal.getsignal(signal.SIGINT)
+        previous_isolation = ISOLATE_CHILD_SIGNALS
+        # Avoid filesystem/lock operations inside the signal handler.
+        signal.signal(signal.SIGINT, lambda *_: setattr(args, 'stop_local', True))
+        ISOLATE_CHILD_SIGNALS = True
+        try:
+            yield
+        finally:
+            ISOLATE_CHILD_SIGNALS = previous_isolation
+            signal.signal(signal.SIGINT, previous_handler)
+            update_session(args, active=False, phase='finished', outcome=args.session_outcome)
 
 
 @contextmanager
@@ -203,8 +353,14 @@ def execute(args, ledger, plan):
     previous_digest = ledger['latest_certificate_digest']
     existing = int(ledger['batches'])
     prior = CHAIN / f'batch-{existing:04d}' / 'certificate.json'
-    instruction = f'check the next {args.count}'
+    continuous = getattr(args, 'mode', 'finite') == 'continuous'
+    instruction = 'check consecutive batches of 9999 until clean stop or the accepted 256-batch limit' if continuous else f'check the next {args.count}'
+    outcome = 'CHAIN_LIMIT_REACHED' if continuous else 'CONDITIONAL_RUN_COMPLETE'
+    update_session(args, initial_end=original_start, end=ledger['end'], completed='0', phase='between_batches')
     for batch in plan:
+        if stop_requested(args):
+            outcome = 'CLEAN_STOPPED'
+            break
         number = batch['number']
         name = f'batch-{number:04d}'
         directory = CHAIN / name
@@ -217,6 +373,9 @@ def execute(args, ledger, plan):
                 'Chain changed during this invocation; stop')
         require(not (ROOT / directory).exists() and not (ROOT / manifest).exists(),
                 'Output appeared during this invocation; stop')
+        if not admit_batch(args, number):
+            outcome = 'CLEAN_STOPPED'
+            break
         authority = 'RUN1-owner-cli-' + datetime.now(timezone.utc).strftime('%Y-%m-%d') + f'-{number:04d}'
         print(f"Batch {number}: [{batch['start']},{batch['end']}) ({batch['width']} integers)", flush=True)
         driver('prepare-authority', '--authority-id', authority, '--base-kind', 'operational',
@@ -251,27 +410,45 @@ def execute(args, ledger, plan):
         previous_digest = digest
         prior = certificate
         remember_tip(ledger)
+        update_session(args, end=ledger['end'], completed=str(int(ledger['end'])-int(original_start)), phase='between_batches', batch=None)
         print(json.dumps(dict(status='VERIFIED_BATCH', **{key: ledger[key] for key in
               ('batches', 'end', 'genesis_digest', 'latest_certificate_digest')}), sort_keys=True), flush=True)
-    print(json.dumps(dict(status='CONDITIONAL_RUN_COMPLETE', run_id=RUN_ID,
-                         added_start=original_start, added_end=ledger['end'], added_count=str(args.count),
-                         snapshot_digest=SNAPSHOT, native_build_digest=BUILD,
-                         **{key: ledger[key] for key in ('batches', 'genesis_digest', 'latest_certificate_digest')}),
-                     sort_keys=True), flush=True)
+    if stop_requested(args):
+        outcome = 'CLEAN_STOPPED'
+    args.session_outcome = outcome
+    summary = dict(status=outcome, run_id=RUN_ID,
+                   added_start=original_start, added_end=ledger['end'], added_count=str(int(ledger['end'])-int(original_start)),
+                   snapshot_digest=SNAPSHOT, native_build_digest=BUILD,
+                   **{key: ledger[key] for key in ('batches', 'genesis_digest', 'latest_certificate_digest')})
+    if not getattr(args, 'defer_summary', False):
+        print_summary(summary)
+    return summary
+
+
+def print_summary(summary):
+    print(json.dumps(summary, sort_keys=True), flush=True)
     print('Continuation receipt saved. Retain the final digests with the aggregate progress record.')
     print('Conditional on the accepted author-reported base; no independent reproduction or world-frontier claim.')
 
 
 def parse_arguments(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', nargs='?', help='Quantity, or optional check-next keyword')
+    parser.add_argument('operation', nargs='?', help='start, stop, or a legacy finite quantity')
     parser.add_argument('quantity', nargs='?', type=int)
     parser.add_argument('--count', type=int, help='Additional integers (legacy option)')
     parser.add_argument('--acknowledge', help='Optional exact acknowledgement; otherwise reuse accepted chain acknowledgement')
     parser.add_argument('--expected-latest', help='Optional explicit digest pin; otherwise audit and discover the current tip')
-    parser.add_argument('--batch-width', type=int, default=14400, help='At most 14400 per batch')
+    parser.add_argument('--batch-width', type=int, default=DEFAULT_WIDTH, help='9999 by default; continuous start requires 9999')
     parser.add_argument('--plan', action='store_true', help='Read-only preflight and plan; execute no batch')
     args = parser.parse_args(argv)
+    args.mode = 'finite'
+    if args.operation in ('start', 'stop'):
+        if args.quantity is not None or args.count is not None or args.batch_width != DEFAULT_WIDTH:
+            parser.error('use start or stop with no quantity; continuous batches are exactly 9999')
+        if args.operation == 'stop' and args.plan:
+            parser.error('stop has no plan option')
+        args.mode = 'continuous' if args.operation == 'start' else 'stop'
+        return args
     if args.operation == 'check-next':
         if args.quantity is None or args.count is not None:
             parser.error('use check-next X with one positive integer quantity')
@@ -293,17 +470,23 @@ def parse_arguments(argv=None):
 def main():
     args = parse_arguments()
     try:
+        if args.mode == 'stop':
+            print(json.dumps(request_stop(), sort_keys=True))
+            return 0
         if args.plan:
             ledger, plan = preflight(args)
-            print(json.dumps(dict(status='PLAN_ONLY', run_id=RUN_ID, added_count=str(args.count),
-                                  start=ledger['end'], end=str(plan[-1]['end']),
+            print(json.dumps(dict(status='PLAN_ONLY', run_id=RUN_ID, mode=args.mode, added_count=str(args.count) if args.count is not None else None,
+                                  start=ledger['end'], end=str(plan[-1]['end']) if plan else ledger['end'],
                                   batches=[{key: str(value) for key, value in batch.items()} for batch in plan]),
                              sort_keys=True))
         else:
-            with operator_lock():
+            args.defer_summary = True
+            with managed_run(args):
                 ledger, plan = preflight(args)
                 remember_tip(ledger)
-                execute(args, ledger, plan)
+                summary = execute(args, ledger, plan)
+            # The operator lock is released before reporting publication readiness.
+            print_summary(summary)
         return 0
     except (StopRun, OSError, ValueError, KeyError) as error:
         print(json.dumps(dict(status='STOPPED', reason=str(error)), sort_keys=True), file=sys.stderr)

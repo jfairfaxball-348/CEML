@@ -4,7 +4,7 @@ The public research website (`jfairfaxball-348/john-fairfaxball-research`, `/col
 
 ## End-of-run command
 
-After the quantity command returns, paste this into PowerShell from any directory:
+After the continuous launcher reports `CLEAN_STOPPED` (or `CHAIN_LIMIT_REACHED`) and returns to the terminal prompt, paste this into PowerShell from any directory:
 
 ```powershell
 python C:/CEML/tools/publication/publish.py

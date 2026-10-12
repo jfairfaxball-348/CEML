@@ -1,21 +1,43 @@
-# Check the next quantity of integers
+# Continuous checking with a clean stop
 
-Paste this into PowerShell, replacing only the final number with the quantity you want:
+Start from the latest verified, committed exclusive endpoint without choosing a quantity:
 
 ```powershell
-python C:\CEML\tools\operator\run_frontier.py 100000
+python C:\CEML\tools\operator\run_frontier.py start
 ```
 
-The absolute path works from any current directory. The command audits the chain and finds its latest verified, committed endpoint E, then checks exactly [E,E+X) for your requested quantity X. No end, batch number, digest or acknowledgement needs to be pasted. It reuses the accepted operational assumption only for this same verified base, snapshot, build and chain.
+The launcher audits the accepted chain and retained published/local anchors, then checks sequential batches of exactly 9999 integers. It reuses the same accepted operational assumption only after the base, build, snapshot and chain verify. It runs in the foreground so the terminal shows every verified batch. No scientific run was started by this procedure edit.
 
-The latest checkpoint means a completed immutable certificate. A checkpoint inside an incomplete batch does not advance the frontier. An uncommitted directory, pending start, abandoned manifest, identity mismatch or failed verification stops continuation without automatic retry, resume, skip or overwrite. Each batch is at most 14400 integers, and the existing chain may have at most 256 batches. A request must fit its remaining capacity; there is no separate 100000-per-invocation cap.
+## Stop after the current batch
 
-The launcher checks the locally frozen published aggregate anchor and, when present, local/frontier/operator_tip.json against the verified chain. It saves that local receipt atomically after each fully verified batch. The receipt is bookkeeping outside batch directories, not a mathematical certificate. Certificate verification, reference replay, chain audit and inspection still precede every extension. The verified digest is also retained and compared in memory between batches.
+In a second PowerShell window, paste:
 
-The owner has removed the separate-device backup requirement. It is optional and is not a prerequisite or outstanding task. The final printed digest and published aggregate progress record remain useful external references. Local receipts alone cannot detect replacement or rollback of all local files together. The offline command performs no network or Git operation.
+```powershell
+python C:\CEML\tools\operator\run_frontier.py stop
+```
 
-After the run finishes, verify and publish the aggregate to GitHub and the website feed with `python C:\CEML\tools\publication\publish.py`. This is a separate owner-invoked network command, not part of scientific execution. To publish live informational progress in the background, separately run `python C:\CEML\tools\publication\live.py start`; use `stop` to stop uploads. See `WEBSITE_PUBLICATION.md` for setup and boundaries.
+`STOP_REQUESTED` acknowledges a request, not completed shutdown. The active batch finishes its preparation, native check, certificate commit, verification, reference replay, full ledger audit and checkpoint inspection. Its continuation receipt is saved before exit. If the request arrives before the next batch is admitted, no new authority, manifest or batch directory is created. The request is tied to the current session and cannot stop a future session. Repeated requests are harmless; no active run returns `NO_ACTIVE_RUN`.
 
-For a read-only rehearsal, append --plan. Legacy --count X, an explicit --acknowledge, an optional exact --expected-latest digest pin, and the spelling check-next X still work. Without an explicit pin, the latest committed endpoint is discovered dynamically on every invocation. Do not infer completion from a partial checkpoint or receipt after an interruption.
+Wait for `CLEAN_STOPPED` and the PowerShell prompt in the run window. The operator lock is released before that final status is printed. You can then publish immediately:
 
-This update changes the operator procedure and convenience launcher outside the frozen verifier identity. It changes no frozen v1/v2 contract, snapshot, worker, checker or batch record. The original 100000-integer run remains recorded in RUN1_PROGRESS.md. The example command above is for owner use; no new scientific quantity was executed while preparing this update.
+```powershell
+python C:\CEML\tools\publication\publish.py
+```
+
+Publication still performs the required independent checks, so upload/merge can take several minutes. A normal clean stop leaves no unfinished successor to quarantine. A verification failure remains a failure and preserves its evidence; requesting a stop never promotes incomplete or mismatched work.
+
+The launcher also treats Ctrl+C as a clean-stop request in this controlled mode. Verifier subprocesses use a separate process group so the signal does not abort the current verification command. The explicit `stop` command is preferable when using a remote terminal. Closing or forcibly killing processes is outside this clean-stop procedure.
+
+## Accepted limits
+
+The owner chose to keep the accepted frozen verifier. This is continuous operation within its existing 256-batch limit, not unlimited verification. At batch 256 it finishes all checks, saves the receipt, releases the lock and reports `CHAIN_LIMIT_REACHED`; publication is ready in the same way. Starting an already full chain reports that state without executing a batch. The build cannot start a second chain at the last endpoint or silently enlarge this limit.
+
+At the current published 122-batch prefix, 134 slots remain: 1339866 additional integers in 9999-wide batches. This capacity is illustrative and declines as batches commit. A separately versioned verifier and acceptance would be needed beyond the existing limit. Frozen v1/v2 records, contracts, identities and historical batch widths remain unchanged.
+
+## Rehearsal and older finite commands
+
+`python C:\CEML\tools\operator\run_frontier.py start --plan` is a read-only rehearsal; it runs no science and shows the remaining bounded plan. Legacy quantity-only, `--count X` and `check-next X` commands remain supported, now defaulting to 9999-wide batches; their last batch may be smaller to meet the exact quantity. An explicit finite `--batch-width` remains capped at 14400. Continuous `start` always requires 9999.
+
+The latest checkpoint means a verified immutable certificate, never a provisional cursor. Pending starts, incomplete directories, abandoned active manifests, mismatched records and failed checks stop continuation without automatic resume, retry, skip or overwrite. The previously interrupted empty attempt of batch 123 was preserved in local quarantine by explicit owner instruction; it is not part of the committed chain.
+
+Control requests and diagnostic state live atomically under ignored `local/frontier/`, outside batch directories. They are bookkeeping, not mathematical certificates. The runner remains offline and performs no Git/network operation. The separate live publisher observes continuous sessions without inventing a requested total. The owner removed the separate-device backup requirement; no backup task is outstanding. See `WEBSITE_PUBLICATION.md` for optional live status and end-of-run publishing.

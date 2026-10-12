@@ -1,6 +1,6 @@
 # CEML — Start Here (post-P0)
 
-**Current PowerShell procedure:** `python C:\CEML\tools\operator\run_frontier.py X`. Change only the final number X. The command discovers and verifies the current committed endpoint and checks the next X integers, with the existing accepted chain assumption. The owner removed the separate-device backup requirement. See [current command](docs/RUN1_ONE_COMMAND.md); this procedure-edit request executes no batch.
+**Current PowerShell procedure:** `python C:\CEML\tools\operator\run_frontier.py start` continues from the latest verified endpoint in batches of exactly 9999, with no quantity. In a second terminal, `python C:\CEML\tools\operator\run_frontier.py stop` requests finishing the active batch and all checks before exit. Then publish with `python C:\CEML\tools\publication\publish.py`. Continuous operation stops cleanly at the accepted 256-batch limit. See [current commands](docs/RUN1_ONE_COMMAND.md). The procedure edit executes no scientific work; backups remain optional.
 
 **Latest published result:** 122 committed and verified batches, covering 1719984 integers through exclusive endpoint `2392518188130440462000`, conditional on the accepted author-reported operational base. See [RUN1 progress](docs/RUN1_PROGRESS.md). The offline runner logs locally; the separate publication command verifies and updates GitHub and the website feed.
 

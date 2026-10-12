@@ -84,6 +84,18 @@ class PublicationTests(unittest.TestCase):
 
 
 class LiveObserverTests(unittest.TestCase):
+    def test_continuous_launcher_has_no_requested_total(self):
+        parsed=live.parse_runner_command('python C:\\CEML\\tools\\operator\\run_frontier.py start')
+        self.assertEqual(parsed,{'mode':'continuous','requested':None})
+        self.assertIsNone(live.parse_runner_command('python C:\\CEML\\tools\\operator\\run_frontier.py start --plan'))
+        with tempfile.TemporaryDirectory() as tmp:
+            chain=Path(tmp);self.fixture(chain,complete=True)
+            value=live.snapshot(chain,{**parsed,'started':0,'started_at':'2026-10-12T00:00:00Z'},10)
+            stopped=live.snapshot(chain,None,10,{**parsed,'started':0,'started_at':'2026-10-12T00:00:00Z'})
+        self.assertEqual(value['session']['completed'],4)
+        self.assertIsNone(value['session']['requested'])
+        self.assertEqual(stopped['state'],'idle')
+
     def test_start_and_stop_manage_only_the_dedicated_watcher_task(self):
         with patch.object(live,'run') as run:
             live.control_task('Start')

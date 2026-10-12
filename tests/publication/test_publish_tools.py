@@ -84,6 +84,16 @@ class PublicationTests(unittest.TestCase):
 
 
 class LiveObserverTests(unittest.TestCase):
+    def test_start_and_stop_manage_only_the_dedicated_watcher_task(self):
+        with patch.object(live,'run') as run:
+            live.control_task('Start')
+            live.control_task('Stop')
+        start = run.call_args_list[0].args[0]
+        stop = run.call_args_list[1].args[0]
+        self.assertIn('Start',start); self.assertIn('Stop',stop)
+        self.assertTrue(any(arg.endswith('watch_task.ps1') for arg in start))
+        self.assertNotIn('run_frontier.py',' '.join(start+stop))
+
     def fixture(self, path, *, complete=False, next_n=102, private=None):
         d=path/'batch-0001'; d.mkdir()
         run=dict(schema='CEML-FRONTIER-2-RUN', run_id='RUN1-operational-0001', base_B=live.BASE,

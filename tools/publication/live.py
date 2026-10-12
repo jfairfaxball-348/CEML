@@ -11,7 +11,7 @@ import subprocess
 import sys
 import time
 
-from github_transport import ROOT, REPO, PublicationError, api, authenticate, commit_files
+from github_transport import ROOT, REPO, PublicationError, api, authenticate, commit_files, run
 
 CHAIN = ROOT / 'local/frontier/run1/RUN1-operational-0001'
 STATE_DIR = ROOT / 'local/frontier/live-publisher'
@@ -181,6 +181,11 @@ def observe(previous):
 
 
 def watch():
+    # pythonw under Task Scheduler has no console. Keep diagnostics local.
+    if sys.stdout is None or sys.stderr is None:
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        log = (STATE_DIR / 'publisher.log').open('a', encoding='utf-8', buffering=1)
+        sys.stdout = sys.stderr = log
     with publisher_lock():
         previous = None
         (STATE_DIR / 'stop').unlink(missing_ok=True)
@@ -203,6 +208,12 @@ def watch():
                 time.sleep(1)
 
 
+def control_task(action):
+    run(['powershell.exe', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+         '-File', str(Path(__file__).with_name('watch_task.ps1')), '-Action', action,
+         '-Python', sys.executable])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=('start', 'stop', 'watch', 'once', 'preview'), nargs='?', default='start')
@@ -213,6 +224,7 @@ def main():
             print(json.dumps(payload, indent=2)); return 0
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         if args.action == 'stop':
+            control_task('Stop')
             (STATE_DIR / 'stop').write_text('stop\n', encoding='ascii')
             print('Stop requested; scientific execution is unaffected.'); return 0
         authenticate()
@@ -222,16 +234,8 @@ def main():
             print('Live status published.'); return 0
         if args.action == 'watch':
             watch(); return 0
-        with publisher_lock():
-            pass
-        log = (STATE_DIR / 'publisher.log').open('ab')
-        try:
-            subprocess.Popen([sys.executable, str(Path(__file__).resolve()), 'watch'], cwd=ROOT,
-                             stdin=subprocess.DEVNULL, stdout=log, stderr=log,
-                             creationflags=subprocess.CREATE_NO_WINDOW | subprocess.DETACHED_PROCESS)
-        finally:
-            log.close()
-        print('Live publisher started in the background. Use the same command with stop to stop it.')
+        control_task('Start')
+        print('Live publisher started as a hidden Windows task with logon and automatic recovery. Use stop to disable uploads.')
         return 0
     except (PublicationError, OSError, ValueError, subprocess.TimeoutExpired) as error:
         print('LIVE_PUBLISHER_STOPPED: ' + str(error), file=sys.stderr)

@@ -1,16 +1,136 @@
 {
   "schema_version": 1,
   "state": "running",
-  "updated_at": "2026-10-13T18:56:10Z",
+  "updated_at": "2026-10-13T18:57:14Z",
   "message": "Local observations; checkpoints are provisional. Verified tally changes only after separate publication.",
   "current_batch": null,
   "session": {
     "requested": null,
-    "completed": 5619438,
+    "completed": 5769423,
     "started_at": "2026-10-13T18:13:48.344653+00:00",
     "mode": "continuous"
   },
   "recent_batches": [
+    {
+      "number": 2468,
+      "start": "2392518188130463909655",
+      "end": "2392518188130463919654",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:57:14Z"
+    },
+    {
+      "number": 2467,
+      "start": "2392518188130463899656",
+      "end": "2392518188130463909655",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:57:10Z"
+    },
+    {
+      "number": 2466,
+      "start": "2392518188130463889657",
+      "end": "2392518188130463899656",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:57:05Z"
+    },
+    {
+      "number": 2465,
+      "start": "2392518188130463879658",
+      "end": "2392518188130463889657",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:57:01Z"
+    },
+    {
+      "number": 2464,
+      "start": "2392518188130463869659",
+      "end": "2392518188130463879658",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:57Z"
+    },
+    {
+      "number": 2463,
+      "start": "2392518188130463859660",
+      "end": "2392518188130463869659",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:52Z"
+    },
+    {
+      "number": 2462,
+      "start": "2392518188130463849661",
+      "end": "2392518188130463859660",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:48Z"
+    },
+    {
+      "number": 2461,
+      "start": "2392518188130463839662",
+      "end": "2392518188130463849661",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:43Z"
+    },
+    {
+      "number": 2460,
+      "start": "2392518188130463829663",
+      "end": "2392518188130463839662",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:39Z"
+    },
+    {
+      "number": 2459,
+      "start": "2392518188130463819664",
+      "end": "2392518188130463829663",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:34Z"
+    },
+    {
+      "number": 2458,
+      "start": "2392518188130463809665",
+      "end": "2392518188130463819664",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:30Z"
+    },
+    {
+      "number": 2457,
+      "start": "2392518188130463799666",
+      "end": "2392518188130463809665",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:26Z"
+    },
+    {
+      "number": 2456,
+      "start": "2392518188130463789667",
+      "end": "2392518188130463799666",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:21Z"
+    },
+    {
+      "number": 2455,
+      "start": "2392518188130463779668",
+      "end": "2392518188130463789667",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:17Z"
+    },
+    {
+      "number": 2454,
+      "start": "2392518188130463769669",
+      "end": "2392518188130463779668",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:56:12Z"
+    },
     {
       "number": 2453,
       "start": "2392518188130463759670",
@@ -50,126 +170,6 @@
       "width": 9999,
       "status": "committed",
       "finished_at": "2026-10-13T18:55:49Z"
-    },
-    {
-      "number": 2448,
-      "start": "2392518188130463709675",
-      "end": "2392518188130463719674",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:44Z"
-    },
-    {
-      "number": 2447,
-      "start": "2392518188130463699676",
-      "end": "2392518188130463709675",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:40Z"
-    },
-    {
-      "number": 2446,
-      "start": "2392518188130463689677",
-      "end": "2392518188130463699676",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:36Z"
-    },
-    {
-      "number": 2445,
-      "start": "2392518188130463679678",
-      "end": "2392518188130463689677",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:31Z"
-    },
-    {
-      "number": 2444,
-      "start": "2392518188130463669679",
-      "end": "2392518188130463679678",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:27Z"
-    },
-    {
-      "number": 2443,
-      "start": "2392518188130463659680",
-      "end": "2392518188130463669679",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:22Z"
-    },
-    {
-      "number": 2442,
-      "start": "2392518188130463649681",
-      "end": "2392518188130463659680",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:18Z"
-    },
-    {
-      "number": 2441,
-      "start": "2392518188130463639682",
-      "end": "2392518188130463649681",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:13Z"
-    },
-    {
-      "number": 2440,
-      "start": "2392518188130463629683",
-      "end": "2392518188130463639682",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:09Z"
-    },
-    {
-      "number": 2439,
-      "start": "2392518188130463619684",
-      "end": "2392518188130463629683",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:55:04Z"
-    },
-    {
-      "number": 2438,
-      "start": "2392518188130463609685",
-      "end": "2392518188130463619684",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:54:59Z"
-    },
-    {
-      "number": 2437,
-      "start": "2392518188130463599686",
-      "end": "2392518188130463609685",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:54:55Z"
-    },
-    {
-      "number": 2436,
-      "start": "2392518188130463589687",
-      "end": "2392518188130463599686",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:54:51Z"
-    },
-    {
-      "number": 2435,
-      "start": "2392518188130463579688",
-      "end": "2392518188130463589687",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:54:46Z"
-    },
-    {
-      "number": 2434,
-      "start": "2392518188130463569689",
-      "end": "2392518188130463579688",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T18:54:42Z"
     }
   ]
 }

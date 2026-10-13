@@ -1,16 +1,48 @@
 {
   "schema_version": 1,
   "state": "running",
-  "updated_at": "2026-10-13T18:17:32Z",
+  "updated_at": "2026-10-13T18:18:36Z",
   "message": "Local observations; checkpoints are provisional. Verified tally changes only after separate publication.",
   "current_batch": null,
   "session": {
     "requested": null,
-    "completed": 0,
+    "completed": 39996,
     "started_at": "2026-10-13T18:13:48.344653+00:00",
     "mode": "continuous"
   },
   "recent_batches": [
+    {
+      "number": 1895,
+      "start": "2392518188130458180228",
+      "end": "2392518188130458190227",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:18:36Z"
+    },
+    {
+      "number": 1894,
+      "start": "2392518188130458170229",
+      "end": "2392518188130458180228",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:18:32Z"
+    },
+    {
+      "number": 1893,
+      "start": "2392518188130458160230",
+      "end": "2392518188130458170229",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:18:28Z"
+    },
+    {
+      "number": 1892,
+      "start": "2392518188130458150231",
+      "end": "2392518188130458160230",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T18:18:24Z"
+    },
     {
       "number": 1891,
       "start": "2392518188130458140232",
@@ -138,38 +170,6 @@
       "width": 9999,
       "status": "committed",
       "finished_at": "2026-10-13T17:42:35Z"
-    },
-    {
-      "number": 1875,
-      "start": "2392518188130457980248",
-      "end": "2392518188130457990247",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T17:42:30Z"
-    },
-    {
-      "number": 1874,
-      "start": "2392518188130457970249",
-      "end": "2392518188130457980248",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T17:42:26Z"
-    },
-    {
-      "number": 1873,
-      "start": "2392518188130457960250",
-      "end": "2392518188130457970249",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T17:42:21Z"
-    },
-    {
-      "number": 1872,
-      "start": "2392518188130457950251",
-      "end": "2392518188130457960250",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T17:42:16Z"
     }
   ]
 }

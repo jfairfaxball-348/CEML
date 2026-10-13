@@ -84,6 +84,29 @@ class PublicationTests(unittest.TestCase):
 
 
 class LiveObserverTests(unittest.TestCase):
+    def test_control_anchor_counts_without_relying_on_certificate_mtime(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            chain=Path(tmp);self.fixture(chain,complete=True)
+            source=dict(mode='continuous',requested=None,started=10**12,started_at='2026-10-13T09:00:00Z',initial_end='100')
+            value=live.snapshot(chain,source,10)
+        self.assertEqual(value['session']['completed'],4)
+
+    def test_current_provisional_prefix_is_clipped_to_session_anchor(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            chain=Path(tmp);self.fixture(chain,next_n=103)
+            source=dict(mode='continuous',requested=None,started=0,started_at='2026-10-13T09:00:00Z',initial_end='102')
+            value=live.snapshot(chain,source,10)
+        self.assertEqual(value['session']['completed'],1)
+
+    def test_control_metadata_and_kernel_identities_never_leave_machine(self):
+        source=dict(mode='continuous',requested=None,started=0,started_at='2026-10-13T09:00:00Z',initial_end='100',pid=12345,token='PRIVATE',stale_active=True)
+        with tempfile.TemporaryDirectory() as tmp,patch.object(live,'CHAIN',Path(tmp)),patch.object(live,'detect',return_value=(source,source)),patch.object(live,'active_runner',side_effect=AssertionError('command visibility dependency')):
+            self.fixture(Path(tmp),complete=True)
+            value,_=live.observe(None)
+        self.assertEqual(value['state'],'running')
+        public=json.dumps(value)
+        for private in ('PRIVATE','12345','initial_end','stale_active','token','pid'):self.assertNotIn(private,public)
+
     def test_continuous_launcher_has_no_requested_total(self):
         parsed=live.parse_runner_command('python C:\\CEML\\tools\\operator\\run_frontier.py start')
         self.assertEqual(parsed,{'mode':'continuous','requested':None})
@@ -155,7 +178,7 @@ class LiveObserverTests(unittest.TestCase):
             with self.assertRaises(ValueError):live.snapshot(chain,None,10)
 
     def test_transport_error_only_retries_live_upload(self):
-        with patch.object(live,'active_runner',side_effect=ValueError('PRIVATE ERROR')):
+        with patch.object(live,'detect',side_effect=ValueError('PRIVATE ERROR')):
             value,_=live.observe(None)
         self.assertEqual(value['state'],'error')
         self.assertNotIn('PRIVATE',json.dumps(value))

@@ -12,6 +12,7 @@ import sys
 import time
 
 from github_transport import ROOT, REPO, PublicationError, api, authenticate, commit_files, run
+from runner_status import detect, UnknownLiveness
 
 CHAIN = ROOT / 'local/frontier/run1/RUN1-operational-0001'
 STATE_DIR = ROOT / 'local/frontier/live-publisher'
@@ -134,14 +135,19 @@ def snapshot(chain, runner, now, previous_session=None):
     session_source = runner or previous_session
     session = None
     if session_source:
-        done = sum(width for width, finished in completed if finished >= session_source['started'])
-        done += current['processed'] if current else 0
+        if 'initial_end' in session_source:
+            anchor = int(session_source['initial_end'])
+            done = sum(max(0, int(b['end']) - max(anchor, int(b['start']))) for b in recent)
+            done += max(0, int(current['start']) + current['processed'] - max(anchor, int(current['start']))) if current else 0
+        else:
+            done = sum(width for width, finished in completed if finished >= session_source['started'])
+            done += current['processed'] if current and datetime.fromisoformat(current['started_at'].replace('Z', '+00:00')).timestamp() >= session_source['started'] else 0
         requested = session_source['requested']
         if requested is not None and done > requested:
             raise ValueError('Observed session progress exceeds request')
         session = dict(requested=requested, completed=done, started_at=session_source['started_at'], mode=session_source.get('mode', 'finite'))
     unfinished = session and session['requested'] is not None and session['completed'] < session['requested']
-    state = 'running' if runner else 'stopped' if current or unfinished else 'idle'
+    state = 'running' if runner else 'stopped' if current or unfinished or session_source and session_source.get('stale_active') else 'idle'
     message = ('Local observations; checkpoints are provisional. Verified tally changes only after separate publication.'
                if runner else 'No verification run active. Live observations do not change the published verified tally.')
     return dict(schema_version=1, state=state, updated_at=iso(now), message=message,
@@ -182,9 +188,24 @@ def publisher_lock():
 
 def observe(previous):
     try:
-        runner = active_runner()
-        payload = snapshot(CHAIN, runner, time.time(), previous)
-        return payload, runner or previous
+        now = time.time()
+        runner, recorded = detect(now)
+        if recorded is None:
+            runner = active_runner()  # compatibility only when no managed control/lock exists
+        payload = snapshot(CHAIN, runner, now, recorded or previous)
+        return payload, recorded or runner or previous
+    except UnknownLiveness as error:
+        # Retain aggregate details; uncertain visibility must not imply stopped.
+        try:
+            recorded = error.source or previous
+            payload = snapshot(CHAIN, None, time.time(), recorded)
+            payload.update(state='error', message='Run activity could not be confirmed. Last observed progress is informational; audited publication is unchanged.')
+            return payload, recorded
+        except (OSError, ValueError, KeyError):
+            pass
+        return dict(schema_version=1, state='error', updated_at=iso(time.time()),
+                    message='Local status needs review. No work is promoted by the live publisher.',
+                    current_batch=None, session=None, recent_batches=[]), previous
     except (OSError, ValueError, KeyError, subprocess.TimeoutExpired):
         return dict(schema_version=1, state='error', updated_at=iso(time.time()),
                     message='Local status needs review. No work is promoted by the live publisher.',

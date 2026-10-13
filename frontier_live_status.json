@@ -1,10 +1,15 @@
 {
   "schema_version": 1,
   "state": "paused",
-  "updated_at": "2026-10-13T12:20:25Z",
-  "message": "Live publisher stopped. The verification runner is unaffected.",
+  "updated_at": "2026-10-13T12:41:41Z",
+  "message": "Live publisher remains paused. Monitoring validation completed; scientific execution is unaffected.",
   "current_batch": null,
-  "session": null,
+  "session": {
+    "requested": null,
+    "completed": 119988,
+    "started_at": "2026-10-13T10:20:44.046501+00:00",
+    "mode": "continuous"
+  },
   "recent_batches": [
     {
       "number": 227,

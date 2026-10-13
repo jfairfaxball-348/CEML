@@ -1,7 +1,7 @@
-"""Owner-invoked continuation using the unchanged CEML-FRONTIER-2 CLI.
+"""Owner-invoked continuation using V2 or explicitly accepted SESSION-I1.
 
 This operator convenience layer is outside the frozen verifier identity.
-It never imports or modifies verifier code or writes batch records itself.
+It never modifies frozen verifier code or writes batch records itself.
 """
 
 import argparse
@@ -37,6 +37,7 @@ TIP = Path('local/frontier/operator_tip.json')
 CONTROL = Path('local/frontier/operator-session.json')
 DEFAULT_WIDTH = 9999
 ISOLATE_CHILD_SIGNALS = False
+SESSION_CLIENT = None
 
 
 class StopRun(Exception):
@@ -67,7 +68,53 @@ def command(arguments, status):
 
 
 def driver(*arguments, status):
+    if SESSION_CLIENT is not None and arguments[0] in ('ledger', 'verify-batch', 'prepare-manifest', 'pilot', 'replay', 'inspect'):
+        value = SESSION_CLIENT.call(arguments)
+        require(value.get('status') == status, 'Stopped: ' + json.dumps(value, sort_keys=True))
+        return value
     return command([DRIVER, *map(str, arguments)], status)
+
+
+@contextmanager
+def verification_session():
+    """Opt-in only. No acceptance means the unchanged frozen CLI execution path."""
+    global SESSION_CLIENT
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/session_i1'))
+    from identity import accepted
+    if not accepted():
+        yield
+        return
+    from client import Client
+    print('SESSION-I1: auditing the full chain once and protecting verified files.', flush=True)
+    with Client(ROOT / CHAIN) as client:
+        SESSION_CLIENT = client
+        try:
+            yield
+        finally:
+            SESSION_CLIENT = None
+
+
+def accept_incremental():
+    """An owner action only; never starts a scientific batch."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/session_i1'))
+    from identity import ACCEPTANCE, PROFILE, digest
+    with operator_lock():
+        build = command(['tools/frontier/f1_build.py', '--verify'], 'PASS')
+        require(build.get('digest') == BUILD, 'Accepted V2 build identity mismatch')
+        status = subprocess.run(['git', 'status', '--porcelain=v1'], cwd=ROOT, capture_output=True, text=True)
+        require(status.returncode == 0 and not status.stdout.strip(), 'Working tree must be clean before acceptance')
+        identity = digest()
+        print('Accept execution profile ' + PROFILE + ' at digest ' + identity + '.', flush=True)
+        print('Read docs/SESSION_I1_VALIDATION.md first. This changes session execution; V2 records and publication audits remain unchanged.', flush=True)
+        require(input('Type ACCEPT-SESSION-I1 to accept, or anything else to cancel: ').strip() == 'ACCEPT-SESSION-I1', 'Acceptance canceled')
+        value = dict(profile=PROFILE, profile_digest=identity, v2_build_digest=BUILD, acknowledgement='ACCEPT-SESSION-I1')
+        from tempfile import NamedTemporaryFile
+        with NamedTemporaryFile(dir=ACCEPTANCE.parent, delete=False) as handle:
+            name = handle.name
+            handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')).encode('ascii'))
+            handle.flush(); os.fsync(handle.fileno())
+        os.replace(name, ACCEPTANCE)
+        return dict(status='PROFILE_ACCEPTED_NOT_EXECUTED', **value)
 
 
 def batch_plan(start, count, existing, width):
@@ -433,7 +480,7 @@ def print_summary(summary):
 
 def parse_arguments(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', nargs='?', help='start, stop, or a legacy finite quantity')
+    parser.add_argument('operation', nargs='?', help='start, stop, accept-incremental, or a legacy finite quantity')
     parser.add_argument('quantity', nargs='?', type=int)
     parser.add_argument('--count', type=int, help='Additional integers (legacy option)')
     parser.add_argument('--acknowledge', help='Optional exact acknowledgement; otherwise reuse accepted chain acknowledgement')
@@ -442,6 +489,11 @@ def parse_arguments(argv=None):
     parser.add_argument('--plan', action='store_true', help='Read-only preflight and plan; execute no batch')
     args = parser.parse_args(argv)
     args.mode = 'finite'
+    if args.operation == 'accept-incremental':
+        if args.quantity is not None or args.count is not None or args.plan or args.batch_width != DEFAULT_WIDTH:
+            parser.error('accept-incremental has no quantity or plan')
+        args.mode = 'accept'
+        return args
     if args.operation in ('start', 'stop'):
         if args.quantity is not None or args.count is not None or args.batch_width != DEFAULT_WIDTH:
             parser.error('use start or stop with no quantity; continuous batches are exactly 9999')
@@ -470,6 +522,9 @@ def parse_arguments(argv=None):
 def main():
     args = parse_arguments()
     try:
+        if args.mode == 'accept':
+            print(json.dumps(accept_incremental(), sort_keys=True))
+            return 0
         if args.mode == 'stop':
             print(json.dumps(request_stop(), sort_keys=True))
             return 0
@@ -481,7 +536,7 @@ def main():
                              sort_keys=True))
         else:
             args.defer_summary = True
-            with managed_run(args):
+            with managed_run(args), verification_session():
                 ledger, plan = preflight(args)
                 remember_tip(ledger)
                 summary = execute(args, ledger, plan)

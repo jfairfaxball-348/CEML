@@ -1,5 +1,17 @@
 # CEML Agent Instructions — active from P0 pivot
 
+**Session optimisation engineering — owner request, 2026-10-13:** investigate,
+profile and integrate the progressive-verification optimisation without running
+additional scientific batches. `CEML-SESSION-I1` is a separately versioned
+prospective execution profile outside the frozen V2 identity. Preserve all V2
+bytes/records and the 256-batch cap. Full-chain replay at startup and independent
+frozen-V2 publication auditing remain required. Only the owner may invoke
+`run_frontier.py accept-incremental` and type `ACCEPT-SESSION-I1` after reading
+`docs/SESSION_I1_VALIDATION.md`; an engineering merge is not profile acceptance.
+Before that acceptance, start/stop retain the original V2 execution path. This
+engineering request permits designated small fixtures and read-only replay of
+existing certificates, never new scientific batches or agent acceptance.
+
 **Continuous operator procedure — owner update, 2026-10-12:** the owner requested quantity-free sequential execution in batches of 9999 and a clean stop that finishes the current batch before publication. Use `python C:\CEML\tools\operator\run_frontier.py start`; in a second terminal use the same path with `stop`. The owner chose to keep the accepted verifier and stop cleanly at its 256-batch limit. A stop request prevents the next admission; an admitted batch must finish certificate verification, replay, full ledger audit, inspection and receipt saving. `CLEAN_STOPPED`/`CHAIN_LIMIT_REACHED` is printed only after releasing the operator lock. Control state is separate ignored bookkeeping, not a certificate. Legacy finite quantity commands remain available, with default width 9999. The owner runs science; this procedure-edit request runs no quantity and grants no agent continuous execution. Frozen v1/v2 identities/contracts and every existing batch record remain unchanged. This supersedes the quantity-only procedure as the default handoff only. See docs/RUN1_ONE_COMMAND.md.
 
 

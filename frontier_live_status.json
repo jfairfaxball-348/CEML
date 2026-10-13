@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "state": "paused",
-  "updated_at": "2026-10-13T12:41:41Z",
-  "message": "Live publisher remains paused. Monitoring validation completed; scientific execution is unaffected.",
+  "state": "running",
+  "updated_at": "2026-10-13T14:27:20Z",
+  "message": "Local observations; checkpoints are provisional. Verified tally changes only after separate publication.",
   "current_batch": null,
   "session": {
     "requested": null,
-    "completed": 119988,
-    "started_at": "2026-10-13T10:20:44.046501+00:00",
+    "completed": 0,
+    "started_at": "2026-10-13T14:26:52.678850+00:00",
     "mode": "continuous"
   },
   "recent_batches": [

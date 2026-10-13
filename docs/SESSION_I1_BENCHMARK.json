@@ -1,0 +1,49 @@
+{
+  "cached_ledger_median_seconds": 0.013828299997840077,
+  "cases": [
+    {
+      "batch": 3,
+      "digest": "ab213f7ba9016bc54afe67873747e605dd88813480a695e8fb54b9b0821f46e6",
+      "i1_samples": [
+        0.18723079999472247,
+        0.2629151000001002,
+        0.3015995000023395
+      ],
+      "i1_seconds": 0.2629151000001002,
+      "legacy_seconds": 2.7834404000022914,
+      "speedup": 10.58684115138777,
+      "width": 14400
+    },
+    {
+      "batch": 64,
+      "digest": "af5d7333b13c34eb4021322a6f22ab150cace99fe6afe13a31384e4314495aeb",
+      "i1_samples": [
+        0.30010000000038417,
+        0.3038442999968538,
+        0.30133919999934733
+      ],
+      "i1_seconds": 0.30133919999934733,
+      "legacy_seconds": 22.222639899999194,
+      "speedup": 73.74626301539038,
+      "width": 14400
+    },
+    {
+      "batch": 208,
+      "digest": "f15d3f8862a7cbd05f3cbcc5d37d083949dc330c77b6e776185dc107b86b18f4",
+      "i1_samples": [
+        0.2133754000024055,
+        0.1543283999999403,
+        0.15878820000216365
+      ],
+      "i1_seconds": 0.15878820000216365,
+      "legacy_seconds": 77.61820779999834,
+      "speedup": 488.8159686862167,
+      "width": 9999
+    }
+  ],
+  "full_startup_seconds": 52.46369029999914,
+  "historical_files_unchanged": 1456,
+  "profile_digest": "823a2d62a074b16fd81b3156804e949d74b497f11d8705c3f13529376024ceb3",
+  "scope": "read-only existing certificates; no scientific batches",
+  "v2_build_digest": "c0263b353e05b9f3d09730e67d321254952c7dbdc2a6d892f7ffe2b14b89c032"
+}

@@ -3,6 +3,15 @@
 **Authoritative current phase:** RUN1 — OWNER-AUTHORISED 2026-10-12 ON THE OPERATIONAL BASE; OFFLINE PILOT RUN BY THE OWNER UNDER docs/RUN1_OPERATOR_RUNBOOK.md
 **Scientific execution authorization:** AUTHORISED
 
+**Session optimisation engineering — 2026-10-13:** the owner authorised profiling,
+implementation, adversarial fixture tests and GitHub integration, with no new
+scientific batches. The prospective `CEML-SESSION-I1` execution profile retains
+the accepted V2 build/record format and requires a separately recorded owner
+acceptance before activation. Without that acceptance, the existing operator
+uses the original V2 path. Full startup and publication audits remain mandatory.
+See `docs/SESSION_I1_PROTOCOL.md` and `docs/SESSION_I1_VALIDATION.md`. This does not
+change the scientific aggregate, assumption, phase, frozen identity or chain cap.
+
 **Continuous operator update — 2026-10-12:** the owner requested `python C:\CEML\tools\operator\run_frontier.py start` with no quantity, sequential 9999-wide batches, and the same command with `stop` in a second terminal to finish the current batch and all verification before exit. The owner explicitly chose preserving the accepted verifier and stopping cleanly at 256 batches for now. The receipt and full verification precede ready status, which is printed after releasing the lock. This procedure change performs no scientific execution and changes no frozen identity or historical record. Legacy finite commands remain supported; the quantity-only wording below is the prior procedure. See `docs/RUN1_ONE_COMMAND.md`.
 
 

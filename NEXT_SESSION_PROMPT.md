@@ -1,5 +1,13 @@
 # RUN1 handoff
 
+Session optimisation I1 is a prospective execution profile. Read
+`docs/SESSION_I1_VALIDATION.md` before resuming with it. Only the owner may run
+`python C:\CEML\tools\operator\run_frontier.py accept-incremental` and type
+`ACCEPT-SESSION-I1`. Engineering integration alone does not activate it. Existing
+start/stop commands keep the original V2 path until that acceptance is recorded.
+Agents must not accept the profile or run additional scientific batches under
+the optimisation engineering request.
+
 For owner-run continuous continuation:
 
 ```powershell

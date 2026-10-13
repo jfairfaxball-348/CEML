@@ -21,19 +21,19 @@
   },
   "coverage": {
     "start": "2392518188130438742016",
-    "end": "2392518188130441511895",
-    "integers": "2769879"
+    "end": "2392518188130441801866",
+    "integers": "3059850"
   },
   "unresolved": 0,
   "genesis_digest": "a416bf0f89ebdb16911baf830b6c375d280829bd58587dd7787e36f5d3c53caf",
-  "latest_certificate_digest": "b50202de60e68792bffbf67b820bd9d03c8412eb2d77c145eae9e99481eece60",
+  "latest_certificate_digest": "a6ab30751d0762f10f783bebf858f846aaf948098db2879a38099b2881e61565",
   "rule_counts": {
-    "E2": 1384940,
-    "Q4": 692470,
-    "P3": 230823,
-    "M9": 76941,
-    "S2K4-03": 96176,
-    "EXPLICIT": 288529
+    "E2": 1529925,
+    "Q4": 764963,
+    "P3": 254988,
+    "M9": 84995,
+    "S2K4-03": 106245,
+    "EXPLICIT": 318734
   },
   "batches": [
     {
@@ -1624,6 +1624,209 @@
       "end": "2392518188130441511895",
       "width": 9999,
       "certificate_digest": "b50202de60e68792bffbf67b820bd9d03c8412eb2d77c145eae9e99481eece60"
+    },
+    {
+      "number": 228,
+      "start": "2392518188130441511895",
+      "end": "2392518188130441521894",
+      "width": 9999,
+      "certificate_digest": "0044d85dafa34fcf86567d9ae48883c132acbe31cf128759e2f5b18053034be9"
+    },
+    {
+      "number": 229,
+      "start": "2392518188130441521894",
+      "end": "2392518188130441531893",
+      "width": 9999,
+      "certificate_digest": "847b964e9593aa49fc13ff165c8552f377188ac4e2edaab1b7290fdb87559209"
+    },
+    {
+      "number": 230,
+      "start": "2392518188130441531893",
+      "end": "2392518188130441541892",
+      "width": 9999,
+      "certificate_digest": "146e44c4d261e616a5e87bff1a90d912ff30e5f08ad217d9bb0431601a1f852f"
+    },
+    {
+      "number": 231,
+      "start": "2392518188130441541892",
+      "end": "2392518188130441551891",
+      "width": 9999,
+      "certificate_digest": "dac896cb65033e1b40238dc99a3a7548ce931fc15206e93075e0f18e08740b1c"
+    },
+    {
+      "number": 232,
+      "start": "2392518188130441551891",
+      "end": "2392518188130441561890",
+      "width": 9999,
+      "certificate_digest": "e3b160025dc85dd71f93fef185c6a853d2183c91e2b185345990794ca40316ff"
+    },
+    {
+      "number": 233,
+      "start": "2392518188130441561890",
+      "end": "2392518188130441571889",
+      "width": 9999,
+      "certificate_digest": "820d24f46b363eb4d3c11ac185ee7f5daf8c3aba17b8e8b20bd3baf119774c81"
+    },
+    {
+      "number": 234,
+      "start": "2392518188130441571889",
+      "end": "2392518188130441581888",
+      "width": 9999,
+      "certificate_digest": "db357f09c356ad9f6517365a4716d3216c948dc5c2af3b02745a508b3471012c"
+    },
+    {
+      "number": 235,
+      "start": "2392518188130441581888",
+      "end": "2392518188130441591887",
+      "width": 9999,
+      "certificate_digest": "43fd1e38cce4545454ed1612c489b649f2b1fdd5bfdb3d4b245a11345bf12cbf"
+    },
+    {
+      "number": 236,
+      "start": "2392518188130441591887",
+      "end": "2392518188130441601886",
+      "width": 9999,
+      "certificate_digest": "4b36a73763e05365638e665f2b09ebd7b9a94b36f1dcec8e54c1f6386dc4ff3a"
+    },
+    {
+      "number": 237,
+      "start": "2392518188130441601886",
+      "end": "2392518188130441611885",
+      "width": 9999,
+      "certificate_digest": "1e5293e4590158fa64f9d45193408bd882eb9f7c0adbbc2c872552745fadb5d5"
+    },
+    {
+      "number": 238,
+      "start": "2392518188130441611885",
+      "end": "2392518188130441621884",
+      "width": 9999,
+      "certificate_digest": "482d9c68b01aa70ab529e8a1e14ada8a81a05826ee2ae101d373b7fa7c1a7950"
+    },
+    {
+      "number": 239,
+      "start": "2392518188130441621884",
+      "end": "2392518188130441631883",
+      "width": 9999,
+      "certificate_digest": "a17b69f5615afbf6ef271321cddb820fb888a075cc7bf4f2018451bb50351e86"
+    },
+    {
+      "number": 240,
+      "start": "2392518188130441631883",
+      "end": "2392518188130441641882",
+      "width": 9999,
+      "certificate_digest": "a5f004050c2e1b6285229e3800c5afb746b747a8b85752b260c30df4476fb937"
+    },
+    {
+      "number": 241,
+      "start": "2392518188130441641882",
+      "end": "2392518188130441651881",
+      "width": 9999,
+      "certificate_digest": "f6162bc1291b027b3b4cbdadb5b2debb0a515f5e04c8ccc3a0ea9a1f9b6ec2f2"
+    },
+    {
+      "number": 242,
+      "start": "2392518188130441651881",
+      "end": "2392518188130441661880",
+      "width": 9999,
+      "certificate_digest": "1c1bce8b0a20199184473b729a2d22184d04e17c0e3f51df7919d493f32b6644"
+    },
+    {
+      "number": 243,
+      "start": "2392518188130441661880",
+      "end": "2392518188130441671879",
+      "width": 9999,
+      "certificate_digest": "c3c3ef9d241de393bc2d98968d61d41b26ab791298277e88dcf0287076b2d648"
+    },
+    {
+      "number": 244,
+      "start": "2392518188130441671879",
+      "end": "2392518188130441681878",
+      "width": 9999,
+      "certificate_digest": "a08cb3ba44cc80a5f0f3479700f244f619734ff3275c6a785d1559df04c473d6"
+    },
+    {
+      "number": 245,
+      "start": "2392518188130441681878",
+      "end": "2392518188130441691877",
+      "width": 9999,
+      "certificate_digest": "7ae5d90c0e35bc2a896d10a847b3445c7f804cdd351c74a67f405efabf15cd75"
+    },
+    {
+      "number": 246,
+      "start": "2392518188130441691877",
+      "end": "2392518188130441701876",
+      "width": 9999,
+      "certificate_digest": "b8908b5a1733a7cfad183155fcbec1663ad3967e41c93d190d0e76c9909e1191"
+    },
+    {
+      "number": 247,
+      "start": "2392518188130441701876",
+      "end": "2392518188130441711875",
+      "width": 9999,
+      "certificate_digest": "dab4088fdb0e8dce559d10d96f59bae8352d72c6ec3923f1baa3a2d9f5380511"
+    },
+    {
+      "number": 248,
+      "start": "2392518188130441711875",
+      "end": "2392518188130441721874",
+      "width": 9999,
+      "certificate_digest": "e2851929612fa24afa46123c505e229f96b5de4bafeb46e8e1adc7aaa1886f47"
+    },
+    {
+      "number": 249,
+      "start": "2392518188130441721874",
+      "end": "2392518188130441731873",
+      "width": 9999,
+      "certificate_digest": "eef643c66580ab689e4782d44edc51a28ae5bfeead865a44461b6dce73bd033a"
+    },
+    {
+      "number": 250,
+      "start": "2392518188130441731873",
+      "end": "2392518188130441741872",
+      "width": 9999,
+      "certificate_digest": "698061584d0060f240f4b57b704f5caa33c05a23dd844a07e65a845b56fe44c8"
+    },
+    {
+      "number": 251,
+      "start": "2392518188130441741872",
+      "end": "2392518188130441751871",
+      "width": 9999,
+      "certificate_digest": "a4412a2dd8b2720e67b8cc011576c8da6b575ae047ca7f911bfe716282c4b604"
+    },
+    {
+      "number": 252,
+      "start": "2392518188130441751871",
+      "end": "2392518188130441761870",
+      "width": 9999,
+      "certificate_digest": "3bab3db22e5ed697f87432a8c1007161757d518a5c5a0c7381052fa7c3ed084c"
+    },
+    {
+      "number": 253,
+      "start": "2392518188130441761870",
+      "end": "2392518188130441771869",
+      "width": 9999,
+      "certificate_digest": "ca62386f1b16a85c3fc8cf2bbc342ace2d1c470dd1984a71329c6c1d855230b9"
+    },
+    {
+      "number": 254,
+      "start": "2392518188130441771869",
+      "end": "2392518188130441781868",
+      "width": 9999,
+      "certificate_digest": "4ac5150cef71987c34482b0458129dd41583167d9c15dcdbb1a3bd749765e69a"
+    },
+    {
+      "number": 255,
+      "start": "2392518188130441781868",
+      "end": "2392518188130441791867",
+      "width": 9999,
+      "certificate_digest": "d8f6cae5e528db67d5f4efb45c647331317a8dc288bb21028b46670490099e9b"
+    },
+    {
+      "number": 256,
+      "start": "2392518188130441791867",
+      "end": "2392518188130441801866",
+      "width": 9999,
+      "certificate_digest": "a6ab30751d0762f10f783bebf858f846aaf948098db2879a38099b2881e61565"
     }
   ],
   "claim": "Every integer in the covered interval reaches 1, conditional on the author-reported base. This is a finite, conditional computational result: not a proof of the Collatz conjecture, not a reproduction of the base, and not a claim of a world first or of global frontier extension."

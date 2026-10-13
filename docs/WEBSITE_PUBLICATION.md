@@ -1,3 +1,14 @@
+# I2 continuous extension — 2026-10-13
+
+The observer supports batch numbers beyond 256 and sorts them numerically beyond
+9999. For I2 extension publication, a separate fresh subprocess independently
+replays all retained certificates through unchanged frozen V2 verification with
+authenticated predecessors, checks the exact 256-batch extension anchor, and
+re-verifies/replays/inspects the final certificate. It never reuses runner RAM or
+saved trust. Original publication auditing remains for the <=256 prefix. Public
+prose identifies the separately accepted I2 extension; historical rows and V2
+identities remain unchanged. See `SESSION_I2_PROTOCOL.md`.
+
 # Website and GitHub publication
 
 The public research website (`jfairfaxball-348/john-fairfaxball-research`, `/collatz`) reads `frontier_progress_for_website.json` from CEML `main` on every request. That JSON is derived from the authoritative aggregate `docs/RUN1_PROGRESS.md`. Publishing it updates the website tally without a website rebuild.

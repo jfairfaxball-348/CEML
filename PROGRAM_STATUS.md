@@ -1,3 +1,15 @@
+# Continuous extension engineering — 2026-10-13
+
+The owner requests indefinite launcher operation beyond the completed 256-batch
+prefix. `CEML-SESSION-I2` is a separately versioned prospective execution extension
+using unchanged V2-format certificates and the accepted V2 build. It requires
+owner-only `accept-continuous` / `ACCEPT-SESSION-I2` after reading
+`docs/SESSION_I2_VALIDATION.md`; engineering integration is not acceptance. All
+existing scientific records and frozen V2/I1 source/contracts remain unchanged.
+No scientific batch is executed by this engineering work. Original full startup
+and independent publication replay remain mandatory. Previous cap wording below
+remains historical for the original V2/I1 path. See `docs/SESSION_I2_PROTOCOL.md`.
+
 # CEML Programme Status
 
 **Authoritative current phase:** RUN1 — OWNER-AUTHORISED 2026-10-12 ON THE OPERATIONAL BASE; OFFLINE PILOT RUN BY THE OWNER UNDER docs/RUN1_OPERATOR_RUNBOOK.md

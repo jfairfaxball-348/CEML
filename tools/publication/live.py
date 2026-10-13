@@ -88,9 +88,10 @@ def parse_runner_command(line):
 def snapshot(chain, runner, now, previous_session=None):
     """Only an allowlist of aggregate fields leaves the computer."""
     recent, pending, completed = [], [], []
-    dirs = sorted(chain.glob('batch-*'))
-    if len(dirs) > 256 or any(not re.fullmatch(r'batch-[0-9]{4}', d.name) for d in dirs):
+    dirs = list(chain.glob('batch-*'))
+    if any(not re.fullmatch(r'batch-[0-9]{4,}', d.name) or d.name != f'batch-{int(d.name[6:]):04d}' for d in dirs):
         raise ValueError('Unexpected local batch layout')
+    dirs.sort(key=lambda d: int(d.name[6:]))
     for directory in dirs:
         number = int(directory.name[6:])
         cert_path = directory / 'certificate.json'

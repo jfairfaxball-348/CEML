@@ -1,5 +1,20 @@
 # CEML Agent Instructions — active from P0 pivot
 
+**Continuous extension — owner request, 2026-10-13:** the owner now requests
+indefinite launcher operation. This supersedes the choice to retain the 256-batch
+execution ceiling only for separately accepted `CEML-SESSION-I2`. Develop/integrate
+that prospective profile, preserving every frozen V2/I1 file and scientific record.
+I2 anchors the completed V2 prefix at batch 256 digest
+`a6ab30751d0762f10f783bebf858f846aaf948098db2879a38099b2881e61565`.
+Full startup and independent publication replay remain mandatory. Only the owner
+may invoke `run_frontier.py accept-continuous` and type `ACCEPT-SESSION-I2` after
+reading `docs/SESSION_I2_VALIDATION.md`. Agents may test designated small fixtures
+and replay existing records; never accept the profile or execute new science.
+Existing start/stop/scheduled-task interfaces stay unchanged; admission remains
+one 9999-integer batch at a time. This authorises removing the scheduler's 48-hour
+timeout without launching its task. Frozen V2 still refuses its own 257th admission.
+Longer chains are I2 extensions with V2-format certificates, not altered V2 evidence.
+
 **Session optimisation engineering — owner request, 2026-10-13:** investigate,
 profile and integrate the progressive-verification optimisation without running
 additional scientific batches. `CEML-SESSION-I1` is a separately versioned

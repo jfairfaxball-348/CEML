@@ -40,6 +40,11 @@ ISOLATE_CHILD_SIGNALS = False
 SESSION_CLIENT = None
 
 
+def continuous_profile():
+    """Only the separately accepted I2 session removes the legacy chain cap."""
+    return SESSION_CLIENT is not None and getattr(SESSION_CLIENT, 'profile', None) == 'CEML-SESSION-I2'
+
+
 class StopRun(Exception):
     pass
 
@@ -79,6 +84,19 @@ def driver(*arguments, status):
 def verification_session():
     """Opt-in only. No acceptance means the unchanged frozen CLI execution path."""
     global SESSION_CLIENT
+    sys.path.insert(0, str(ROOT))
+    from tools.session_i2.identity import ACCEPTANCE as I2_ACCEPTANCE, accepted as accepted_i2
+    if I2_ACCEPTANCE.exists():
+        require(accepted_i2(), 'Invalid I2 acceptance')
+        from tools.session_i2.client import Client as I2Client
+        print('SESSION-I2: auditing the full chain once; continuous batches have no fixed count limit.', flush=True)
+        with I2Client(ROOT / CHAIN) as client:
+            SESSION_CLIENT = client
+            try:
+                yield
+            finally:
+                SESSION_CLIENT = None
+        return
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/session_i1'))
     from identity import accepted
     if not accepted():
@@ -94,10 +112,18 @@ def verification_session():
             SESSION_CLIENT = None
 
 
-def accept_incremental():
+def accept_incremental(continuous=False):
     """An owner action only; never starts a scientific batch."""
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/session_i1'))
-    from identity import ACCEPTANCE, PROFILE, digest
+    if continuous:
+        sys.path.insert(0, str(ROOT))
+        from tools.session_i2.identity import ACCEPTANCE, PROFILE, digest
+        acknowledgement = 'ACCEPT-SESSION-I2'
+        validation = 'docs/SESSION_I2_VALIDATION.md'
+    else:
+        from identity import ACCEPTANCE, PROFILE, digest
+        acknowledgement = 'ACCEPT-SESSION-I1'
+        validation = 'docs/SESSION_I1_VALIDATION.md'
     with operator_lock():
         build = command(['tools/frontier/f1_build.py', '--verify'], 'PASS')
         require(build.get('digest') == BUILD, 'Accepted V2 build identity mismatch')
@@ -105,9 +131,9 @@ def accept_incremental():
         require(status.returncode == 0 and not status.stdout.strip(), 'Working tree must be clean before acceptance')
         identity = digest()
         print('Accept execution profile ' + PROFILE + ' at digest ' + identity + '.', flush=True)
-        print('Read docs/SESSION_I1_VALIDATION.md first. This changes session execution; V2 records and publication audits remain unchanged.', flush=True)
-        require(input('Type ACCEPT-SESSION-I1 to accept, or anything else to cancel: ').strip() == 'ACCEPT-SESSION-I1', 'Acceptance canceled')
-        value = dict(profile=PROFILE, profile_digest=identity, v2_build_digest=BUILD, acknowledgement='ACCEPT-SESSION-I1')
+        print('Read ' + validation + ' first. This changes session execution; V2 record bytes remain unchanged.', flush=True)
+        require(input('Type ' + acknowledgement + ' to accept, or anything else to cancel: ').strip() == acknowledgement, 'Acceptance canceled')
+        value = dict(profile=PROFILE, profile_digest=identity, v2_build_digest=BUILD, acknowledgement=acknowledgement)
         from tempfile import NamedTemporaryFile
         with NamedTemporaryFile(dir=ACCEPTANCE.parent, delete=False) as handle:
             name = handle.name
@@ -117,21 +143,31 @@ def accept_incremental():
         return dict(status='PROFILE_ACCEPTED_NOT_EXECUTED', **value)
 
 
-def batch_plan(start, count, existing, width):
+def batch_plan(start, count, existing, width, unlimited=False):
     require(count >= 1, 'Count must be positive')
     require(1 <= width <= 14400, 'Batch width must be from 1 to 14400')
-    require(1 <= existing <= 256, 'Invalid existing batch count')
-    require(count <= (256 - existing) * width, 'Requested continuation exceeds the 256-batch limit')
+    require(1 <= existing and (unlimited or existing <= 256), 'Invalid existing batch count')
+    require(unlimited or count <= (256 - existing) * width, 'Requested continuation exceeds the 256-batch limit')
     batches = []
     remaining = count
     while remaining:
         span = min(width, remaining)
         number = existing + len(batches) + 1
-        require(number <= 256, 'Requested continuation exceeds the 256-batch limit')
+        require(unlimited or number <= 256, 'Requested continuation exceeds the 256-batch limit')
         batches.append(dict(number=number, start=start, end=start + span, width=span))
         start += span
         remaining -= span
     return batches
+
+
+def continuous_batches(start, existing, width=DEFAULT_WIDTH):
+    """Lazy admission: never allocate an infinite plan or pre-authorise work."""
+    require(existing >= 1 and width == DEFAULT_WIDTH, 'Invalid continuous plan')
+    number = existing + 1
+    while True:
+        yield dict(number=number, start=start, end=start + width, width=width)
+        number += 1
+        start += width
 
 
 def published_anchor():
@@ -151,19 +187,23 @@ def published_anchor():
     return anchor
 
 
-def check_anchor(anchor, ledger):
+def check_anchor(anchor, ledger, audited_anchors=None):
     require(isinstance(anchor, dict) and set(anchor) == {'batches', 'end', 'latest_certificate_digest', 'genesis_digest'}
             and all(isinstance(v, str) for v in anchor.values()), 'Continuation anchor shape mismatch')
-    require(re.fullmatch('[1-9][0-9]{0,2}', anchor['batches']) is not None and
+    require(re.fullmatch('[1-9][0-9]{0,19}', anchor['batches']) is not None and
             re.fullmatch('[1-9][0-9]{0,8191}', anchor['end']) is not None and
             re.fullmatch('[0-9a-f]{64}', anchor['latest_certificate_digest']) is not None,
             'Continuation anchor encoding mismatch')
     number = int(anchor['batches'])
-    require(1 <= number <= int(ledger['batches']) <= 256 and
+    require(1 <= number <= int(ledger['batches']) and (continuous_profile() or audited_anchors is not None or int(ledger['batches']) <= 256) and
             int(anchor['end']) <= int(ledger['end']) and anchor['genesis_digest'] == GENESIS,
             'Chain rolled back or differs from retained continuation anchor')
-    result = driver('verify-batch', '--certificate', CHAIN / f'batch-{number:04d}' / 'certificate.json',
-                    status='conditional_complete')
+    if audited_anchors is None:
+        result = driver('verify-batch', '--certificate', CHAIN / f'batch-{number:04d}' / 'certificate.json',
+                        status='conditional_complete')
+    else:
+        require(str(number) in audited_anchors, 'Anchor missing from independent audit')
+        result = audited_anchors[str(number)]
     require(result.get('digest') == anchor['latest_certificate_digest'] and
             result.get('batch_end') == anchor['end'], 'Retained continuation anchor differs from chain')
 
@@ -223,8 +263,16 @@ def preflight(args):
     verified = driver('verify-batch', '--certificate', prior, status='conditional_complete')
     require(verified.get('digest') == ledger['latest_certificate_digest'] and verified.get('batch_end') == ledger['end'],
             'Latest numbered batch differs from the ledger')
-    count = (256 - existing) * DEFAULT_WIDTH if getattr(args, 'mode', 'finite') == 'continuous' else args.count
-    plan = batch_plan(int(ledger['end']), count, existing, args.batch_width) if count else []
+    unbounded = continuous_profile()
+    if unbounded and getattr(args, 'mode', 'finite') == 'continuous':
+        plan = continuous_batches(int(ledger['end']), existing)
+        if args.plan:
+            plan = [next(plan)]  # preview exactly the next admission
+    else:
+        count = (256 - existing) * DEFAULT_WIDTH if getattr(args, 'mode', 'finite') == 'continuous' else args.count
+        plan = batch_plan(int(ledger['end']), count, existing, args.batch_width, unlimited=unbounded) if count else []
+    if unbounded and not args.plan and getattr(args, 'mode', 'finite') == 'continuous':
+        return ledger, plan
     for batch in plan:
         name = f"batch-{batch['number']:04d}"
         require(not (ROOT / CHAIN / name).exists() and
@@ -401,7 +449,8 @@ def execute(args, ledger, plan):
     existing = int(ledger['batches'])
     prior = CHAIN / f'batch-{existing:04d}' / 'certificate.json'
     continuous = getattr(args, 'mode', 'finite') == 'continuous'
-    instruction = 'check consecutive batches of 9999 until clean stop or the accepted 256-batch limit' if continuous else f'check the next {args.count}'
+    instruction = ('SESSION-I2: check consecutive batches of 9999 until clean stop or integrity/resource refusal' if continuous_profile()
+                   else 'check consecutive batches of 9999 until clean stop or the accepted 256-batch limit') if continuous else f'check the next {args.count}'
     outcome = 'CHAIN_LIMIT_REACHED' if continuous else 'CONDITIONAL_RUN_COMPLETE'
     update_session(args, initial_end=original_start, end=ledger['end'], completed='0', phase='between_batches')
     for batch in plan:
@@ -480,7 +529,7 @@ def print_summary(summary):
 
 def parse_arguments(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', nargs='?', help='start, stop, accept-incremental, or a legacy finite quantity')
+    parser.add_argument('operation', nargs='?', help='start, stop, accept-continuous, accept-incremental, or a finite quantity')
     parser.add_argument('quantity', nargs='?', type=int)
     parser.add_argument('--count', type=int, help='Additional integers (legacy option)')
     parser.add_argument('--acknowledge', help='Optional exact acknowledgement; otherwise reuse accepted chain acknowledgement')
@@ -489,9 +538,9 @@ def parse_arguments(argv=None):
     parser.add_argument('--plan', action='store_true', help='Read-only preflight and plan; execute no batch')
     args = parser.parse_args(argv)
     args.mode = 'finite'
-    if args.operation == 'accept-incremental':
+    if args.operation in ('accept-incremental', 'accept-continuous'):
         if args.quantity is not None or args.count is not None or args.plan or args.batch_width != DEFAULT_WIDTH:
-            parser.error('accept-incremental has no quantity or plan')
+            parser.error('acceptance has no quantity or plan')
         args.mode = 'accept'
         return args
     if args.operation in ('start', 'stop'):
@@ -523,13 +572,14 @@ def main():
     args = parse_arguments()
     try:
         if args.mode == 'accept':
-            print(json.dumps(accept_incremental(), sort_keys=True))
+            print(json.dumps(accept_incremental(args.operation == 'accept-continuous'), sort_keys=True))
             return 0
         if args.mode == 'stop':
             print(json.dumps(request_stop(), sort_keys=True))
             return 0
         if args.plan:
-            ledger, plan = preflight(args)
+            with verification_session():
+                ledger, plan = preflight(args)
             print(json.dumps(dict(status='PLAN_ONLY', run_id=RUN_ID, mode=args.mode, added_count=str(args.count) if args.count is not None else None,
                                   start=ledger['end'], end=str(plan[-1]['end']) if plan else ledger['end'],
                                   batches=[{key: str(value) for key, value in batch.items()} for batch in plan]),

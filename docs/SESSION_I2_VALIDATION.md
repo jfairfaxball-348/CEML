@@ -103,11 +103,14 @@ prepared configurator changes only that setting to `PT0S` and starts no task:
 powershell -NoProfile -ExecutionPolicy Bypass -File C:\CEML\tools\operator\configure_task.ps1
 ```
 
-**Windows returned Access is denied from this unelevated session.** The owner must
-run that one-time command in Administrator PowerShell. The timeout has not yet
-been removed. The helper verifies the expected existing launcher action, refuses
-while it is running, preserves all other task settings and confirms the change.
-Existing battery/power settings still apply.
+The initial unelevated attempt returned Access is denied. The owner subsequently
+approved the Windows administrator prompt for this helper on 2026-10-13.
+**Configuration is now confirmed: ExecutionTimeLimit `PT0S`, task state Ready,
+and the original launcher action unchanged. No scientific computation started.**
+No further timeout setup is needed on this PC. If recreating/restoring the task,
+run the helper in Administrator PowerShell. It verifies the expected launcher
+action, refuses while it is running, preserves all other task settings and
+confirms the change. Existing battery/power settings still apply.
 
 Clean stop remains `python C:\CEML\tools\operator\run_frontier.py stop`; wait for
 `CLEAN_STOPPED` in the task log and Ready state before `publish.py`. Watcher

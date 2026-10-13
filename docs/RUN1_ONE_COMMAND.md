@@ -18,8 +18,10 @@ Start-ScheduledTask -TaskName 'CEML Frontier Verification'
 
 The existing task calls the same `run_frontier.py start`. I2 continues sequential
 9999-wide batches from the fully audited tip, beyond 256, until a clean stop or
-integrity/resource refusal. To remove the task's old 48-hour timeout, configure it
-once with the following command in Administrator PowerShell if access is denied:
+integrity/resource refusal. The owner approved removal of this PC's old 48-hour
+timeout on 2026-10-13: `PT0S` and Ready state are confirmed, with no computation
+started. If recreating/restoring the task, configure the timeout once with this
+command in Administrator PowerShell:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File C:\CEML\tools\operator\configure_task.ps1

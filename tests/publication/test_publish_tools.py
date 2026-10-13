@@ -129,6 +129,20 @@ class LiveObserverTests(unittest.TestCase):
         self.assertTrue(any(arg.endswith('watch_task.ps1') for arg in start))
         self.assertNotIn('run_frontier.py',' '.join(start+stop))
 
+    def test_observer_update_exits_without_upload_or_scientific_action(self):
+        with tempfile.TemporaryDirectory() as tmp,patch.object(live,'STATE_DIR',Path(tmp)),patch.object(live,'observer_identity',side_effect=[b'old',b'new']),patch.object(live,'publisher_lock',return_value=nullcontext()),patch.object(live,'observe') as observe,patch.object(live,'upload') as upload,patch('sys.stdout',StringIO()):
+            live.watch()
+            observe.assert_not_called();upload.assert_not_called()
+
+    def test_reload_signal_ignores_line_endings_but_detects_source_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source=Path(tmp)/'source';source.write_bytes(b'a\nb\n')
+            first=live.observer_identity([source])
+            source.write_bytes(b'a\r\nb\r\n')
+            self.assertEqual(first,live.observer_identity([source]))
+            source.write_bytes(b'changed\n')
+            self.assertNotEqual(first,live.observer_identity([source]))
+
     def fixture(self, path, *, complete=False, next_n=102, private=None):
         d=path/'batch-0001'; d.mkdir()
         run=dict(schema='CEML-FRONTIER-2-RUN', run_id='RUN1-operational-0001', base_B=live.BASE,

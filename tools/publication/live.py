@@ -220,9 +220,13 @@ def watch():
         log = (STATE_DIR / 'publisher.log').open('a', encoding='utf-8', buffering=1)
         sys.stdout = sys.stderr = log
     with publisher_lock():
+        loaded_sources = observer_identity()
         previous = None
         (STATE_DIR / 'stop').unlink(missing_ok=True)
         while True:
+            if observer_identity() != loaded_sources:
+                print('Observer source changed; exiting for scheduled recovery. Verification is unaffected.', flush=True)
+                return
             payload, previous = observe(previous)
             stopping = (STATE_DIR / 'stop').exists()
             if stopping:
@@ -239,6 +243,19 @@ def watch():
                 if (STATE_DIR / 'stop').exists():
                     break
                 time.sleep(1)
+
+
+def observer_identity(paths=None):
+    """Private reload signal only; never mathematical authority or public data."""
+    if paths is None:
+        directory = Path(__file__).parent
+        paths = [directory / name for name in ('live.py', 'runner_status.py', 'github_transport.py', 'watch_task.ps1')]
+    digest = hashlib.sha3_256()
+    for path in paths:
+        data = path.read_bytes().replace(b'\r\n', b'\n')
+        digest.update(len(data).to_bytes(8, 'big'))
+        digest.update(data)
+    return digest.digest()
 
 
 def control_task(action):

@@ -238,6 +238,30 @@ Owner-run continuation recorded by the publication command: batches 123–208 ad
 | 207 | `[2392518188130441301916,2392518188130441311915)` | 9999 | `fc766a956e2b669a641481d28cc840b42090604d92e0a4a83cc431b893064000` |
 | 208 | `[2392518188130441311915,2392518188130441321914)` | 9999 | `f15d3f8862a7cbd05f3cbcc5d37d083949dc330c77b6e776185dc107b86b18f4` |
 
+Owner-run continuation recorded by the publication command: batches 209–227 add 189981 integers in `[2392518188130441321914,2392518188130441511895)`. Full chain audit, accepted build verification, final certificate verification, reference replay and checkpoint inspection passed. The retained receipt matches; no scientific batch was executed by the publisher.
+
+| Batch | Half-open interval | Width | Certificate digest |
+|---|---|---:|---|
+| 209 | `[2392518188130441321914,2392518188130441331913)` | 9999 | `df23144e23b4eaa61e98b5bb38bb3bc3c077980a3e3a3d70e686557774ccaf0c` |
+| 210 | `[2392518188130441331913,2392518188130441341912)` | 9999 | `787c1eb4264b29210871f90ab722a212fb2b0b39dd920b62c0115c96be64f7d6` |
+| 211 | `[2392518188130441341912,2392518188130441351911)` | 9999 | `59722ddd1a7631b5333b6ec234fbe424f09c3f1b1aeb4c8c0bdaeacd92d75548` |
+| 212 | `[2392518188130441351911,2392518188130441361910)` | 9999 | `71309e06387aaa10ac0b8d2eb96ff1a353d2093b3774f99f18a6ef795088ba95` |
+| 213 | `[2392518188130441361910,2392518188130441371909)` | 9999 | `4a5b9b85dfa0010cc5852eb1c9ecbeb8d7727fdf09e91da91ae7af4879205ee6` |
+| 214 | `[2392518188130441371909,2392518188130441381908)` | 9999 | `51d96ad77c7088d34879d6c0d653343f55d827755afbf4199ae4d3d70aab2c3b` |
+| 215 | `[2392518188130441381908,2392518188130441391907)` | 9999 | `9845f78761e5639f572de09ff816ed584a88aa9abf3d48fd5ce0504c50b626c2` |
+| 216 | `[2392518188130441391907,2392518188130441401906)` | 9999 | `d779ad78852e347206e491a5055d4e12ef01874b10e23454510ca19acea44127` |
+| 217 | `[2392518188130441401906,2392518188130441411905)` | 9999 | `4f6b4f71e047aa83f129fd515db4c288deb456ebdf6eb37b3f48b01ec4186c17` |
+| 218 | `[2392518188130441411905,2392518188130441421904)` | 9999 | `892a873d71d1a915afc510b2c4f0347e7a78cf4fc7b97225c475d3ab2a1c15eb` |
+| 219 | `[2392518188130441421904,2392518188130441431903)` | 9999 | `353138a2300a8a6c6c53b76b567c0ddce5cd430f40bb6c936b3719983ab492c5` |
+| 220 | `[2392518188130441431903,2392518188130441441902)` | 9999 | `4183e9a86185df458665b7565aad3864f4abf6f1057ecbb7c283c394b9d9dbcf` |
+| 221 | `[2392518188130441441902,2392518188130441451901)` | 9999 | `22910e6af1cf8be5a98ddcda58a96f920ff4e025e379e27e631bf85902a2a391` |
+| 222 | `[2392518188130441451901,2392518188130441461900)` | 9999 | `c66f8f88e9cffd5e1bc778e5e0fe3fdfe3f586e576f5694920c1a3e1e46c055f` |
+| 223 | `[2392518188130441461900,2392518188130441471899)` | 9999 | `6f5d3c912d259031af4c855e153ad43ff69d4cabb31b14f64879debe38dff606` |
+| 224 | `[2392518188130441471899,2392518188130441481898)` | 9999 | `1a07cef85a891aaf336c39857171ab562c7ef7fb787f06e32b5c348ea7afb09a` |
+| 225 | `[2392518188130441481898,2392518188130441491897)` | 9999 | `b1a1e2535637b4c89697c3a314af16c495228fa16767e13df92c84d4003b98a5` |
+| 226 | `[2392518188130441491897,2392518188130441501896)` | 9999 | `827dcdef24e28df67f4c6a6c2ace1991379cdd7d875dba87bb1c58f3edbf8a26` |
+| 227 | `[2392518188130441501896,2392518188130441511895)` | 9999 | `b50202de60e68792bffbf67b820bd9d03c8412eb2d77c145eae9e99481eece60` |
+
 ```text
 CEML-FRONTIER-2 conditional batch chain
 Run identifier: RUN1-operational-0001
@@ -245,21 +269,21 @@ Base kind and tier: operational (author-reported, not replicated)
 Assumed, not verified by CEML: every positive integer below B = 2392518188130438742016 converges
   Source and its date: author's project homepage https://pcbarina.fit.vut.cz/, generated 2026-10-11T11:29:26Z
   CEML observation time (UTC): 2026-10-11T12:38:06Z
-Verified conditional on that assumption: every integer in [2392518188130438742016,2392518188130441321914) converges
-Batches: 208 (2579898 integers)
+Verified conditional on that assumption: every integer in [2392518188130438742016,2392518188130441511895) converges
+Batches: 227 (2769879 integers)
 Genesis digest: a416bf0f89ebdb16911baf830b6c375d280829bd58587dd7787e36f5d3c53caf
-Latest certificate digest: f15d3f8862a7cbd05f3cbcc5d37d083949dc330c77b6e776185dc107b86b18f4
+Latest certificate digest: b50202de60e68792bffbf67b820bd9d03c8412eb2d77c145eae9e99481eece60
 Snapshot digest: 538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729
 Native build digest: c0263b353e05b9f3d09730e67d321254952c7dbdc2a6d892f7ffe2b14b89c032
 Source commit of pilot 1: 641e7b64acd01397f360a14eb1659107e7732459
 Source commit of owner's 100000-integer continuation: 789dca672cdd3bbe9ed7d30d93f465f2e2e47c7b
 Source commit at confirmation of batches 11–17: c10da89922e5185d4d0bb8076136a5f991fadd96 (records bind the build digest, not a Git SHA)
 Source commit at confirmation of batches 18–87: 8467367a088f9af5a686fd99149320f228fa2d23 (records bind the build digest, not a Git SHA)
-Source commit at automated confirmation: f962109eee5c99184a0f166da82b674b1e8a23b0 (records bind the build digest, not a Git SHA)
-Rule counts (E2, Q4, P3, M9, S2K4-03, EXPLICIT): 1289949, 644975, 214992, 71663, 89580, 268739
+Source commit at automated confirmation: 5c816ad1ca3acf66035c4f3edaf80412b3657a7e (records bind the build digest, not a Git SHA)
+Rule counts (E2, Q4, P3, M9, S2K4-03, EXPLICIT): 1384940, 692470, 230823, 76941, 96176, 288529
 Unresolved: 0
-Explicit shortened-map steps computed: 3203717 (1958755 odd; 5162472 standard-map steps)
-Run dates (UTC): 2026-10-13; chain began 2026-10-12; latest certificate filesystem timestamp 2026-10-13T06:05:14Z (batch 208); not an end-to-end timer
+Explicit shortened-map steps computed: 3441442 (2104155 odd; 5545597 standard-map steps)
+Run dates (UTC): 2026-10-13; chain began 2026-10-12; latest certificate filesystem timestamp 2026-10-13T12:09:45Z (batch 227); not an end-to-end timer
 Independent full replay performed: yes, built-in second pass (same author and machine)
 Independent reproduction by other code: none
 Overlap with externally reported work: expected; not checked against the external project's current state

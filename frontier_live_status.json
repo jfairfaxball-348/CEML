@@ -1,18 +1,19 @@
 {
   "schema_version": 1,
-  "state": "stopped",
-  "updated_at": "2026-10-13T12:00:16Z",
+  "state": "idle",
+  "updated_at": "2026-10-13T12:01:20Z",
   "message": "No verification run active. Live observations do not change the published verified tally.",
-  "current_batch": {
-    "number": 226,
-    "start": "2392518188130441491897",
-    "end": "2392518188130441501896",
-    "width": 9999,
-    "processed": 9999,
-    "started_at": "2026-10-13T11:56:53Z"
-  },
+  "current_batch": null,
   "session": null,
   "recent_batches": [
+    {
+      "number": 226,
+      "start": "2392518188130441491897",
+      "end": "2392518188130441501896",
+      "width": 9999,
+      "status": "committed",
+      "finished_at": "2026-10-13T12:00:20Z"
+    },
     {
       "number": 225,
       "start": "2392518188130441481898",
@@ -164,14 +165,6 @@
       "width": 9999,
       "status": "committed",
       "finished_at": "2026-10-13T05:57:00Z"
-    },
-    {
-      "number": 206,
-      "start": "2392518188130441291917",
-      "end": "2392518188130441301916",
-      "width": 9999,
-      "status": "committed",
-      "finished_at": "2026-10-13T05:48:51Z"
     }
   ]
 }

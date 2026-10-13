@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "state": "stopped",
-  "updated_at": "2026-10-13T10:53:40Z",
+  "updated_at": "2026-10-13T10:54:45Z",
   "message": "No verification run active. Live observations do not change the published verified tally.",
   "current_batch": {
     "number": 219,
     "start": "2392518188130441421904",
     "end": "2392518188130441431903",
     "width": 9999,
-    "processed": 0,
+    "processed": 9999,
     "started_at": "2026-10-13T10:53:34Z"
   },
   "session": null,

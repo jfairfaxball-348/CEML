@@ -1,5 +1,15 @@
 # I2 continuous extension — 2026-10-13
 
+**Watcher reload recovery — 2026-10-13:** a pre-I2 publisher process kept its old
+256-batch observation limit in memory and uploaded error status while the I2
+runner continued normally. Reloading only the publisher restored running status,
+Latest batch and This session on the public page; science was untouched. Future
+observers compare private source fingerprints once per loop and exit on changes
+to live.py, runner_status.py, github_transport.py or watch_task.ps1. The enabled
+one-minute task recovery loads the current code; no scientific process is stopped
+or started and no fingerprint enters public data. First deployment still needs a
+publisher-only reload to replace an older process that lacks this check.
+
 The observer supports batch numbers beyond 256 and sorts them numerically beyond
 9999. For I2 extension publication, a separate fresh subprocess independently
 replays all retained certificates through unchanged frozen V2 verification with

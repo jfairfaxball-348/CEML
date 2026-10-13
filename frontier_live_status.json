@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "state": "idle",
-  "updated_at": "2026-10-13T09:00:12Z",
+  "updated_at": "2026-10-13T09:01:15Z",
   "message": "No verification run active. Live observations do not change the published verified tally.",
   "current_batch": null,
   "session": null,

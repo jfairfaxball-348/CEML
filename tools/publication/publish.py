@@ -1,5 +1,6 @@
 """Owner-invoked verify-and-publish command; executes no scientific batch."""
 import argparse
+from contextlib import contextmanager
 import importlib.util
 import json
 from pathlib import Path
@@ -15,6 +16,8 @@ import website_progress
 spec = importlib.util.spec_from_file_location('frontier_operator', ROOT / 'tools/operator/run_frontier.py')
 operator = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(operator)
+sys.path.insert(0, str(ROOT))
+from tools.session_i2.pinned import IntegrityError
 KEYS = ('e2_count', 'q4_count', 'p3_count', 'm9_count', 's2_count', 'explicit_count')
 FILES = ('docs/RUN1_PROGRESS.md', 'frontier_progress_for_website.json', 'PROGRAM_STATUS.md', 'START_HERE.md')
 
@@ -32,6 +35,22 @@ def stamp(path):
     return datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
 
 
+@contextmanager
+def publication_leases(force=False):
+    """Keep extended scientific record bytes pinned through derivation and merge."""
+    chain = ROOT / operator.CHAIN
+    if not force and len(list(chain.glob('*/certificate.json'))) <= 256:
+        yield
+        return
+    sys.path.insert(0, str(ROOT))
+    from tools.session_i2.pinned import ReadLeases
+    with ReadLeases(ROOT) as leases:
+        for path in [*chain.glob('*/*'), *(ROOT / operator.MANIFESTS).iterdir()]:
+            require(path.is_file(), 'Nested or unexpected scientific record layout')
+            leases.pin(path)
+        yield
+
+
 def verify_chain():
     """The frozen CLI remains the authority, not this publication layer."""
     build = operator.command(['tools/frontier/f1_build.py', '--verify'], 'PASS')
@@ -41,12 +60,25 @@ def verify_chain():
     snapshot = operator.driver('snapshot', '--file', 'config/frontier_snapshot_v2.json', status='research_only_unaccepted')
     require(snapshot['digest'] == operator.SNAPSHOT and snapshot['operational']['B'] == operator.BASE, 'Snapshot mismatch')
     print('Auditing the full immutable chain; this can take several minutes.', flush=True)
-    ledger = operator.driver('ledger', '--dir', operator.CHAIN, status='conditional_chain')
-    require(ledger['start'] == operator.BASE and ledger['genesis_digest'] == operator.GENESIS, 'Chain root mismatch')
-    operator.check_anchor(operator.published_anchor(), ledger)
     receipt = ROOT / operator.TIP
-    require(receipt.exists(), 'Retained continuation receipt is missing')
+    require(receipt.exists() and receipt.stat().st_size <= 131072, 'Retained continuation receipt is missing or oversized')
     saved = json.loads(receipt.read_text(encoding='ascii'))
+    published = operator.published_anchor()
+    extended = len(list((ROOT / operator.CHAIN).glob('*/certificate.json'))) > 256
+    audit = None
+    if extended:
+        sys.path.insert(0, str(ROOT))
+        from tools.session_i2.identity import accepted
+        require(accepted(), 'Extended publication requires accepted SESSION-I2')
+        audit = operator.command(['-m', 'tools.session_i2.audit', '--dir', str(operator.CHAIN),
+                                  '--anchor', str(published['batches']), '--anchor', str(saved['batches'])],
+                                 'I2_PUBLICATION_AUDIT')
+        ledger = audit['ledger']
+        require(ledger['status'] == 'conditional_chain', 'Independent I2 ledger refused')
+    else:
+        ledger = operator.driver('ledger', '--dir', operator.CHAIN, status='conditional_chain')
+    require(ledger['start'] == operator.BASE and ledger['genesis_digest'] == operator.GENESIS, 'Chain root mismatch')
+    operator.check_anchor(published, ledger, audit['anchors'] if audit else None)
     require(saved == {key: ledger[key] for key in saved} and set(saved) == {
         'batches', 'end', 'genesis_digest', 'latest_certificate_digest'}, 'Receipt does not exactly match chain')
     count = int(ledger['batches'])
@@ -55,11 +87,11 @@ def verify_chain():
     require({p.name for p in (ROOT / operator.MANIFESTS).glob('batch-*.json')} ==
             {f'batch-{i:04d}.json' for i in range(1, count + 1)}, 'Uncommitted or unexpected manifest')
     final = operator.CHAIN / f'batch-{count:04d}'
-    verified = operator.driver('verify-batch', '--certificate', final / 'certificate.json', status='conditional_complete')
-    replay = operator.driver('replay', '--batch-dir', final, status='REFERENCE_REPLAY_MATCH')
+    verified = audit['verified'] if audit else operator.driver('verify-batch', '--certificate', final / 'certificate.json', status='conditional_complete')
+    replay = audit['replay'] if audit else operator.driver('replay', '--batch-dir', final, status='REFERENCE_REPLAY_MATCH')
     require(verified['digest'] == replay['digest'] == ledger['latest_certificate_digest'] and
             verified['batch_end'] == replay['batch_end'] == ledger['end'], 'Final verification mismatch')
-    inspection = operator.driver('inspect', '--batch-dir', final, status='INSPECTION_ONLY')
+    inspection = audit['inspection'] if audit else operator.driver('inspect', '--batch-dir', final, status='INSPECTION_ONLY')
     recovery = inspection.get('recovery', {})
     require(recovery.get('status') == 'RECOVERABLE' and recovery.get('pending') is None and
             not recovery.get('warnings') and inspection['temporaries'] == '0', 'Final checkpoint needs attention')
@@ -97,6 +129,10 @@ def derive_files(contents, certificates, ledger, source_commit, last_time):
                  "build verification, final certificate verification, reference replay and checkpoint inspection passed. "
                  "The retained receipt matches; no scientific batch was executed by the publisher.\n\n"
                  "| Batch | Half-open interval | Width | Certificate digest |\n|---|---|---:|---|\n" + '\n'.join(rows) + '\n\n')
+    if count > 256:
+        paragraph = ("Execution profile: **CEML-SESSION-I2 extension using unchanged V2-format certificates**. "
+                     "The frozen V2 admission cap remains 256; this separately accepted profile extends its audited prefix. "
+                     "Independent publication replays every retained batch through frozen V2 arithmetic in a fresh audit.\n\n" + paragraph)
     marker = '```text\nCEML-FRONTIER-2 conditional batch chain'
     require(progress.count(marker) == 1, 'Claim block missing or ambiguous')
     progress = progress.replace(marker, paragraph + marker, 1)
@@ -177,7 +213,7 @@ def main():
             authenticate()
             git('fetch', '--no-tags', 'origin', 'main')
             require(source == git('rev-parse', 'origin/main'), 'Local main differs from GitHub; synchronize before publishing')
-        with operator.operator_lock():
+        with operator.operator_lock(), publication_leases():
             ledger, certificates = verify_chain()
             contents = {p: (ROOT / p).read_text(encoding='utf-8') for p in FILES}
             latest = ROOT / operator.CHAIN / f"batch-{int(ledger['batches']):04d}/certificate.json"
@@ -190,7 +226,7 @@ def main():
                 url = publish(files, source, ledger)
                 print(json.dumps({**ledger, 'status': 'PUBLISHED', 'pull_request': url}))
         return 0
-    except (PublicationError, website_progress.PublicationError, operator.StopRun, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
+    except (PublicationError, website_progress.PublicationError, operator.StopRun, IntegrityError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         print('PUBLICATION_STOPPED: ' + str(error), file=sys.stderr)
         print('No scientific batch executed. Any created PR is retained for review.', file=sys.stderr)
         return 1

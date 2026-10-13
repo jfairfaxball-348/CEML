@@ -1,0 +1,15 @@
+{
+  "elapsed_seconds": 43.100616,
+  "ledger": {
+    "batches": "256",
+    "end": "2392518188130441801866",
+    "genesis_digest": "a416bf0f89ebdb16911baf830b6c375d280829bd58587dd7787e36f5d3c53caf",
+    "latest_certificate_digest": "a6ab30751d0762f10f783bebf858f846aaf948098db2879a38099b2881e61565",
+    "start": "2392518188130438742016",
+    "status": "conditional_chain"
+  },
+  "profile": "CEML-SESSION-I2",
+  "profile_digest": "bb0575893b228dbb0d7c26606229f0e3bca87e58ea5c525453e70fddda17e1de",
+  "scope": "read-only full saved-chain audit, final replay and inspection; no scientific batch executed",
+  "unchanged_files": 1792
+}

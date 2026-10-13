@@ -1,3 +1,45 @@
+# Continuous I2 extension — 2026-10-13
+
+The owner requested indefinite operation after completing all 256 original slots.
+Read [I2 validation](SESSION_I2_VALIDATION.md), then accept the installed successor:
+
+```powershell
+python C:\CEML\tools\operator\run_frontier.py accept-continuous
+```
+
+Type `ACCEPT-SESSION-I2`. Acceptance executes nothing. The original I1 acceptance
+does not authorise the extension and becomes stale when the launcher changes.
+
+Start as before, with no quantity:
+
+```powershell
+Start-ScheduledTask -TaskName 'CEML Frontier Verification'
+```
+
+The existing task calls the same `run_frontier.py start`. I2 continues sequential
+9999-wide batches from the fully audited tip, beyond 256, until a clean stop or
+integrity/resource refusal. To remove the task's old 48-hour timeout, configure it
+once with the following command in Administrator PowerShell if access is denied:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\CEML\tools\operator\configure_task.ps1
+```
+
+This changes only that timeout and never starts/stops a run. Use the operator's
+clean stop, not Task Scheduler's process termination:
+
+```powershell
+python C:\CEML\tools\operator\run_frontier.py stop
+```
+
+Wait for `CLEAN_STOPPED` in `C:\CEML\local\frontier\operator-task.log` and for the
+task to return to Ready, then publish with `python C:\CEML\tools\publication\publish.py`.
+Watcher commands remain `python C:\CEML\tools\publication\live.py start` / `stop`.
+Scientific records and frozen identities are unchanged. Startup/publication still
+replay all history. Physical resources and numeric budgets remain finite.
+
+The following original 256-slot procedure is retained as historical V2/I1 guidance.
+
 # Continuous checking with a clean stop
 
 Start from the latest verified, committed exclusive endpoint without choosing a quantity:

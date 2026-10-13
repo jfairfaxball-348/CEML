@@ -1,6 +1,6 @@
 """Operator orchestration tests using simulated command results, never scientific runs."""
 
-from contextlib import redirect_stdout
+from contextlib import redirect_stdout, nullcontext
 import importlib.util
 import io
 import json
@@ -152,7 +152,7 @@ class OperatorTests(unittest.TestCase):
             return dict(status='CLEAN_STOPPED')
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);(root/'local/frontier').mkdir(parents=True)
-            with patch.object(operator,'ROOT',root),patch.object(operator,'parse_arguments',return_value=args),patch.object(operator,'preflight',return_value=(ledger,[])),patch.object(operator,'execute',side_effect=execute),patch.object(operator,'print_summary',side_effect=summary):
+            with patch.object(operator,'ROOT',root),patch.object(operator,'verification_session',return_value=nullcontext()),patch.object(operator,'parse_arguments',return_value=args),patch.object(operator,'preflight',return_value=(ledger,[])),patch.object(operator,'execute',side_effect=execute),patch.object(operator,'print_summary',side_effect=summary):
                 self.assertEqual(operator.main(),0)
         self.assertEqual(observed,[('CLEAN_STOPPED',False)])
 

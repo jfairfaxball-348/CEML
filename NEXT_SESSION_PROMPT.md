@@ -1,3 +1,14 @@
+# Latest continuous extension handoff — 2026-10-13
+
+The owner requested indefinite execution through the existing scheduled launcher.
+The prospective CEML-SESSION-I2 extension removes the execution batch-count cap,
+preserving frozen V2/I1 bytes and the exact completed 256-batch prefix. See
+docs/SESSION_I2_PROTOCOL.md and docs/SESSION_I2_VALIDATION.md for validation and
+owner-only acceptance. An engineering merge is not acceptance or agent execution
+authority. Never start the scheduled scientific task or type its acknowledgement.
+Original start/stop/watch/publish commands remain; independently audit all history
+at startup and publication. No persisted cache may replace mathematical replay.
+
 # RUN1 handoff
 
 Session optimisation I1 is a prospective execution profile. Read

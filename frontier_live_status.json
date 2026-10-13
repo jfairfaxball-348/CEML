@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "state": "error",
-  "updated_at": "2026-10-13T16:37:31Z",
-  "message": "Local status needs review. No work is promoted by the live publisher.",
+  "state": "paused",
+  "updated_at": "2026-10-13T16:38:13Z",
+  "message": "Live publisher stopped. The verification runner is unaffected.",
   "current_batch": null,
   "session": null,
   "recent_batches": []

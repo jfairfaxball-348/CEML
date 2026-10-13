@@ -1,15 +1,10 @@
 {
   "schema_version": 1,
-  "state": "paused",
-  "updated_at": "2026-10-13T06:05:50Z",
-  "message": "Live publisher stopped. The verification runner is unaffected.",
+  "state": "idle",
+  "updated_at": "2026-10-13T08:58:04Z",
+  "message": "No verification run active. Live observations do not change the published verified tally.",
   "current_batch": null,
-  "session": {
-    "requested": null,
-    "completed": 859914,
-    "started_at": "2026-10-12T21:16:42.4679680Z",
-    "mode": "continuous"
-  },
+  "session": null,
   "recent_batches": [
     {
       "number": 208,

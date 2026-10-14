@@ -1,5 +1,8 @@
 # Road to 3 × 10²¹ — active research roadmap (14 October 2026)
 
+**Mathematical research overlay (R3E21-3, independently invoked):** [rigorous exact sieve analysis](docs/R3E21_3_MATHEMATICAL_SIEVE.md) proves a conditional 0.4150130471% residue density remaining after depth-35 prefix and 3^6 reverse proofs above 2^70. The legacy R3E21-2 gate remains future/unexecuted; R3E21-4 is the next owner-invoked mathematical audit. No operational, scientific, website or frozen contract changes and no performance/novelty claims.
+
+
 **Current programme phase: R3E21 — RESEARCH ONLY.** Older P0/P1/P2/L1/RUN1 gates below are preserved as historical completion/operational evidence, not a current instruction to perform more science.
 
 | Research gate | Status | Evidence required to advance |

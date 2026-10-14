@@ -1,3 +1,9 @@
+# Mathematical sieve research overlay — CEML-R3E21-3 (2026-10-14)
+
+**R3E21-3 RESEARCH COMPLETE (agent-assessed exact arithmetic and proved conditional mathematical identities; hosted CI absent).** This separately owner-authorised session studied mathematical sieves only, without executing R3E21-2 (which remains FUTURE/UNEXECUTED), changing any frozen worker/certificate or running scientific intervals. [Rigorous mathematical result](docs/R3E21_3_MATHEMATICAL_SIEVE.md) and [bounded reproducible fixture](research/r3e21_3_symbolic_sieve.py): for n>=2^70, the exact depth-35 prefix criterion combined with proved 3^6 reverse coalescence retains **51976751269/12524124635136 = 0.4150130471%** residue density for explicit trajectory work. This reuses classical sieve principles and is NOT a novel universal Collatz theorem, NOT a measured speedup, NOT integrated into RUN1, and NOT an extension of CEML's published verified frontier. R3E21-4 is FUTURE/UNEXECUTED and requires new authority; see [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md). Older authority and scientific tallies below remain verbatim.
+
+---
+
 # Research programme overlay — Road to 3 × 10²¹ (2026-10-14)
 
 **Active owner-directed programme gate: R3E21-1 RESEARCH COMPLETE (author-assessed, no hosted CI); R3E21-2 FUTURE, NOT AUTHORISED; RESEARCH ONLY.** Work now concerns credible means of reaching the exclusive target of 3 × 10²¹ from an independently assessed moving external contiguous frontier, not the indefinite execution of CEML-RUN1. The four principal workstreams are (1) hardware and distributed capacity, (2) optimized software plus proportionate independent validation, (3) strictly proved Collatz exclusions, (4) elapsed time, power, money and logistical feasibility.

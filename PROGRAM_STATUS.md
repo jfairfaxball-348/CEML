@@ -1,3 +1,11 @@
+# Research programme overlay — Road to 3 × 10²¹ (2026-10-14)
+
+**Active owner-directed programme gate: R3E21-0 DOCUMENTED / R3E21-1 NEXT; RESEARCH ONLY.** Work now concerns credible means of reaching the exclusive target of 3 × 10²¹ from an independently assessed moving external contiguous frontier, not the indefinite execution of CEML-RUN1. The four principal workstreams are (1) hardware and distributed capacity, (2) optimized software plus proportionate independent validation, (3) strictly proved Collatz exclusions, (4) elapsed time, power, money and logistical feasibility.
+
+**Do not launch or authorise new scientific batches or local operational commands as part of this research work.** Prior RUN1 execution-authorization strings and historical counts further down this file remain *byte-preserved* for the existing operator's status-parser and chain consistency; they describe the earlier separately accepted run and are not prospective research authorisation. This documentation change is not proof that the owner's machine was stopped, and does not revoke or alter historical certificates. No old aggregate, source version or trust tier is upgraded. [Feasibility brief](docs/ROAD_TO_3E21_FEASIBILITY.md); [current roadmap](ROADMAP.md); [next research-only session](NEXT_SESSION_PROMPT.md).
+
+---
+
 # Continuous extension engineering — 2026-10-13
 
 The owner requests indefinite launcher operation beyond the completed 256-batch

@@ -1,38 +1,22 @@
-# Latest continuous extension handoff — 2026-10-13
+# CEML-R3E21-1 — Road to 3 × 10²¹: frontier-scale mathematics and implementation audit
 
-The owner requested indefinite execution through the existing scheduled launcher.
-The prospective CEML-SESSION-I2 extension removes the execution batch-count cap,
-preserving frozen V2/I1 bytes and the exact completed 256-batch prefix. See
-docs/SESSION_I2_PROTOCOL.md and docs/SESSION_I2_VALIDATION.md for validation and
-owner-only acceptance. An engineering merge is not acceptance or agent execution
-authority. Never start the scheduled scientific task or type its acknowledgement.
-Original start/stop/watch/publish commands remain; independently audit all history
-at startup and publication. No persisted cache may replace mathematical replay.
+**FUTURE, UNEXECUTED.** On one new explicit owner invocation perform ONE substantive, cloud/GitHub-only, **research-only** session in https://github.com/jfairfaxball-348/CEML. This prompt itself authorises no work outside R3E21-1. Do not execute RUN1, test a new scientific interval, inspect the user's laptop, start services, accept operational profiles, change frozen workers/protocols/certificates, publish a new record or contact external researchers. Preserve all historical material and all public run/website data byte-for-byte unless an independently requested correction is justified.
 
-# RUN1 handoff
+## Entry and authoritative state
 
-Session optimisation I1 is a prospective execution profile. Read
-`docs/SESSION_I1_VALIDATION.md` before resuming with it. Only the owner may run
-`python C:\CEML\tools\operator\run_frontier.py accept-incremental` and type
-`ACCEPT-SESSION-I1`. Engineering integration alone does not activate it. Existing
-start/stop commands keep the original V2 path until that acceptance is recorded.
-Agents must not accept the profile or run additional scientific batches under
-the optimisation engineering request.
+Independently pin LIVE main SHA, open/recent PRs, recent commits and actual available checks/workflows. No CI is not CI PASS. Read PROGRAM_STATUS, START_HERE, PROJECT_CHARTER, ROADMAP, AGENTS, docs/ROAD_TO_3E21_FEASIBILITY.md, docs/P0_FRONTIER_AUDIT.md, docs/P0_REDUCTION_AUDIT.md, docs/P1_EXCLUSION_PROOFS.md, docs/P2_PROTOCOL_AUDIT.md, docs/FRONTIER_PROTOCOL_V2.md, docs/CLAIM_POLICY.md, docs/WEBSITE_PUBLICATION.md and necessary local benchmark/engineering reports. Reconcile the 2026-10-14 research pivot with the completed RUN1 chain; do not alter scientific identities.
 
-For owner-run continuous continuation:
+## Mandatory research tasks
 
-```powershell
-python C:\CEML\tools\operator\run_frontier.py start
-```
+1. **Frontier provenance** — locate the strongest current independently defensible contiguous Collatz verification claim. Separate Bařina's peer-reviewed n<2^71, his timestamped operational homepage headline and exact *lowest incomplete* work-unit pointer, unassigned/work-in-progress, independent reproduction, and later competitors. Compare current date/source time; model external advancement, overlap and changed priority.
+2. **Primary implementation comparison** — audit Bařina's open-source C/OpenCL code and 2021/2025 papers at pinned source references, including n+1 switching, CTZ grouped steps, 128-bit fast path/overflow fallback, GPU memory/branch-divergence, sieve generation/compression, per-work-unit checksums and architecture. Record exactly what is observed versus inferred and what CEML currently does differently.
+3. **Mathematics** — independently reconstruct the proof obligations for 2^k parity/residue exclusions, 3^k reverse-coalescence classes, predecessor induction and exact domain exceptions. Compare existing CEML mod-144 explicit density of 15/144 with published sieve settings, distinguish percentages of integers excluded from elapsed-time gains, and rigorously investigate at least two plausible improvements *without* declaring an unproved skip safe. Analyse whether optimized sieves can be independently validated.
+4. **Scale and limits** — quantify the exact work-unit gap to 3×10^21 from a timestamped starting B; give explicit ideal throughput scenarios for 1, 10, 100 and 1,000 modern-GPU-equivalents and plausible utilisation, failure, duplicate checks, scheduling and audit overheads. Do not invent CEML GPU performance or rental prices. Include CPU-only, GPU farm, HPC allocation, volunteer and collaboration options.
+5. **Certificate and operations architecture** — propose an auditable division between optimized production workers and independent verifier/checksum/cross-checking. Explicitly discuss why compact work-unit hashes/checksums alone are not standalone publicly verifiable proofs that all starts were covered. Estimate metadata, scheduler, transfer, energy, data and money from sourced inputs or formulas.
+6. **Route comparison** — evaluate contributing to Bařina's existing infrastructure, independent replication of selected whole units, an optimized standalone GPU/distributed implementation and genuinely new mathematically proved sieve research. Identify dependency on third-party cooperation, available hardware, opportunity cost and reasons to stop.
 
-No quantity is required. The launcher audits the same accepted chain, discovers its verified exclusive endpoint, and checks sequential batches of exactly 9999. The owner chose to preserve the frozen 256-batch limit; it stops cleanly there with `CHAIN_LIMIT_REACHED`.
+## Outputs and gates
 
-In a second PowerShell window, request a clean stop with:
+Author a substantial sourced R3E21-1 report with (a) dated/source-graded frontier, (b) carefully reviewed code and theorem notes, (c) throughput/energy/cost model with sensitivity and uncertainty, (d) blockers and auditable mitigations, (e) at least three independently testable research hypotheses, (f) clear feasibility verdict/options, (g) minimal research-only next-session prompt. Update the parent roadmap and status only prospectively. Normal branch, atomic commit, validation, PR and expected-head non-force integration when supported; do not claim missing CI passed. Any new production implementation, scientific batch, hardware spend, collaboration/outreach or website publishing requires a **separate owner decision**. Leave all existing RUN1 data and publication machinery untouched.
 
-```powershell
-python C:\CEML\tools\operator\run_frontier.py stop
-```
-
-Wait for `CLEAN_STOPPED` and the run terminal prompt, then invoke `python C:\CEML\tools\publication\publish.py`. The active batch must finish every check and save the receipt; stop requests do not terminate the worker or promote unresolved work. No successor is admitted after the request. The operator lock is released before the final ready status.
-
-Use PROGRAM_STATUS.md, AGENTS.md, docs/RUN1_OPERATOR_RUNBOOK.md and docs/RUN1_ONE_COMMAND.md. Preserve every frozen contract and batch record. The owner starts scientific execution; this procedure-edit request executes no quantity. Agents check and record only unless separately authorised for a finite scientific run. Keep raw records out of Git, distinguish conditional results from independent reproduction, and never skip a partial checkpoint. Backups are optional and not an outstanding task. Legacy finite quantity commands remain supported but are no longer the default handoff.
+**Headline remains Road to 3 × 10²¹.** No automatic R3E21-2 or scientific execution.

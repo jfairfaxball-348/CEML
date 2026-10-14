@@ -1,3 +1,9 @@
+# Current owner steer — Road to 3 × 10²¹ (2026-10-14)
+
+This **research-only** programme steer supersedes the former objective of extending a local RUN1 prefix as the active project goal. Preserve all frozen V2/I1 scientific identities, byte-accurate certificates, website JSON/feed, old run records, accepted operator instructions and historical permissions. Never execute science, start or stop a local job, accept execution profiles, rewrite the worker/verifier, change source identity files or publish a novel frontier as part of research gate R3E21. Prior authorisations below describe completed/earlier operational work, not permissions derived from this new session. Re-evaluate the live external frontier and source date at each future research session; proposed residue/sieve exclusions require exact proof, and published performance requires platform-specific tests. Do not equate external work-unit checksum with independent mathematical certification. See docs/ROAD_TO_3E21_FEASIBILITY.md, ROADMAP.md and NEXT_SESSION_PROMPT.md.
+
+---
+
 # CEML Agent Instructions — active from P0 pivot
 
 **Continuous extension — owner request, 2026-10-13:** the owner now requests

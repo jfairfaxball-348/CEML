@@ -1,3 +1,13 @@
+# Current programme charter — Road to 3 × 10²¹ (owner pivot, 2026-10-14)
+
+**Prospective active objective:** a research-only, evidence-based investigation of the mathematical, computational, software, validation, logistical, financial and time requirements to extend the independently defensible contiguous Collatz verification frontier toward the **exclusive target B = 3,000,000,000,000,000,000,000**. This is a demanding aspirational destination, not a claim of feasibility or a mandate to allocate computing resources.
+
+The operational local/offline verifier, accepted CEML-FRONTIER-2 chain, certificates, published website feed, source pins and all former workstream outcomes remain intact and historically authoritative. Existing conditional records do not become a new independently verified global frontier. **No new scientific batches, machine access, performance-code changes, production rollouts or external-contact campaign are authorised by this research pivot.** Do not infer that any running local operator has been stopped; that is an owner-side operational action.
+
+The operative research authority is [the new feasibility brief](docs/ROAD_TO_3E21_FEASIBILITY.md), [new research roadmap](ROADMAP.md), and [next research session](NEXT_SESSION_PROMPT.md). Prior RUN1 status and operator commands are preserved below as historical engineering/operational instructions; they are not instructions to execute under this research-only gate.
+
+---
+
 # CEML Project Charter — version 0.2 (P0 pivot, 2026-10-11)
 
 ## Active purpose and authority

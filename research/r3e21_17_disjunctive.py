@@ -5,7 +5,7 @@ from functools import lru_cache
 from r3e21_15_tail_cover import B,E,T,roots_mask
 J,K,D,MOD=12,67,72,729
 PREVIOUS=326928588657578096
-LOWER=127947636332546
+LOWER=52093319358849
 
 def root(r):
     x,s,c=r,0,0
@@ -55,7 +55,7 @@ def signed_gate_check():
                     'P3':(5820949337,71,45),
                     'P4':(5820949363,72,46)}
     assert B>max(v[0] for v in maxima.values())
-    assert 3**46>2**72 and 2*3**46>3*2**72
+    assert 3**47>2**72 and 4*3**47>9*2**72
     return maxima
 
 def test_witness(n,roots,U):
@@ -87,7 +87,7 @@ def main():
     initial=Counter((*root(r),0) for r in roots)
     @lru_cache(None)
     def optimum(j,s,c,seen):
-        stop=ws[j] if seen&6 and s>=46 else 0
+        stop=ws[j] if seen&6 and s>=47 else 0
         if j==K:return stop
         return max(stop,sum(optimum(j+1,*v) for b in (0,1)
                   if (v:=transfer(j,s,c,seen,b)) is not None))
@@ -97,7 +97,7 @@ def main():
     for j in range(J,K+1):
         nxt=Counter()
         for (s,c,seen),mult in frontier.items():
-            if seen&6 and s>=46:
+            if seen&6 and s>=47:
                 hist[j]+=mult;types[seen&6]+=mult
                 continue
             if j==K:continue

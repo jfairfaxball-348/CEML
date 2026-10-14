@@ -1,3 +1,19 @@
+# Road to 3 × 10²¹ — active research roadmap (14 October 2026)
+
+**Current programme phase: R3E21 — RESEARCH ONLY.** Older P0/P1/P2/L1/RUN1 gates below are preserved as historical completion/operational evidence, not a current instruction to perform more science.
+
+| Research gate | Status | Evidence required to advance |
+|---|---|---|
+| **R3E21-0: programme pivot and baseline** | **DOCUMENTED, research only; 2026-10-14** | Freeze target/assumptions, identify primary source snapshots, quantify exact gap and idealised model, preserve CEML operational record |
+| **R3E21-1: competitor/source and sieve audit** | **NEXT; UNEXECUTED** | Source-pinned review of Barina's code/papers, mathematically proved sieve coverage, correctness and certification comparison, documented open questions and proof/test plan |
+| **R3E21-2: architecture and validation feasibility** | **BLOCKED pending R3E21-1** | Candidate CPU/GPU/HPC/distributed designs, independent verifier/replication strategy, throughput and cost model with justified assumptions, bottleneck map |
+| **R3E21-3: options and go/no-go decision** | **BLOCKED** | Owners choose cooperation/independent replication/new engineering/no build on explicit resource, overlap, novelty, time and evidence thresholds |
+| **Any implementation or verification deployment** | **NOT AUTHORISED** | Fresh explicit owner instruction and separately reviewed specification, validation and compute budget; no automatic progression |
+
+Guardrails: never confuse 2025 peer-reviewed 2^71 with the author's moving homepage pointer, mathematical sieve counts with throughput, a work-unit checksum with independent proof, or local conditional coverage with a published global frontier. The target may be overtaken externally. Details: [feasibility brief](docs/ROAD_TO_3E21_FEASIBILITY.md).
+
+---
+
 # CEML Roadmap — active post-pivot gates (2026-10-11)
 
 No transition is automatic; status must match actual evidence. P0–P2 are CLOUD research and governance; L1 is ONE focused local Codex implementation session; RUN1 is wholly OFFLINE CLI execution on the owner's machine.

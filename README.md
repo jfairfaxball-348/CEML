@@ -1,3 +1,17 @@
+# CEML — Road to 3 × 10²¹
+
+**Current objective (14 October 2026):** research the realistic mathematics, hardware, GPU/CPU distributed architecture, optimized verification software, independent audit standards, funding/energy constraints and time required to extend the contiguous computational Collatz frontier toward an **exclusive bound of 3 × 10²¹**.
+
+**Current phase: R3E21 research-only. No new scientific run, code/worker overhaul or resource commitment is authorised.** The validated local/offline multi-million-integer checking and GitHub/website publication pipeline is a preserved achievement, not the proposed method at world-frontier scale.
+
+Evidence tiers: peer-reviewed Bařina 2025 reports n < 2^71; his live homepage reports a moving higher, *author-claimed not independently reproduced here* contiguous pointer. At the research snapshot of 2026-10-14, the first incomplete work unit begins at 2175982616 × 2^40 = 2,392,518,188,130,438,742,016. Recheck before any future plan or novelty claim.
+
+Read [START_HERE.md](START_HERE.md), [full feasibility brief](docs/ROAD_TO_3E21_FEASIBILITY.md), [roadmap](ROADMAP.md), [charter](PROJECT_CHARTER.md), [status](PROGRAM_STATUS.md), [claim policy](docs/CLAIM_POLICY.md) and [next research session](NEXT_SESSION_PROMPT.md).
+
+Older CEML single-large-random-odd trajectory research, P0–P2, L1 and RUN1 records, frozen contracts and verified-publication ledgers remain historically preserved. No verified local starts are asserted to be a new global frontier.
+
+---
+
 # CEML — Collatz Frontier Verification Programme
 
 **Owner-directed pivot (2026-10-11):** this repository's active aim is to verify complete consecutive integer intervals just beyond an evidence-backed Collatz frontier using exact, proved exclusions, an economical offline local command-line verifier, and compact reproducible batch certificates. The previous name was *Collatz Extreme Magnitude Ladder* and its one-random-odd-start-per-magnitude design is **inactive** but fully preserved as historical R1–R4, I1 and C1 research.

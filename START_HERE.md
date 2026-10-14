@@ -1,3 +1,11 @@
+# Current programme: Road to 3 × 10²¹
+
+**As of 14 October 2026 the new active research phase is R3E21, with NO new scientific execution.** Study the feasibility of extending the external contiguous Collatz verification frontier to **3 × 10²¹** across hardware/distribution, software/validation, mathematical sieving, and elapsed time/cost. Start with [research charter](PROJECT_CHARTER.md), [feasibility brief](docs/ROAD_TO_3E21_FEASIBILITY.md), [roadmap](ROADMAP.md), and [R3E21-1 prompt](NEXT_SESSION_PROMPT.md). The source-pinned Bařina 2025 published bound and the independently unreplicated dynamic operational homepage are different evidence tiers.
+
+The local/offline verified-batch pipeline and public reporting remain successful preserved assets. **RUN1 commands and records below are historical operator reference**, not a fresh instruction to run science. This documentation-only pivot does not itself stop any live Windows job; do not assume the owner's machine state. The historical 7,936-batch / 79,852,170-start publication is conditional on its author-reported base.
+
+---
+
 # CEML — Start Here (post-P0)
 
 **Current PowerShell procedure:** `python C:\CEML\tools\operator\run_frontier.py start` continues from the latest verified endpoint in batches of exactly 9999, with no quantity. In a second terminal, `python C:\CEML\tools\operator\run_frontier.py stop` requests finishing the active batch and all checks before exit. Then publish with `python C:\CEML\tools\publication\publish.py`. Continuous operation stops cleanly at the accepted 256-batch limit. See [current commands](docs/RUN1_ONE_COMMAND.md). The procedure edit executes no scientific work; backups remain optional.

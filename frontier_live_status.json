@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "state": "running",
-  "updated_at": "2026-10-14T06:34:05Z",
-  "message": "Local observations; checkpoints are provisional. Verified tally changes only after separate publication.",
+  "state": "idle",
+  "updated_at": "2026-10-14T06:35:12Z",
+  "message": "No verification run active. Live observations do not change the published verified tally.",
   "current_batch": null,
   "session": {
     "requested": null,

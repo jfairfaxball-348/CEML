@@ -7985,6 +7985,18 @@ Owner-run continuation recorded by the publication command: batches 1892–7931 
 | 7930 | `[2392518188130518524193,2392518188130518534192)` | 9999 | `b541cc11461fffdcec540a2ffa34e8f3350c2e95d361a5d3ca844e87f2c4fc23` |
 | 7931 | `[2392518188130518534192,2392518188130518544191)` | 9999 | `a1f7ca2c7887d6c1474d50df1d6742af87b11cbd5c471442063f7905cfdefd39` |
 
+Execution profile: **CEML-SESSION-I2 extension using unchanged V2-format certificates**. The frozen V2 admission cap remains 256; this separately accepted profile extends its audited prefix. Independent publication replays every retained batch through frozen V2 arithmetic in a fresh audit.
+
+Owner-run continuation recorded by the publication command: batches 7932–7936 add 49995 integers in `[2392518188130518544191,2392518188130518594186)`. Full chain audit, accepted build verification, final certificate verification, reference replay and checkpoint inspection passed. The retained receipt matches; no scientific batch was executed by the publisher.
+
+| Batch | Half-open interval | Width | Certificate digest |
+|---|---|---:|---|
+| 7932 | `[2392518188130518544191,2392518188130518554190)` | 9999 | `d6ab1f5a90558cb58d1379646cf58304f7909b726aee5457c1442b5d16590f9f` |
+| 7933 | `[2392518188130518554190,2392518188130518564189)` | 9999 | `2e9690248b88ae515090b59641d38bab5d5a94387ae63554f00f139b5bbd2f08` |
+| 7934 | `[2392518188130518564189,2392518188130518574188)` | 9999 | `4dbd70e90a2df406c7093ba737a24288832e0b17dc68c41a85286213525bf8d0` |
+| 7935 | `[2392518188130518574188,2392518188130518584187)` | 9999 | `0a91c57f08dc3ef23d723781f8d871e19ae6b30f64935fddc6fcee4cdb7a88de` |
+| 7936 | `[2392518188130518584187,2392518188130518594186)` | 9999 | `370e33da7aedcf733420f75df5c3c49a81ad8cce1fd1b8d01f35d46d125828bd` |
+
 ```text
 CEML-FRONTIER-2 conditional batch chain
 Run identifier: RUN1-operational-0001
@@ -7992,21 +8004,21 @@ Base kind and tier: operational (author-reported, not replicated)
 Assumed, not verified by CEML: every positive integer below B = 2392518188130438742016 converges
   Source and its date: author's project homepage https://pcbarina.fit.vut.cz/, generated 2026-10-11T11:29:26Z
   CEML observation time (UTC): 2026-10-11T12:38:06Z
-Verified conditional on that assumption: every integer in [2392518188130438742016,2392518188130518544191) converges
-Batches: 7931 (79802175 integers)
+Verified conditional on that assumption: every integer in [2392518188130438742016,2392518188130518594186) converges
+Batches: 7936 (79852170 integers)
 Genesis digest: a416bf0f89ebdb16911baf830b6c375d280829bd58587dd7787e36f5d3c53caf
-Latest certificate digest: a1f7ca2c7887d6c1474d50df1d6742af87b11cbd5c471442063f7905cfdefd39
+Latest certificate digest: 370e33da7aedcf733420f75df5c3c49a81ad8cce1fd1b8d01f35d46d125828bd
 Snapshot digest: 538d319bad77b58ec3b37d653df3213312e260167ad26861e8870e48b276b729
 Native build digest: c0263b353e05b9f3d09730e67d321254952c7dbdc2a6d892f7ffe2b14b89c032
 Source commit of pilot 1: 641e7b64acd01397f360a14eb1659107e7732459
 Source commit of owner's 100000-integer continuation: 789dca672cdd3bbe9ed7d30d93f465f2e2e47c7b
 Source commit at confirmation of batches 11–17: c10da89922e5185d4d0bb8076136a5f991fadd96 (records bind the build digest, not a Git SHA)
 Source commit at confirmation of batches 18–87: 8467367a088f9af5a686fd99149320f228fa2d23 (records bind the build digest, not a Git SHA)
-Source commit at automated confirmation: 15aac5b880173d1de1094ce625fe96e2b1383684 (records bind the build digest, not a Git SHA)
-Rule counts (E2, Q4, P3, M9, S2K4-03, EXPLICIT): 39901088, 19950544, 6650181, 2216727, 2770908, 8312727
+Source commit at automated confirmation: 97620ae345a9f61cbfe85a0afc9a639d8b0aed5e (records bind the build digest, not a Git SHA)
+Rule counts (E2, Q4, P3, M9, S2K4-03, EXPLICIT): 39926085, 19963043, 6654348, 2218115, 2772645, 8317934
 Unresolved: 0
-Explicit shortened-map steps computed: 99424596 (60795555 odd; 160220151 standard-map steps)
-Run dates (UTC): 2026-10-14; chain began 2026-10-12; latest certificate filesystem timestamp 2026-10-14T06:34:01Z (batch 7931); not an end-to-end timer
+Explicit shortened-map steps computed: 99486514 (60833407 odd; 160319921 standard-map steps)
+Run dates (UTC): 2026-10-14; chain began 2026-10-12; latest certificate filesystem timestamp 2026-10-14T08:29:01Z (batch 7936); not an end-to-end timer
 Independent full replay performed: yes, built-in second pass (same author and machine)
 Independent reproduction by other code: none
 Overlap with externally reported work: expected; not checked against the external project's current state

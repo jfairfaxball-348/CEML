@@ -21,19 +21,19 @@
   },
   "coverage": {
     "start": "2392518188130438742016",
-    "end": "2392518188130518544191",
-    "integers": "79802175"
+    "end": "2392518188130518594186",
+    "integers": "79852170"
   },
   "unresolved": 0,
   "genesis_digest": "a416bf0f89ebdb16911baf830b6c375d280829bd58587dd7787e36f5d3c53caf",
-  "latest_certificate_digest": "a1f7ca2c7887d6c1474d50df1d6742af87b11cbd5c471442063f7905cfdefd39",
+  "latest_certificate_digest": "370e33da7aedcf733420f75df5c3c49a81ad8cce1fd1b8d01f35d46d125828bd",
   "rule_counts": {
-    "E2": 39901088,
-    "Q4": 19950544,
-    "P3": 6650181,
-    "M9": 2216727,
-    "S2K4-03": 2770908,
-    "EXPLICIT": 8312727
+    "E2": 39926085,
+    "Q4": 19963043,
+    "P3": 6654348,
+    "M9": 2218115,
+    "S2K4-03": 2772645,
+    "EXPLICIT": 8317934
   },
   "batches": [
     {
@@ -55552,6 +55552,41 @@
       "end": "2392518188130518544191",
       "width": 9999,
       "certificate_digest": "a1f7ca2c7887d6c1474d50df1d6742af87b11cbd5c471442063f7905cfdefd39"
+    },
+    {
+      "number": 7932,
+      "start": "2392518188130518544191",
+      "end": "2392518188130518554190",
+      "width": 9999,
+      "certificate_digest": "d6ab1f5a90558cb58d1379646cf58304f7909b726aee5457c1442b5d16590f9f"
+    },
+    {
+      "number": 7933,
+      "start": "2392518188130518554190",
+      "end": "2392518188130518564189",
+      "width": 9999,
+      "certificate_digest": "2e9690248b88ae515090b59641d38bab5d5a94387ae63554f00f139b5bbd2f08"
+    },
+    {
+      "number": 7934,
+      "start": "2392518188130518564189",
+      "end": "2392518188130518574188",
+      "width": 9999,
+      "certificate_digest": "4dbd70e90a2df406c7093ba737a24288832e0b17dc68c41a85286213525bf8d0"
+    },
+    {
+      "number": 7935,
+      "start": "2392518188130518574188",
+      "end": "2392518188130518584187",
+      "width": 9999,
+      "certificate_digest": "0a91c57f08dc3ef23d723781f8d871e19ae6b30f64935fddc6fcee4cdb7a88de"
+    },
+    {
+      "number": 7936,
+      "start": "2392518188130518584187",
+      "end": "2392518188130518594186",
+      "width": 9999,
+      "certificate_digest": "370e33da7aedcf733420f75df5c3c49a81ad8cce1fd1b8d01f35d46d125828bd"
     }
   ],
   "claim": "Every integer in the covered interval reaches 1, conditional on the author-reported base. This is a finite, conditional computational result: not a proof of the Collatz conjecture, not a reproduction of the base, and not a claim of a world first or of global frontier extension."

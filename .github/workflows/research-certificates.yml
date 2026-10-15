@@ -17,6 +17,7 @@ on:
       - "research/r3e21_39_later_block_caps.py"
       - "research/r3e21_39_original_witness_trace.json"
       - "research/r3e21_40_source_reachable_cylinder.py"
+      - "research/r3e21_41_parity_partition.py"
   push:
     branches: [main]
     paths:
@@ -31,6 +32,7 @@ on:
       - "research/r3e21_39_later_block_caps.py"
       - "research/r3e21_39_original_witness_trace.json"
       - "research/r3e21_40_source_reachable_cylinder.py"
+      - "research/r3e21_41_parity_partition.py"
   workflow_dispatch:
 
 permissions:
@@ -178,3 +180,24 @@ jobs:
           python3 -B research/r3e21_40_source_reachable_cylinder.py | tee "$RUNNER_TEMP/r40.txt"
           grep -Fqx 'R40_CYLINDER_PASS roots=105742 interval=870591 admitted=456289 bitmap=456203 false_clear=167 inverse=15 max_descent=181 digest=ea27859daa20511ce786caba1c212110663e1d42fbb36f7b7a299028ed96406e' "$RUNNER_TEMP/r40.txt"
           grep -Fqx 'R40_DIRECT_ROOT_ORACLE_PASS tested_roots=262144 surviving_roots=105742' "$RUNNER_TEMP/r40.txt"
+
+  r41-global-prefix-and-local-closure:
+    name: R41 exact f43 odd-q source1 automaton and all 54438 original descents
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Exact root partition, four independently clipped 2^16-root bands, every admitted original-T witness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_41_parity_partition.py | tee "$RUNNER_TEMP/r41.txt"
+          grep -Fqx 'R41_DP_PASS pairs=848 unrestricted=39001983984117856 rational=9398852100800112 predecessor=7645997023219688 exact=6438209236755220' "$RUNNER_TEMP/r41.txt"
+          grep -Fqx 'R41_PARTITION_PASS no_prefix=55340232221128654848 source1_rejected=18440305864472796396 closed_cylinder=12401 untouched_roots=6438209236742819 total=73786976294838206464' "$RUNNER_TEMP/r41.txt"
+          grep -Fqx 'R41_CYLINDER_PASS source_roots=12401 interval=102090 admitted=54438 source_clear=49191 false_clear=167 inverse=0 direct_descent=54438 direct_le90=47406 direct_gt90=7032 no_descent_through2000=0 smaller_predecessor_67_90=48582 max_descent=349 digest=ea27859daa20511ce786caba1c212110663e1d42fbb36f7b7a299028ed96406e admitted_digest=7edb1e7df2015e373d4bfc02dd120b7e645e543f2c880f3120194ccfeeecb761' "$RUNNER_TEMP/r41.txt"
+          grep -Fqx 'R41_BAND_PASS i=0 roots=3116 admitted=13287 direct=13287' "$RUNNER_TEMP/r41.txt"
+          grep -Fqx 'R41_BAND_PASS i=1 roots=3095 admitted=13712 direct=13712' "$RUNNER_TEMP/r41.txt"
+          grep -Fqx 'R41_BAND_PASS i=2 roots=3082 admitted=14198 direct=14198' "$RUNNER_TEMP/r41.txt"
+          grep -Fqx 'R41_BAND_PASS i=3 roots=3108 admitted=13241 direct=13241' "$RUNNER_TEMP/r41.txt"

@@ -10,6 +10,8 @@ on:
       - "research/r3e21_36_sparse_parity_mitm.py"
       - "research/r3e21_37_audit.py"
       - "research/r3e21_37_bitmap_audit.cpp"
+      - "research/r3e21_38_authentic_mod3.py"
+      - "research/r3e21_38_two_parity_bitmap.cpp"
   push:
     branches: [main]
     paths:
@@ -17,6 +19,8 @@ on:
       - "research/r3e21_36_sparse_parity_mitm.py"
       - "research/r3e21_37_audit.py"
       - "research/r3e21_37_bitmap_audit.cpp"
+      - "research/r3e21_38_authentic_mod3.py"
+      - "research/r3e21_38_two_parity_bitmap.cpp"
   workflow_dispatch:
 
 permissions:
@@ -69,3 +73,32 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/r37_bitmap" | tee "$RUNNER_TEMP/r37_bitmap.txt"
           grep -Fqx 'R37_BITMAP_PASS all_residues=16777216 equal_scores=16633847' "$RUNNER_TEMP/r37_bitmap.txt"
+
+  r38-mod3-witness:
+    name: R38 authentic mod3 witness and complete two-parity bitmap / ${{ matrix.compiler }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Independent exact original-start witness and base n<=99781
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_38_authentic_mod3.py | tee "$RUNNER_TEMP/r38_witness.txt"
+          grep -Fq 'R38_AUTHENTIC_MISMATCH_PASS original_n=2736476243348084729115' "$RUNNER_TEMP/r38_witness.txt"
+          grep -Fqx 'R38_BOUNDED_BASE_PASS starts=99781 max_steps=221 max_peak=785412368' "$RUNNER_TEMP/r38_witness.txt"
+      - name: Exact all 2^24 residues with incoming even-run parity 0 and 1
+        shell: bash
+        env:
+          CXX: ${{ matrix.compiler }}
+        run: |
+          set -euo pipefail
+          "$CXX" -O3 -std=c++17 -Wall -Wextra -o "$RUNNER_TEMP/r38_parity" research/r3e21_38_two_parity_bitmap.cpp
+          "$RUNNER_TEMP/r38_parity" | tee "$RUNNER_TEMP/r38_parity.txt"
+          grep -Fqx 'R38_TWO_PARITY_SCAN_COMPLETE residues=16777216 mismatched_scores=399426 source_false_clear_pairs=63015 source_false_keep_pairs=11401' "$RUNNER_TEMP/r38_parity.txt"

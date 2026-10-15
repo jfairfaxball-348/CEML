@@ -92,3 +92,20 @@ def main():
  print('R39_WITNESS_PASS original_n=2736476243348084729115 lift=37 original_24word=0x9faddc source=791 corrected=612 cutoff=659 first_descent=116')
  print('R39_FIBER_FALSE_CLEAR_LIFTS '+','.join(str(t[1]) for t in falseclear))
 if __name__=='__main__':main()
+
+# Independently replay the committed full chronological original-start record.
+# A missing, truncated or reordered record is a test failure, not evidence.
+if __name__=='__main__':
+ import json
+ with open('research/r3e21_39_original_witness_trace.json',encoding='utf-8') as fh:
+  rec=json.load(fh)
+ assert rec['original_n']==str(N) and rec['step_start']==0
+ assert rec['step_end']==rec['first_strict_descent_step']==116
+ assert len(rec['states_0_to_116'])==117
+ xs=trace(N,116)
+ assert rec['states_0_to_116']==[str(t) for t in xs]
+ assert all(t>=N for t in xs[1:116]) and xs[116]<N
+ assert sum(t%2 for t in xs[:66])==43
+ assert rec['previous_66_prefix_odd_count']==43
+ assert rec['previous_66_trailing_even_count']==1
+ print('R39_TRACE_FILE_PASS original_n=2736476243348084729115 chronological_states=117 first_descent=116')

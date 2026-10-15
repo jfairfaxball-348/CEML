@@ -15,6 +15,7 @@ on:
       - "research/r3e21_39_independent_bitmap.cpp"
       - "research/r3e21_39_exact_lift_fiber.py"
       - "research/r3e21_39_later_block_caps.py"
+      - "research/r3e21_39_original_witness_trace.json"
   push:
     branches: [main]
     paths:
@@ -27,6 +28,7 @@ on:
       - "research/r3e21_39_independent_bitmap.cpp"
       - "research/r3e21_39_exact_lift_fiber.py"
       - "research/r3e21_39_later_block_caps.py"
+      - "research/r3e21_39_original_witness_trace.json"
   workflow_dispatch:
 
 permissions:
@@ -124,6 +126,7 @@ jobs:
           python3 -B research/r3e21_39_exact_lift_fiber.py | tee "$RUNNER_TEMP/r39_fiber.txt"
           grep -Fqx 'R39_EXACT_FIBER_PASS interval_lifts=8 admitted_lifts=4 false_clear_lifts=1 no_direct_or_predecessor_through90=1' "$RUNNER_TEMP/r39_fiber.txt"
           grep -Fqx 'R39_WITNESS_PASS original_n=2736476243348084729115 lift=37 original_24word=0x9faddc source=791 corrected=612 cutoff=659 first_descent=116' "$RUNNER_TEMP/r39_fiber.txt"
+          grep -Fqx 'R39_TRACE_FILE_PASS original_n=2736476243348084729115 chronological_states=117 first_descent=116' "$RUNNER_TEMP/r39_fiber.txt"
       - name: Complete capped j114 j130 m<=3 parity cylinders, explicit remainder
         shell: bash
         run: |

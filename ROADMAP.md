@@ -1,3 +1,9 @@
+# R3E21-27 decision update — 15 October 2026
+
+**R3E21-27 RESEARCH COMPLETE; R3E21-28 FUTURE / UNEXECUTED.** Owner pivot after R26's diminishing mathematical-exclusion marginal gains. Computational feasibility, BOINC volunteering, peer-reviewed/external competitive algorithms, throughput/cost and hostile validation design audited in [R27 report](docs/R3E21_27_COMPUTE_CROWDSOURCING.md) and [reproducible sensitivity model](docs/R3E21_27_TRUST_COST_MODEL.md). Recommendation: collaboration-first / independent correctness-and-benchmark-first; no volunteer deployment, scientific run or expenditure. The older R3E21-2 computational architecture entry below was labelled future historically; R27 investigated that topic under separate owner authority, **not** as execution of R3E21-2. R28 now addresses exact interval adaptation and independent certification only; no phase transition without separate owner approval. Official conditional mathematical majorant 326518028938128165 unchanged.
+
+---
+
 # Road to 3 × 10²¹ — active research roadmap (14 October 2026)
 
 **Mathematical research overlay (R3E21-3, independently invoked):** [rigorous exact sieve analysis](docs/R3E21_3_MATHEMATICAL_SIEVE.md) proves a conditional 0.4150130471% residue density remaining after depth-35 prefix and 3^6 reverse proofs above 2^70. The legacy R3E21-2 gate remains future/unexecuted; R3E21-4 is the next owner-invoked mathematical audit. No operational, scientific, website or frozen contract changes and no performance/novelty claims.

@@ -59,3 +59,15 @@ Carry unchanged B=`2392518188130438742016`; exclusive E=`3000000000000000000000`
 ## GO/NO-GO and next gate
 
 **NO-GO for production changes, frontier science, benchmark permission request, crowdsourcing and external correctness claims.** Research-only bounded CI is authorised. Tier assessment: q-mod3 inheritance **MATHEMATICAL PROOF**; full finite 2×2^24 score/index construction **LOCAL FINITE CERTIFICATE** with CI to confirm; one exact original 66-bit fiber **FINITE SOURCE-FILTERED TRACE**; j98 **INHERITED complete R36 certificate**; j114/j130 m≤3 **NEW COMPLETE FINITE STRATA**, remainder explicit; full source/compiled binary/native exceptions/maps/independent whole-work-unit arbiter **NOT CERTIFIED**. Next R40 should focus one sharply defined source-reachable witness theorem (full q0/q1 repair and independent source-certified 66-bit prefix/bitmap gate) before dispersing effort across map and native-block engineering. Preserve separate secondary backlog and stop conditions.
+
+## GitHub Actions independent verification (first complete PR-head check)
+
+On R39 PR #70 commit `08e89a9b41fd98040366b5ea49b05d81b3ef1ac2`, actual [Actions run 38771219326](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326) completed **SUCCESS** with all **8/8 jobs passing** (15 October 2026):
+
+- [R36 MITM and R37 bounded Python](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547230442) — PASS.
+- [R37 all-24-bit g++](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547230148) and [clang++](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547229987) — PASS.
+- [R38 authentic original and two-parity g++](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547229990) and [clang++](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547229898) — PASS.
+- [R39 full independent positive-lift bitmap g++](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547230005) and [clang++](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547229585) — PASS.
+- [R39 original-start exact fiber + later-block caps](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547229875) — PASS.
+
+**Important:** this appendix creates a *new documentation commit after the above successful run*. The cited 8/8 verdict is tied to `08e89a9...`, **not automatically** to the eventual merge SHA. Confirm any newer PR-head run after the appendix change, and any merged-main push run separately; never pretend cross-SHA status transfers.

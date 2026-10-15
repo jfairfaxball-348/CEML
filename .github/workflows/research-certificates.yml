@@ -16,6 +16,7 @@ on:
       - "research/r3e21_39_exact_lift_fiber.py"
       - "research/r3e21_39_later_block_caps.py"
       - "research/r3e21_39_original_witness_trace.json"
+      - "research/r3e21_40_source_reachable_cylinder.py"
   push:
     branches: [main]
     paths:
@@ -29,6 +30,7 @@ on:
       - "research/r3e21_39_exact_lift_fiber.py"
       - "research/r3e21_39_later_block_caps.py"
       - "research/r3e21_39_original_witness_trace.json"
+      - "research/r3e21_40_source_reachable_cylinder.py"
   workflow_dispatch:
 
 permissions:
@@ -160,3 +162,19 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/r39_bitmap" | tee "$RUNNER_TEMP/r39_bitmap.txt"
           grep -Fqx 'R39_INDEPENDENT_BITMAP_PASS residues=16777216 parity_states=2 mismatched=399426 source_clear_corrected_live=63015 source_live_corrected_clear=11401 padded_lifts=64' "$RUNNER_TEMP/r39_bitmap.txt"
+
+  r40-source-reachable-cylinder:
+    name: R40 exact reachable cylinder and direct-root oracle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: R40 exact 48-bit cylinder all 66-bit roots and 167 literal-T descent certificates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_40_source_reachable_cylinder.py | tee "$RUNNER_TEMP/r40.txt"
+          grep -Fqx 'R40_CYLINDER_PASS roots=105742 interval=870591 admitted=456289 bitmap=456203 false_clear=167 inverse=15 max_descent=181 digest=ea27859daa20511ce786caba1c212110663e1d42fbb36f7b7a299028ed96406e' "$RUNNER_TEMP/r40.txt"
+          grep -Fqx 'R40_DIRECT_ROOT_ORACLE_PASS tested_roots=262144 surviving_roots=105742' "$RUNNER_TEMP/r40.txt"

@@ -71,3 +71,7 @@ On R39 PR #70 commit `08e89a9b41fd98040366b5ea49b05d81b3ef1ac2`, actual [Actions
 - [R39 original-start exact fiber + later-block caps](https://github.com/jfairfaxball-348/CEML/actions/runs/38771219326/job/116547229875) — PASS.
 
 **Important:** this appendix creates a *new documentation commit after the above successful run*. The cited 8/8 verdict is tied to `08e89a9...`, **not automatically** to the eventual merge SHA. Confirm any newer PR-head run after the appendix change, and any merged-main push run separately; never pretend cross-SHA status transfers.
+
+## Fixed full chronological source-admitted witness (additional R39 artifact)
+
+The exact original-start sequence for `n=2736476243348084729115` is committed as [117-state original witness JSON](../research/r3e21_39_original_witness_trace.json), from T^0 through T^116 inclusive, with original n, fixed source-text pin, exact odd count 43 through the first 66 states, incoming-even-run 1, and first strict descent at 116. The independent R39 Python witness fixture **recomputes the entire record element by element**, checks every equality, validates the pre-boundary odd count, and emits `R39_TRACE_FILE_PASS`; both PR and push workflow path filters include the JSON artifact. The earlier 8-job run in the previous appendix predates this new file and **does not certify this newer PR head**; re-check the new exact SHA and jobs. Nothing in this file is a frontier science batch or full-source deployed binary verification.

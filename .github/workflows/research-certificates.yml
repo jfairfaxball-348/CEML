@@ -12,6 +12,10 @@ on:
       - "research/r3e21_37_bitmap_audit.cpp"
       - "research/r3e21_38_authentic_mod3.py"
       - "research/r3e21_38_two_parity_bitmap.cpp"
+      - "research/r3e21_39_independent_bitmap.cpp"
+      - "research/r3e21_39_exact_lift_fiber.py"
+      - "research/r3e21_39_later_block_caps.py"
+      - "research/r3e21_39_original_witness_trace.json"
   push:
     branches: [main]
     paths:
@@ -21,6 +25,10 @@ on:
       - "research/r3e21_37_bitmap_audit.cpp"
       - "research/r3e21_38_authentic_mod3.py"
       - "research/r3e21_38_two_parity_bitmap.cpp"
+      - "research/r3e21_39_independent_bitmap.cpp"
+      - "research/r3e21_39_exact_lift_fiber.py"
+      - "research/r3e21_39_later_block_caps.py"
+      - "research/r3e21_39_original_witness_trace.json"
   workflow_dispatch:
 
 permissions:
@@ -102,3 +110,53 @@ jobs:
           "$CXX" -O3 -std=c++17 -Wall -Wextra -o "$RUNNER_TEMP/r38_parity" research/r3e21_38_two_parity_bitmap.cpp
           "$RUNNER_TEMP/r38_parity" | tee "$RUNNER_TEMP/r38_parity.txt"
           grep -Fqx 'R38_TWO_PARITY_SCAN_COMPLETE residues=16777216 mismatched_scores=399426 source_false_clear_pairs=63015 source_false_keep_pairs=11401' "$RUNNER_TEMP/r38_parity.txt"
+
+  r39-exact-original-fiber:
+    name: R39 exact original-start lift fiber and capped later parity classes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Exact 66-bit source admitted lift fiber and 116-step original trace
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_39_exact_lift_fiber.py | tee "$RUNNER_TEMP/r39_fiber.txt"
+          grep -Fqx 'R39_EXACT_FIBER_PASS interval_lifts=8 admitted_lifts=4 false_clear_lifts=1 no_direct_or_predecessor_through90=1' "$RUNNER_TEMP/r39_fiber.txt"
+          grep -Fqx 'R39_WITNESS_PASS original_n=2736476243348084729115 lift=37 original_24word=0x9faddc source=791 corrected=612 cutoff=659 first_descent=116' "$RUNNER_TEMP/r39_fiber.txt"
+          grep -Fqx 'R39_TRACE_FILE_PASS original_n=2736476243348084729115 chronological_states=117 first_descent=116' "$RUNNER_TEMP/r39_fiber.txt"
+      - name: Complete capped j114 j130 m<=3 parity cylinders, explicit remainder
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_39_later_block_caps.py | tee "$RUNNER_TEMP/r39_later.txt"
+          grep -Fqx 'R39_LATER_STRATUM_PASS j=114 checked=247020 zero_hits=1 unexamined=362205922639287064 max_m=14 next_class_count=6672876 cap_probes=5000000' "$RUNNER_TEMP/r39_later.txt"
+          grep -Fqx 'R39_LATER_STRATUM_PASS j=130 checked=366276 zero_hits=1 unexamined=1080231996567188756950656 max_m=21 next_class_count=11358880 cap_probes=5000000' "$RUNNER_TEMP/r39_later.txt"
+
+  r39-independent-two-parity:
+    name: R39 exact T mod3 and index bitmap / ${{ matrix.compiler }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Compile independent bitmap model with ${{ matrix.compiler }}
+        shell: bash
+        env:
+          CXX: ${{ matrix.compiler }}
+        run: |
+          set -euo pipefail
+          "$CXX" -O3 -std=c++17 -Wall -Wextra -o "$RUNNER_TEMP/r39_bitmap" research/r3e21_39_independent_bitmap.cpp
+      - name: Verify exact T, mod3, inverse permutation, 64-lift wrap and 2x2^24 cells
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/r39_bitmap" | tee "$RUNNER_TEMP/r39_bitmap.txt"
+          grep -Fqx 'R39_INDEPENDENT_BITMAP_PASS residues=16777216 parity_states=2 mismatched=399426 source_clear_corrected_live=63015 source_live_corrected_clear=11401 padded_lifts=64' "$RUNNER_TEMP/r39_bitmap.txt"

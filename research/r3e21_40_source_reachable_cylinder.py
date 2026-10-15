@@ -67,7 +67,20 @@ def trace_certificate(n, number, a, f, run):
         path.append(T(path[-1]))
     assert path[66] == number+a*POW[f]-1
     assert sum(z&1 for z in path[:66])==f
-    assert run%2 == (1 if path[65]%2==0 else 0) if run in (0,1) else True
+    trailing=0
+    for z in reversed(path[:66]):
+        if z&1:
+            break
+        trailing+=1
+    assert trailing==run
+    q=run
+    for k in range(66,90):
+        if path[k]&1:
+            assert path[k+1]%3==2
+            q=0
+        else:
+            q+=1
+            assert (((2*path[k+1]-1)%3)==0) == (q%2==0)
     # All direct descents and smaller integral predecessors through the exact 24-window.
     assert all(z>=n for z in path[1:91])
     for z in path[67:91]:

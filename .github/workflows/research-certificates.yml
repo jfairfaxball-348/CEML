@@ -1,0 +1,71 @@
+# Bounded mathematics/source audits only; not a Collatz frontier verifier.
+# No owner hardware, secrets, production binaries or scientific intervals.
+# Runs stdlib and two C++ compilers on standard free public-repository CPU runners.
+name: CEML bounded research certificates
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/research-certificates.yml"
+      - "research/r3e21_36_sparse_parity_mitm.py"
+      - "research/r3e21_37_audit.py"
+      - "research/r3e21_37_bitmap_audit.cpp"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/research-certificates.yml"
+      - "research/r3e21_36_sparse_parity_mitm.py"
+      - "research/r3e21_37_audit.py"
+      - "research/r3e21_37_bitmap_audit.cpp"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parity-and-bounds:
+    name: Exact R36 parity MITM and R37 bounded oracles
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Reproduce complete finite R36 certificate (not frontier science)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_36_sparse_parity_mitm.py | tee "$RUNNER_TEMP/r36.txt"
+          grep -Fqx 'R36_MITM_PASS cylinders=14958711636 third_block_unsafe_sparse_cylinders=0' "$RUNNER_TEMP/r36.txt"
+      - name: R37 exact rational bounds, miniature oracles, base and omission model
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_37_audit.py | tee "$RUNNER_TEMP/r37.txt"
+          grep -Fqx 'R37_BOUNDED_AUDIT_PASS' "$RUNNER_TEMP/r37.txt"
+
+  bitmap-24:
+    name: Exact R37 2^24 bitmap / ${{ matrix.compiler }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Compile independently with ${{ matrix.compiler }}
+        shell: bash
+        env:
+          CXX: ${{ matrix.compiler }}
+        run: |
+          set -euo pipefail
+          "$CXX" -O3 -std=c++17 -Wall -Wextra -o "$RUNNER_TEMP/r37_bitmap" research/r3e21_37_bitmap_audit.cpp
+      - name: Reproduce all 16,777,216 source bitvector residues (not full source proof)
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/r37_bitmap" | tee "$RUNNER_TEMP/r37_bitmap.txt"
+          grep -Fqx 'R37_BITMAP_PASS all_residues=16777216 equal_scores=16633847' "$RUNNER_TEMP/r37_bitmap.txt"

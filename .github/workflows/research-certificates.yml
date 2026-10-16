@@ -24,6 +24,7 @@ on:
       - "research/r3e21_44_independent_phase.cpp"
       - "research/r3e21_45_multi_class.py"
       - "research/r3e21_45_independent_phase.cpp"
+      - "research/r3e21_46_overlap.py"
   push:
     branches: [main]
     paths:
@@ -45,6 +46,7 @@ on:
       - "research/r3e21_44_independent_phase.cpp"
       - "research/r3e21_45_multi_class.py"
       - "research/r3e21_45_independent_phase.cpp"
+      - "research/r3e21_46_overlap.py"
   workflow_dispatch:
 
 permissions:
@@ -327,3 +329,18 @@ jobs:
           "$RUNNER_TEMP/r45_phase" | tee "$RUNNER_TEMP/r45_cpp.txt"
           test "$(grep -Fc 'R45_INDEPENDENT_CLASS_PASS state=' "$RUNNER_TEMP/r45_cpp.txt")" -eq 7
           grep -Fqx 'R45_INDEPENDENT_ALL_PASS classes=7 probes=33030144 phases=129024' "$RUNNER_TEMP/r45_cpp.txt"
+
+  r46-mask-containment:
+    name: R46 exact prior-descent containment witness and count conservation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check R46 exact arithmetic and literal T69 sample
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_46_overlap.py | tee "$RUNNER_TEMP/r46.txt"
+          grep -Fqx 'R46_MASK_CONTAINMENT_PASS fresh=0 selected=1086887097472160 untouched_roots=5351322139189268 witness69=1 upper_unchanged=326518028938128165' "$RUNNER_TEMP/r46.txt"

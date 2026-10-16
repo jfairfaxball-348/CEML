@@ -20,6 +20,8 @@ on:
       - "research/r3e21_41_parity_partition.py"
       - "research/r3e21_42_global_lift.py"
       - "research/r3e21_43_source_admitted_intersection.py"
+      - "research/r3e21_44_suffix_certificate.py"
+      - "research/r3e21_44_independent_phase.cpp"
   push:
     branches: [main]
     paths:
@@ -37,6 +39,8 @@ on:
       - "research/r3e21_41_parity_partition.py"
       - "research/r3e21_42_global_lift.py"
       - "research/r3e21_43_source_admitted_intersection.py"
+      - "research/r3e21_44_suffix_certificate.py"
+      - "research/r3e21_44_independent_phase.cpp"
   workflow_dispatch:
 
 permissions:
@@ -238,3 +242,43 @@ jobs:
           python3 -B research/r3e21_43_source_admitted_intersection.py | tee "$RUNNER_TEMP/r43.txt"
           test "$(grep -Fc 'R43_CLASS_PASS index=' "$RUNNER_TEMP/r43.txt")" -eq 8
           grep -Fqx 'R43_INTERSECTION_PASS probes=2097152 eligible_roots=81391 ninth=18994 source_gated=358621 canonical_admitted=41937 nonadmitted_canonical=39454 union_R41=96375 sha256=fa2add371b8e778e793adfaa84d57a72b6f7d103a74c2528435640100e8bcc24' "$RUNNER_TEMP/r43.txt"
+
+  r44-global-prefix-suffix-family:
+    name: R44 exact global disjoint prefix-suffix theorem and 125 literal T replays
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Exact 58-bit prefix DP, all 18432 suffix phases, exclusions, real start replays
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_44_suffix_certificate.py | tee "$RUNNER_TEMP/r44.txt"
+          grep -Fqx 'R44_PREFIX_DP_PASS i=58 f=39 flag=0 q=0 exact_prefixes=55114089659444' "$RUNNER_TEMP/r44.txt"
+          grep -Fqx 'R44_SUFFIX_PHASE_PASS probes=524288 phases=18432 min=5 max=17 sum=206080 histogram=5:49,6:90,7:485,8:1844,9:2509,10:1677,11:2914,12:3744,13:2627,14:1269,15:747,16:416,17:61' "$RUNNER_TEMP/r44.txt"
+          grep -Fqx 'R44_DISJOINT_COUNT_PASS excluded_old_prefixes=843 remaining_prefixes=55114089658601 certified_per_prefix=5 new_original_starts=275570448293005 union_with_R43_R41=275570448389380' "$RUNNER_TEMP/r44.txt"
+          grep -Fqx 'R44_LITERAL_T_PASS starts=125 prefix_search_probes=35328 sha256=9466aa8a805c11ea60f7f0448ccd152941a25c54b21c8f8825529031c9a38518 example=2733576887422834181503' "$RUNNER_TEMP/r44.txt"
+
+  r44-independent-matrix:
+    name: R44 independent source-suffix phase machine / ${{ matrix.compiler }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Independently check all 4718592 (phase, suffix) pairs
+        shell: bash
+        env:
+          CXX: ${{ matrix.compiler }}
+        run: |
+          set -euo pipefail
+          "$CXX" -O2 -std=c++17 -Wall -Wextra -Werror -pedantic -o "$RUNNER_TEMP/r44_phase" research/r3e21_44_independent_phase.cpp
+          "$RUNNER_TEMP/r44_phase" | tee "$RUNNER_TEMP/r44_cpp.txt"
+          grep -Fqx 'R44_INDEPENDENT_PHASE_PASS probes=4718592 phases=18432 min=5 max=17 sum=206080 histogram=5:49,6:90,7:485,8:1844,9:2509,10:1677,11:2914,12:3744,13:2627,14:1269,15:747,16:416,17:61' "$RUNNER_TEMP/r44_cpp.txt"

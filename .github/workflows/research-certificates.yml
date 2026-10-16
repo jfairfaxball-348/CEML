@@ -26,6 +26,7 @@ on:
       - "research/r3e21_45_independent_phase.cpp"
       - "research/r3e21_46_overlap.py"
       - "research/r3e21_47_fresh_late.py"
+      - "research/r3e21_48_source_live.py"
   push:
     branches: [main]
     paths:
@@ -49,6 +50,7 @@ on:
       - "research/r3e21_45_independent_phase.cpp"
       - "research/r3e21_46_overlap.py"
       - "research/r3e21_47_fresh_late.py"
+      - "research/r3e21_48_source_live.py"
   workflow_dispatch:
 
 permissions:
@@ -362,3 +364,19 @@ jobs:
           python3 -B research/r3e21_47_fresh_late.py | tee "$RUNNER_TEMP/r47.txt"
           grep -Fqx 'R47_FRESH_LATE_PASS original_starts=149 complement=18 first_range=91..181 old_inverse=17 u729=1 first91=8 last181=1 sha256=e2e797a88d5fefb00addaaab39536d1b557e56d99215658e7e21546e6c0ff082 upper=326518028938128016' "$RUNNER_TEMP/r47.txt"
           grep -Fqx 'R47_WITNESS_PASS n=2736476243348084729115 D72_negative=1 first_descent=116 T116=2226197956138333406479' "$RUNNER_TEMP/r47.txt"
+
+  r48-source-live-late:
+    name: R48 exact source-LIVE late descents outside inherited original-start masks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Exhaustive bounded low48 cylinder, 114082 literal original-T certificates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_48_source_live.py | tee "$RUNNER_TEMP/r48.txt"
+          grep -Fqx 'R48_SOURCE_LIVE_PASS roots=105742 lifts=870591 admitted=456289 bitmap=456203 source_live=117735 new_originals=114082 excluded_U729=3114 excluded_old_inverse=539 first=91..367 first91=4402 last367=1 corrected_live=114082 sha256=7f6fb0698ba15cac5fa399362cb2f0e4618ee2f9efd5ede70bd7f1128545803c conditional_upper=326518028938013934' "$RUNNER_TEMP/r48.txt"
+          grep -Fqx 'R48_WITNESS_PASS n=2392525080806731523355 first_descent=162 T162=1898301465502453841680 source=352 corrected=352 cutoff=1629' "$RUNNER_TEMP/r48.txt"

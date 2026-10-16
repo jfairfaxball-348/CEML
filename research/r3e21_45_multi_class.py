@@ -148,7 +148,7 @@ def direct_samples():
     assert not any(quota.values()) and len(starts)==len(set(starts))
     digest=sha256(('\n'.join(map(str,sorted(starts)))+'\n').encode()).hexdigest()
     print('R45_SAMPLE_DIAGNOSTIC count=%d digest=%s bitmap=%s' %(len(starts),digest,dict(bitmap)),flush=True)
-    assert digest==SAMPLE_SHA and bitmap=={'starts':132,'source_CLEAR':132,'corrected_CLEAR':132}
+    assert digest==SAMPLE_SHA and bitmap=={'starts':132,'source_CLEAR':132,'source_LIVE':0,'corrected_CLEAR':132}
     return bitmap,digest
 
 def main():

@@ -22,6 +22,8 @@ on:
       - "research/r3e21_43_source_admitted_intersection.py"
       - "research/r3e21_44_suffix_certificate.py"
       - "research/r3e21_44_independent_phase.cpp"
+      - "research/r3e21_45_multi_class.py"
+      - "research/r3e21_45_independent_phase.cpp"
   push:
     branches: [main]
     paths:
@@ -41,6 +43,8 @@ on:
       - "research/r3e21_43_source_admitted_intersection.py"
       - "research/r3e21_44_suffix_certificate.py"
       - "research/r3e21_44_independent_phase.cpp"
+      - "research/r3e21_45_multi_class.py"
+      - "research/r3e21_45_independent_phase.cpp"
   workflow_dispatch:
 
 permissions:
@@ -282,3 +286,44 @@ jobs:
           "$CXX" -O2 -std=c++17 -Wall -Wextra -Werror -pedantic -o "$RUNNER_TEMP/r44_phase" research/r3e21_44_independent_phase.cpp
           "$RUNNER_TEMP/r44_phase" | tee "$RUNNER_TEMP/r44_cpp.txt"
           grep -Fqx 'R44_INDEPENDENT_PHASE_PASS probes=4718592 phases=18432 min=5 max=17 sum=206080 histogram=5:49,6:90,7:485,8:1844,9:2509,10:1677,11:2914,12:3744,13:2627,14:1269,15:747,16:416,17:61' "$RUNNER_TEMP/r44_cpp.txt"
+
+  r45-seven-class-and-bitmap:
+    name: R45 exact seven-class canonical and bitmap arithmetic with literal T
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Reproduce seven source-gated classes, 132 literal 90-step original traces, raw-source bitmap
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B research/r3e21_45_multi_class.py | tee "$RUNNER_TEMP/r45.txt"
+          test "$(grep -Fc 'R45_CLASS_PASS state=' "$RUNNER_TEMP/r45.txt")" -eq 7
+          grep -Fqx 'R45_GLOBAL_UNION_PASS new_originals=811316649179155 inherited_R44=275570448293005 old_originals=96375 combined_originals=1086887097568535 untouched_eligible_roots=5351322139189268 global_candidate_upper_unchanged=326518028938128165' "$RUNNER_TEMP/r45.txt"
+          grep -Fqx 'R45_ORIGINAL_T_BITMAP_PASS samples=132 source_CLEAR=132 source_LIVE=0 corrected_CLEAR=132 sha256=b60a5e41435c2b5169d1071d821c73c6c8c76dce77698f41350dfeec9ab6d090' "$RUNNER_TEMP/r45.txt"
+          grep -Fqx 'R45_EXACT_PHASE_PASS prefix_mod2048 root_mod9 eight_suffix_steps=8 future_equivalence=integer_only source_bitmap_CLEAR=mathematical_not_native' "$RUNNER_TEMP/r45.txt"
+
+  r45-independent-phase-matrix:
+    name: R45 independent seven-class phases / ${{ matrix.compiler }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Independently replay all 129024 phases; each class under 5m probes
+        shell: bash
+        env:
+          CXX: ${{ matrix.compiler }}
+        run: |
+          set -euo pipefail
+          "$CXX" -O3 -std=c++17 -Wall -Wextra -Werror -pedantic -o "$RUNNER_TEMP/r45_phase" research/r3e21_45_independent_phase.cpp
+          "$RUNNER_TEMP/r45_phase" | tee "$RUNNER_TEMP/r45_cpp.txt"
+          test "$(grep -Fc 'R45_INDEPENDENT_CLASS_PASS state=' "$RUNNER_TEMP/r45_cpp.txt")" -eq 7
+          grep -Fqx 'R45_INDEPENDENT_ALL_PASS classes=7 probes=33030144 phases=129024' "$RUNNER_TEMP/r45_cpp.txt"
